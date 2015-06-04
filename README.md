@@ -23,7 +23,7 @@ Basic auth:
     
 Test request: 
 
-    url: 'http://45.55.197.87:8001/api/test'
+    url: 'http://45.55.197.87:8003/api/test'
     type: 'GET'
 
 Response:

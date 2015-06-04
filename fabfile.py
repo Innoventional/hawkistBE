@@ -2,16 +2,16 @@ from fabric.api import *
 from fabric.decorators import *
 #from environment import env
 
-env.hosts = ['social@roma.dennytwix.com']
+env.hosts = ['45.55.197.87']
 env.port = '27678'
-client = 'social'
+client = 'hawkist'
 
 @task
 def deploy():
     local('git push')
 
-    with cd('/home/social/social-server'):
-        with prefix('source /home/social/social-server/.env/bin/activate'):
+    with cd('/home/hawkist/hawkist'):
+        with prefix('source /home/hawkist/hawkist/.env/bin/activate'):
             run('./ctl stop')
             run('git pull')
             run('alembic upgrade head')
@@ -20,16 +20,16 @@ def deploy():
 
 @task
 def getdb():
-    run('pg_dump social > /tmp/social.sql')
-    get('/tmp/social.sql', '/tmp/social.sql')
+    run('pg_dump social > /tmp/hawkist.sql')
+    get('/tmp/hawkist.sql', '/tmp/hawkist.sql')
     run('rm /tmp/social.sql')
 
 @task
 def updatedb():
-    local('dropdb social')
-    local('createdb social')
-    local('psql social < /tmp/social.sql')
-    local('rm /tmp/social.sql')
+    local('dropdb hawkist')
+    local('createdb hawkist')
+    local('psql hawkist < /tmp/hawkist.sql')
+    local('rm /tmp/hawkist.sql')
 
 
 @task

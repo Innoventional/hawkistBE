@@ -1,4 +1,4 @@
-Hawkist 
+HAWKIST
 ==============
 
 Server setup:

@@ -1,4 +1,6 @@
 import re
+import datetime
+from environment import env
 
 __author__ = 'ne_luboff'
 
@@ -25,4 +27,20 @@ def username_verification(username):
 def email_verification(email):
     if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
         return 'Invalid email format. Example: your@mail.com'
+    return False
+
+
+# check user avability to send one more sms
+def sms_limit_check(self):
+    if self.user.last_pin_sending:
+        if self.user.sent_pins_count >= env['sms_limit_per_hour']:
+            available_time = self.user.last_pin_sending + datetime.timedelta(hours=1)
+            current_time = datetime.datetime.utcnow()
+            if current_time < available_time:
+                return 'You sent sms 3 times per hour. Try again later'
+            else:
+                self.user.sent_pins_count = 0
+    else:
+        self.user.sent_pins_count = 0
+    self.session.commit()
     return False

@@ -145,6 +145,32 @@ Response Failure:
         'message': '' — Error message
     }
     
+**Link facebook to profile**
+
+    Url: 'user/socials'
+    Method: 'PUT'
+
+
+Data:
+
+    {
+        "facebook_token" : "YOUR_FACEBOOK_ACCESS_TOKEN"
+    }
+
+Response Success:
+    
+    {
+        'status': 0,
+        'user': USER_INFO_DICT
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '' — Error message
+    }
+    
 ---
 
 ###Another users

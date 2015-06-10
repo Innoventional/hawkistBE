@@ -7,7 +7,7 @@ from api.users.models import User
 from base import ApiHandler, die
 from helpers import route
 from utility.facebook_api import get_facebook_user, get_facebook_photo
-from utility.format_verification import phone_verification
+from utility.format_verification import phone_verification, sms_limit_check
 from utility.twilio_api import send_sms
 
 __author__ = 'ne_luboff'
@@ -55,16 +55,23 @@ class UserLoginHandler(ApiHandler):
                 self.session.add(user)
                 self.session.commit()
 
+            # check user avability to send one more sms
+            reach_sms_limit = sms_limit_check(self)
+            if reach_sms_limit:
+                return self.make_error(reach_sms_limit)
+
             # generate pin code
             confirm_code = ''.join(choice(string.digits) for _ in xrange(4))
             message_body = 'Welcome to Hawkist! Use this code to login:\n%s' % confirm_code
 
-            # end send it to user
+            # and send it to user
             error = send_sms(phone, message_body)
             if error:
                 return self.make_error(error)
 
             user.pin = confirm_code
+            user.last_pin_sending = datetime.datetime.utcnow()
+            user.sent_pins_count += 1
             user.updated_at = datetime.datetime.utcnow()
             self.session.commit()
         elif facebook_token:

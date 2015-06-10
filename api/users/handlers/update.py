@@ -1,11 +1,16 @@
 import logging
+from random import choice
+import string
 from sqlalchemy import and_
 from api.users.models import User
 from base import ApiHandler, die
-from helpers import route
+from environment import env
+from helpers import route, encrypt_password
 from utility.amazon import upload_file
+from utility.facebook_api import get_facebook_user
 from utility.format_verification import username_verification, email_verification
 from utility.image.processor import make_thumbnail
+from utility.send_email import send_email
 
 __author__ = 'ne_luboff'
 
@@ -83,6 +88,15 @@ class UserHandler(ApiHandler):
 
             self.user.email = email
 
+            # send email confirmation
+            email_salt = encrypt_password(password=email, salt=env['password_salt'])
+            self.user.email_salt = email_salt
+
+            text = 'Welcome to Hawkist!\nTo confirm your email address use the link bellow:\n' + env['server_address'] \
+                   + '/api/user/confirm_email/' + email_salt
+            subject = 'Email confirmation'
+            send_email(text, subject=subject, recipient=self.user.email)
+
         # about me handler
         if about_me:
             self.user.info = about_me
@@ -103,4 +117,59 @@ class UserHandler(ApiHandler):
             except Exception, e:
                 logger.debug(e)
 
+        return self.success({'user': self.user.user_response})
+
+
+@route('user/confirm_email/(.*)')
+class UserEmailVerificationHandler(ApiHandler):
+    allowed_methods = ('GET', )
+
+    def read(self, email_salt):
+
+        if self.user is None:
+            die(401)
+
+        if self.user.email_salt != email_salt:
+            return self.make_error('Invalid confirmation link. Try again')
+        self.user.email_status = True
+        self.session.commit()
+
+        return self.success({'user': self.user.user_response})
+
+
+@route('user/socials')
+class UserSocialHandler(ApiHandler):
+    allowed_methods = ('PUT', )
+
+    def update(self):
+
+        if self.user is None:
+            die(401)
+
+        logger.debug('REQUEST_OBJECT_USER_SOCIAL')
+        logger.debug(self.request_object)
+
+        facebook_token = ''
+
+        if 'facebook_token' in self.request_object:
+            facebook_token = self.request_object['facebook_token']
+
+        if not facebook_token:
+            return self.make_error('No facebook token')
+
+        facebook_response = get_facebook_user(facebook_token)
+        facebook_error, facebook_id = facebook_response['error'], facebook_response['data']
+        if facebook_error:
+            return self.make_error(facebook_error)
+        if not facebook_id:
+            return self.make_error('Something wrong! Try again later')
+
+        # check is this facebook id available
+        already_used = self.session.query(User).filter(and_(User.facebook_id == facebook_id,
+                                                            User.id != self.user.id)).first()
+        if already_used:
+            return self.make_error('This facebook account is already used by another user.')
+
+        self.user.facebook_id = facebook_id
+        self.session.commit()
         return self.success({'user': self.user.user_response})

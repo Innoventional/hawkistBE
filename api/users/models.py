@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, Integer, DateTime, String, Boolean
+from sqlalchemy import Column, Integer, DateTime, String, Boolean, SmallInteger
 from orm import Base
 
 __author__ = 'ne_luboff'
@@ -16,6 +16,8 @@ class User(Base):
     # if user sign up via phone
     phone = Column(String(20), nullable=True, default='')
     pin = Column(String, nullable=True, default='')
+    last_pin_sending = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
+    sent_pins_count = Column(SmallInteger, nullable=True, default=0)
 
     # if user use fb
     facebook_id = Column(String, nullable=True, default='')
@@ -29,6 +31,7 @@ class User(Base):
     # email must be verified for sales
     # TODO first email status is False
     email_status = Column(Boolean, nullable=False, default=True)
+    email_salt = Column(String, nullable=True, default='')
 
     def __repr__(self):
         return '<User %s (%s)>' % (self.id, self.username)

@@ -212,8 +212,12 @@ class ApiHandler(BaseRequestHandler):
                 return False
             api_key, api_pass = base64.decodestring(auth_token).split(':')
             
-            logger.debug('api_key, api_pass = %s, %s', api_key, api_pass)
-            
+            # if its our key-pass - don't show
+            authorization_credentials = self.session.query(ApiKey).filter_by(api_key=api_key, api_pass=api_pass).one()
+            if api_key != authorization_credentials.api_key or api_pass != authorization_credentials.api_pass:
+                logger.debug('It looks like someone wants to break us')
+                logger.debug('api_key, api_pass = %s, %s', api_key, api_pass)
+
             self.ApiKey = self.test_auth(api_key, api_pass)
             return self.ApiKey is not None
         except Exception:

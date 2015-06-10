@@ -33,6 +33,8 @@ class User(Base):
     email_status = Column(Boolean, nullable=False, default=True)
     email_salt = Column(String, nullable=True, default='')
 
+    first_login = Column(Boolean, nullable=False, default=False)
+
     def __repr__(self):
         return '<User %s (%s)>' % (self.id, self.username)
 
@@ -47,5 +49,6 @@ class User(Base):
             'about_me': self.info,
             'phone': self.phone,
             'facebook_id': self.facebook_id,
-            'email_status': self.email_status
+            'email_status': self.email_status,
+            'first_login': self.first_login
         }

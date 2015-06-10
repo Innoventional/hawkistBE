@@ -52,6 +52,7 @@ class UserLoginHandler(ApiHandler):
                 user = User()
                 user.created_at = datetime.datetime.utcnow()
                 user.phone = phone
+                user.first_login = True
                 self.session.add(user)
                 self.session.commit()
 
@@ -89,6 +90,7 @@ class UserLoginHandler(ApiHandler):
                 user = User()
                 user.created_at = datetime.datetime.utcnow()
                 user.facebook_id = facebook_id
+                user.first_login = True
                 self.session.add(user)
                 self.session.commit()
 

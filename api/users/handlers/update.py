@@ -3,7 +3,7 @@ from random import choice
 import string
 from sqlalchemy import and_
 from api.users.models import User
-from base import ApiHandler, die
+from base import ApiHandler, die, USER_ID
 from environment import env
 from helpers import route, encrypt_password
 from utility.amazon import upload_file
@@ -24,6 +24,9 @@ class UserHandler(ApiHandler):
 
         if self.user is None:
             die(401)
+
+        # update cookies
+        self.set_secure_cookie(USER_ID, str(self.user.id), expires_days=30)
 
         user_id = self.get_arg('id', int)
         if user_id:

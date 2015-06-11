@@ -1,5 +1,6 @@
 import datetime
-from sqlalchemy import Column, Integer, DateTime, String, Boolean, SmallInteger
+from sqlalchemy import Column, Integer, DateTime, String, Boolean, SmallInteger, ForeignKey
+from sqlalchemy.orm import relationship, backref
 from orm import Base
 
 __author__ = 'ne_luboff'
@@ -52,3 +53,13 @@ class User(Base):
             'email_status': self.email_status,
             'first_login': self.first_login
         }
+
+
+class UserTags(Base):
+    __tablename__ = 'users_tags'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False, index=True)
+    user = relationship(User, backref=backref('tags', order_by=id, cascade="all,delete", lazy='dynamic'),
+                        foreign_keys=user_id)
+    tag_id = Column(String, nullable=False)

@@ -1,8 +1,8 @@
 import logging
 from random import choice
 import string
-from sqlalchemy import and_
-from api.users.models import User
+from sqlalchemy import and_, Enum
+from api.users.models import User, UserTags
 from base import ApiHandler, die, USER_ID
 from environment import env
 from helpers import route, encrypt_password
@@ -15,6 +15,19 @@ from utility.send_email import send_email
 __author__ = 'ne_luboff'
 
 logger = logging.getLogger(__name__)
+
+
+class Tags(Enum):
+    PS = 0
+    PC = 1
+    XBox = 2
+
+    @classmethod
+    def tostring(cls, val):
+        for k, v in vars(cls).iteritems():
+            if v == val:
+                return k
+
 
 @route('user')
 class UserHandler(ApiHandler):
@@ -175,4 +188,42 @@ class UserSocialHandler(ApiHandler):
 
         self.user.facebook_id = facebook_id
         self.session.commit()
+        return self.success({'user': self.user.user_response})
+
+
+@route('user/tags')
+class UserTagsHandler(ApiHandler):
+    allowed_methods = ('PUT', )
+
+    def update(self):
+
+        if self.user is None:
+            die(401)
+
+        logger.debug('REQUEST_OBJECT_USER_TAGS')
+        logger.debug(self.request_object)
+
+        tags = []
+
+        if 'tags' in self.request_object:
+            tags = self.request_object['tags']
+
+        if not tags:
+            logger.debug('No tags to be added to user %s' % self.user)
+
+        if tags:
+            for tag in tags:
+                # tag value to int
+                try:
+                    tag = int(tag)
+                    tag_name = Tags.tostring(tag)
+                    if tag_name:
+                        user_tag = UserTags()
+                        user_tag.user = self.user
+                        user_tag.tag_id = tag
+                        # self.session.add(user_tag)
+                        # self.session.commit()
+                except ValueError:
+                    logger.debug('%s is not a number' % tag)
+
         return self.success({'user': self.user.user_response})

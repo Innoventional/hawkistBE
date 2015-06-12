@@ -221,8 +221,8 @@ class UserTagsHandler(ApiHandler):
                         user_tag = UserTags()
                         user_tag.user = self.user
                         user_tag.tag_id = tag
-                        # self.session.add(user_tag)
-                        # self.session.commit()
+                        self.session.add(user_tag)
+                        self.session.commit()
                 except ValueError:
                     logger.debug('%s is not a number' % tag)
 

@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 try:
     from users.handlers.login import *
     from users.handlers.update import *
+    from items.handlers import *
 except ImportError:
     logger.debug(ImportError)
 __author__ = 'ne_luboff'

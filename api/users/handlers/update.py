@@ -1,16 +1,13 @@
 import logging
-from random import choice
-import string
 from sqlalchemy import and_, Enum
 from api.users.models import User, UserTags
-from base import ApiHandler, die, USER_ID
-from environment import env
-from helpers import route, encrypt_password
+from base import ApiHandler, die, USER_ID, OpenApiHandler
+from helpers import route
 from utility.amazon import upload_file
 from utility.facebook_api import get_facebook_user
 from utility.format_verification import username_verification, email_verification
 from utility.image.processor import make_thumbnail
-from utility.send_email import send_email
+from utility.send_email import email_confirmation_sending
 
 __author__ = 'ne_luboff'
 
@@ -105,13 +102,7 @@ class UserHandler(ApiHandler):
             self.user.email = email
 
             # send email confirmation
-            email_salt = encrypt_password(password=email, salt=env['password_salt'])
-            self.user.email_salt = email_salt
-
-            text = 'Welcome to Hawkist!\nTo confirm your email address use the link bellow:\n' + env['server_address'] \
-                   + '/api/user/confirm_email/' + email_salt
-            subject = 'Email confirmation'
-            send_email(text, subject=subject, recipient=self.user.email)
+            email_confirmation_sending(self, self.user, email)
 
         # about me handler
         if about_me:
@@ -137,7 +128,7 @@ class UserHandler(ApiHandler):
 
 
 @route('user/confirm_email/(.*)')
-class UserEmailVerificationHandler(ApiHandler):
+class UserEmailVerificationHandler(OpenApiHandler):
     allowed_methods = ('GET', )
 
     def read(self, email_salt):
@@ -146,11 +137,10 @@ class UserEmailVerificationHandler(ApiHandler):
             die(401)
 
         if self.user.email_salt != email_salt:
-            return self.make_error('Invalid confirmation link. Try again')
+            return self.render_string('ui/error.html', message='Invalid confirmation link. Try again')
         self.user.email_status = True
         self.session.commit()
-
-        return self.success({'user': self.user.user_response})
+        return self.render_string('ui/welcome.html', menu_tab_active='')
 
 
 @route('user/socials')

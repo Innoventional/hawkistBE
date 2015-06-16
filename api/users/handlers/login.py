@@ -8,6 +8,7 @@ from base import ApiHandler, die
 from helpers import route
 from utility.facebook_api import get_facebook_user, get_facebook_photo
 from utility.format_verification import phone_verification, sms_limit_check
+from utility.send_email import email_confirmation_sending
 from utility.twilio_api import send_sms
 
 __author__ = 'ne_luboff'
@@ -55,6 +56,9 @@ class UserLoginHandler(ApiHandler):
                 user.first_login = True
                 self.session.add(user)
                 self.session.commit()
+            else:
+                user.first_login = False
+                self.session.commit()
 
             # check user avability to send one more sms
             reach_sms_limit = sms_limit_check(self)
@@ -77,9 +81,10 @@ class UserLoginHandler(ApiHandler):
             self.session.commit()
         elif facebook_token:
             facebook_response = get_facebook_user(facebook_token)
-            facebook_error, facebook_id = facebook_response['error'], facebook_response['data']
+            facebook_error, facebook_data = facebook_response['error'], facebook_response['data']
             if facebook_error:
                 return self.make_error(facebook_error)
+            facebook_id = facebook_data.get('id', None)
             if not facebook_id:
                 return self.make_error('Something wrong! Try again later')
 
@@ -103,6 +108,18 @@ class UserLoginHandler(ApiHandler):
                     self.session.commit()
                 else:
                     logger.debug(fb_avatar_error)
+
+                # getting email
+                facebook_email = facebook_data.get('email', None)
+                if facebook_email:
+                    user.email = facebook_email
+                    self.session.commit()
+                    email_confirmation_sending(self, user, facebook_email)
+                else:
+                    logger.debug('No email address in fb response')
+            else:
+                user.first_login = False
+                self.session.commit()
 
             self.user = user
             self.session.commit()

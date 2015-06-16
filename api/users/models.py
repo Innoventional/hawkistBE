@@ -31,7 +31,7 @@ class User(Base):
 
     # email must be verified for sales
     # TODO first email status is False
-    email_status = Column(Boolean, nullable=False, default=True)
+    email_status = Column(Boolean, nullable=False, default=False)
     email_salt = Column(String, nullable=True, default='')
 
     first_login = Column(Boolean, nullable=False, default=False)

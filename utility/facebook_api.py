@@ -6,22 +6,25 @@ logger = logging.getLogger(__name__)
 
 
 def get_facebook_user(token):
-    user_id = ''
+    data = {}
     error = None
     try:
         opener = urllib2.build_opener()
         url = 'https://graph.facebook.com/me/?access_token={0}'.format(token)
         response = opener.open(url).read()
         response_dict = json.loads(response)
+        logger.debug('FB response')
+        logger.debug(response_dict)
         try:
-            user_id = response_dict['id']
+            data['id'] = response_dict['id']
+            data['email'] = response_dict['email']
         except Exception, e:
             logger.debug('Facebook response have not key %s' % str(e))
     except urllib2.HTTPError, e:
         error = str(e)
     finally:
         return {
-            'data': user_id,
+            'data': data,
             'error': error
         }
 
@@ -35,11 +38,15 @@ def get_facebook_photo(token):
         url = 'https://graph.facebook.com/me/picture?type=large&redirect=0&access_token={0}'.format(token)
         response = opener.open(url).read()
         response_dict = json.loads(response)
+        logger.debug('Avatar response')
+        logger.debug(response_dict)
         photo['avatar'] = response_dict['data']['url']
         # get thumbnail
         url = 'https://graph.facebook.com/me/picture?type=square&redirect=0&access_token={0}'.format(token)
         response = opener.open(url).read()
         response_dict = json.loads(response)
+        logger.debug('Thumbnail response')
+        logger.debug(response_dict)
         photo['thumbnail'] = response_dict['data']['url']
     except urllib2.HTTPError, e:
         error = str(e)
@@ -50,4 +57,4 @@ def get_facebook_photo(token):
         }
 
 if __name__ == '__main__':
-    print get_facebook_user('CAAWeYZAnzPmcBAAl4UhOObK3ZAKp91EiDp6ZCX4H1wQyPBWlheGY1jmnn4og8SlPzs2Km0vAtlmgmKoZAgeer2M3mSLgZAIs1ZABkZAceYSPkj8XVf6u5uBRUvY1JcRMM5oWVVactBKowtTW7C3DLKRtrRvhj8iRbRtRDyBNSXMOSuCtfAn71TE01wonO1odOXtHDwmF8NAVd0NlmF6l6E0z7pkUtQ3FlJvwL4jEHyJVqEYTSt2NScd')
+    print get_facebook_user('CAACEdEose0cBAD54FnGjjaQpcZCZAofYxyASxhWsK6teG1B50kcmZChjdqZBwjPKrk7WSgH7XwoZAWcem8efejjHa3McVMZAnRmKFtnUgL3ZCYa83ZBKZB3wYqPC9ZCDrjGgCsGNixzo1iWUzOt1UPgn4NQKwoWPQ2mUVp1XEeEVJn8mqIpQujRXrd6qdzkYxhLO7pSRuDAHgC5eZBdlzCnMzYVKstCKkFlzcMZD')

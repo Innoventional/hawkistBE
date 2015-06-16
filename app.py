@@ -13,6 +13,9 @@ class HawkistApi(web.Application):
         super(HawkistApi, self).__init__(self.get_handlers(), **{
             'cookie_secret': env['cookie_secret'],
             'debug': env['debug'],
+            'template_path': 'templates',
+            'static_path': os.path.join(ROOT, 'static'),
+            'static_url_prefix': env['static_url'],
         })
 
     def get_handlers(self):
@@ -22,4 +25,8 @@ class HawkistApi(web.Application):
             (r'/static/(.*)', web.StaticFileHandler, {'path': os.path.join(ROOT, 'static')}),
             (r'', include('handlers')),
         )
+        if env.get('serve_static'):
+            res += make_handlers(env.get('url_prefix', ''),
+                                 (r'/s/(.*)', web.StaticFileHandler, {"path": os.path.join(ROOT, 'static')}),
+            )
         return res

@@ -3,6 +3,7 @@ import logging
 import smtplib
 from email.mime.text import MIMEText
 from environment import env
+from helpers import encrypt_password
 
 __author__ = 'ne_luboff'
 
@@ -43,3 +44,14 @@ def send_email(text=None, subject=None, recipient=None, filename=None, recipient
     recipients = recipients if recipients else [recipient, ]
     print server.sendmail(env['mail']['from'], recipients, msg.as_string())
     server.quit()
+
+
+def email_confirmation_sending(self, user, email):
+    email_salt = encrypt_password(password=email, salt=env['password_salt'])
+    user.email_salt = email_salt
+    self.session.commit()
+
+    text = 'Welcome to Hawkist!\nTo confirm your email address use the link bellow:\n' + env['server_address'] \
+           + '/api/user/confirm_email/' + email_salt
+    subject = 'Email confirmation'
+    send_email(text, subject=subject, recipient=email)

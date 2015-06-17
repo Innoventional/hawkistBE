@@ -6,9 +6,14 @@ logger = logging.getLogger(__name__)
 
 __author__ = 'ne_luboff'
 
-account_sid = "ACbc4b5aa87ac7329916beac9cd197b438"
-auth_token = "0011bf9dbbde88c80430fa227852294f"
-from_number = "+14697063609"
+# account_sid = "ACbc4b5aa87ac7329916beac9cd197b438"
+# auth_token = "0011bf9dbbde88c80430fa227852294f"
+# from_number = "+14697063609"
+
+# consumer twilio live account credentials
+account_sid = "AC21a1e1681c5c5a07068883a237a4084f"
+auth_token = "acee56df48b9700fa65966262275c041"
+from_number = "+447903596742"
 
 
 def send_sms(to_number, text):

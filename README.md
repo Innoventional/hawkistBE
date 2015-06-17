@@ -100,6 +100,25 @@ Response:
 
     {...} - Full user info dict or 404 error if user was not found
     
+    
+**Logout**
+
+    Url: 'user/logout'
+    Method: 'PUT'
+    Content-Type: application/json; charset=UTF-8
+    
+Data:
+
+    {
+        
+    }
+
+Response:
+
+    { 
+        'status': 0
+    }
+    
 ---
 
 ###User profile
@@ -156,6 +175,38 @@ Data:
     {
         "facebook_token" : "YOUR_FACEBOOK_ACCESS_TOKEN"
     }
+
+Response Success:
+    
+    {
+        'status': 0,
+        'user': USER_INFO_DICT
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '' — Error message
+    }
+        
+**Add tags**
+
+    Url: 'user/tags'
+    Method: 'PUT'
+
+
+Data:
+
+    {
+        "tags" : [VALID_TAGS_NUMBERS]
+    }
+
+    VALID_TAGS_NUMBERS:
+        PS = 0
+        PC = 1
+        XBox = 2
+
 
 Response Success:
     

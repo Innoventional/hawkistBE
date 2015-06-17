@@ -1,9 +1,21 @@
 import datetime
-from sqlalchemy import Column, Integer, DateTime, String, Boolean, SmallInteger, ForeignKey
+from sqlalchemy import Column, Integer, DateTime, String, Boolean, SmallInteger, ForeignKey, Enum
 from sqlalchemy.orm import relationship, backref
 from orm import Base
 
 __author__ = 'ne_luboff'
+
+
+class Tags(Enum):
+    PS = 0
+    PC = 1
+    XBox = 2
+
+    @classmethod
+    def tostring(cls, val):
+        for k, v in vars(cls).iteritems():
+            if v == val:
+                return k
 
 
 class User(Base):
@@ -39,6 +51,17 @@ class User(Base):
     def __repr__(self):
         return '<User %s (%s)>' % (self.id, self.username)
 
+    def get_user_tags(self):
+        tag_names = []
+        tags = self.tags
+        for tag in tags:
+            tag_dict = dict()
+            tag_dict['id'] = tag.tag_id
+            tag_dict['name'] = Tags.tostring(tag.id)
+            tag_names.append(tag_dict)
+        return tag_names
+
+
     @property
     def user_response(self):
         return {
@@ -51,7 +74,8 @@ class User(Base):
             'phone': self.phone,
             'facebook_id': self.facebook_id,
             'email_status': self.email_status,
-            'first_login': self.first_login
+            'first_login': self.first_login,
+            'tags': self.get_user_tags()
         }
 
 

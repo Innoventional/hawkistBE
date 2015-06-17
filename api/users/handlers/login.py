@@ -4,7 +4,7 @@ from random import choice
 import string
 from sqlalchemy import and_, or_
 from api.users.models import User
-from base import ApiHandler, die
+from base import ApiHandler, die, OpenApiHandler
 from helpers import route
 from utility.facebook_api import get_facebook_user, get_facebook_photo
 from utility.format_verification import phone_verification, sms_limit_check
@@ -169,3 +169,17 @@ class UserLoginHandler(ApiHandler):
         self.user = user
         self.session.commit()
         return self.success({'user': self.user.user_response})
+
+
+@route('user/logout')
+class LogoutHandler(OpenApiHandler):
+    allowed_methods = ('PUT', )
+
+    def update(self):
+        if self.user is None:
+            die(401)
+
+        self.user = None
+        self.session.commit()
+
+        return self.success()

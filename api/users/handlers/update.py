@@ -1,6 +1,6 @@
 import logging
-from sqlalchemy import and_, Enum
-from api.users.models import User, UserTags
+from sqlalchemy import and_
+from api.users.models import User, UserTags, Tags
 from base import ApiHandler, die, USER_ID, OpenApiHandler
 from helpers import route
 from utility.amazon import upload_file
@@ -12,18 +12,6 @@ from utility.send_email import email_confirmation_sending
 __author__ = 'ne_luboff'
 
 logger = logging.getLogger(__name__)
-
-
-class Tags(Enum):
-    PS = 0
-    PC = 1
-    XBox = 2
-
-    @classmethod
-    def tostring(cls, val):
-        for k, v in vars(cls).iteritems():
-            if v == val:
-                return k
 
 
 @route('user')
@@ -133,12 +121,12 @@ class UserEmailVerificationHandler(OpenApiHandler):
 
     def read(self, email_salt):
 
-        if self.user is None:
-            die(401)
+        # get user by email_salt
+        user = self.session.query(User).filter(User.email_salt == email_salt).first()
+        if not user:
+            return self.render_string('ui/error.html', message='Invalid confirmation link. Try again later')
 
-        if self.user.email_salt != email_salt:
-            return self.render_string('ui/error.html', message='Invalid confirmation link. Try again')
-        self.user.email_status = True
+        user.email_status = True
         self.session.commit()
         return self.render_string('ui/welcome.html', menu_tab_active='')
 
@@ -194,12 +182,14 @@ class UserTagsHandler(ApiHandler):
         logger.debug(self.request_object)
 
         tags = []
+        warning_message = ''
 
         if 'tags' in self.request_object:
             tags = self.request_object['tags']
 
         if not tags:
             logger.debug('No tags to be added to user %s' % self.user)
+            warning_message = 'No tags to be added'
 
         if tags:
             for tag in tags:
@@ -208,12 +198,22 @@ class UserTagsHandler(ApiHandler):
                     tag = int(tag)
                     tag_name = Tags.tostring(tag)
                     if tag_name:
-                        user_tag = UserTags()
-                        user_tag.user = self.user
-                        user_tag.tag_id = tag
-                        self.session.add(user_tag)
-                        self.session.commit()
+                        # check is this tag already added
+                        already_exists = self.session.query(UserTags).filter(and_(UserTags.tag_id == str(tag),
+                                                                                  UserTags.user_id == self.user.id)).first()
+                        if already_exists:
+                            warning_message = 'You already added tag %s' % tag_name
+                            logger.debug(warning_message)
+                        else:
+                            user_tag = UserTags()
+                            user_tag.user = self.user
+                            user_tag.tag_id = tag
+                            self.session.add(user_tag)
+                            self.session.commit()
+                    else:
+                        warning_message = 'No tag with id %s' % tag
+                        logger.debug(warning_message)
                 except ValueError:
                     logger.debug('%s is not a number' % tag)
 
-        return self.success({'user': self.user.user_response})
+        return self.success({'user': self.user.user_response, 'warning_message': warning_message})

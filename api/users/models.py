@@ -8,15 +8,29 @@ __author__ = 'ne_luboff'
 
 
 class UserType(Enum):
+    __order__ = '0 1 2 3'
+
     Standard = 0
     Admin = 1
     Developer = 2
     Support = 3
 
+    @classmethod
+    def tostring(cls, val):
+        for k, v in vars(cls).iteritems():
+            if v == val:
+                return k
+
 
 class SystemStatus(Enum):
     Active = 0
     Suspended = 1
+
+    @classmethod
+    def tostring(cls, val):
+        for k, v in vars(cls).iteritems():
+            if v == val:
+                return k
 
 
 class User(Base):
@@ -77,7 +91,9 @@ class User(Base):
             'facebook_id': self.facebook_id,
             'email_status': self.email_status,
             'first_login': self.first_login,
-            'tags': self.get_user_tags()
+            'tags': self.get_user_tags(),
+            'user_type': self.user_type,
+            'system_status': self.system_status,
         }
 
 

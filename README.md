@@ -39,6 +39,20 @@ Response:
         }
 --------------------------
 
+###Used enum classes
+    
+class UserType(Enum):
+
+    Standard = 0
+    Admin = 1
+    Developer = 2
+    Support = 3
+        
+class SystemStatus(Enum):
+
+    Active = 0
+    Suspended = 1
+
 ###User registration
 
 **Registration**

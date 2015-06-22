@@ -1,5 +1,5 @@
 from api.admin.handlers.tags import AdminBaseHandler
-from api.users.models import User
+from api.users.models import User, SystemStatus, UserType
 from base import paginate
 from helpers import route
 
@@ -19,4 +19,4 @@ class AdminUsersHandler(AdminBaseHandler):
         paginator, tags = paginate(users, page, page_size)
 
         return self.render_string('admin/admin_users.html', users=users, paginator=paginator,
-                                  menu_tab_active='tab_users')
+                                  menu_tab_active='tab_users', SystemStatus=SystemStatus, UserType=UserType)

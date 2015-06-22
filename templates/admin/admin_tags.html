@@ -29,10 +29,11 @@
                         {% end %}
                         <td>{{ tag.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
                         <td>
-                            <a class="btn btn_edit_tag" href="#" data-toggle="modal" data-target="#edit_tag_modal" >
+                            <a class="btn btn_edit_tag silver-color" href="#" data-toggle="modal" data-target="#edit_tag_modal"
+                               title="Edit tag">
                                 <i class="glyphicon glyphicon-pencil"></i>
                             </a>
-                            <a class="btn btn_delete_tag" href="#">
+                            <a class="btn btn_delete_tag red-color" href="#" title="Delete tag">
                                 <i class="glyphicon glyphicon-trash"></i>
                             </a>
                         </td>
@@ -91,26 +92,7 @@
                     <h4 class="modal-title" id="edit_tag_modalLabel"> Add tag </h4>
                 </div>
                 <div class="modal-body">
-                    <span class="label label-default">Parent tag</span>
-                    <form action="">
-                        <div class="row-fluid edit_tag_parent_tag">
-                            <select  name="type" id="edit_tag_select">
-                                <option value="0">---</option>
-                                {% for tag in tags %}
-                                    <option value="{{ tag.id }}">{{ tag.name.capitalize() }}</option>
-                                {% end %}
-                            </select>
-                        </div>
-                    </form>
-                        <div>&nbsp</div>
-
-                    <div class="category_fields">
-                        <input type="text" class="form-control" id="editing_tag_id" disabled>
-
-                        <span class="label label-default">Tag title</span>
-                        <input type="text" class="form-control" id="editing_tag_name" placeholder="Input tag title" required>
-                        <div>&nbsp</div>
-                    </div>
+                    Hello
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

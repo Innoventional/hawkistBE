@@ -2,98 +2,6 @@
 
 {% block title %}Users List{% end %}
 
-{% block search %}
-    <!--<form class="navbar-form navbar-right" role="search">-->
-        <!--<div class="form-group">-->
-            <!--<input type="text" name="q" class="form-control" placeholder="Search">-->
-        <!--</div>-->
-        <!--<button type="submit" class="btn btn-default glyphicon glyphicon-search"></button>-->
-    <!--</form>-->
-{% end %}
-
-{% block js %}
-    <script type="text/javascript">
-        $('.btn_remove').click(function(){
-            if (confirm('Do you really want to delete this user?'))
-            {
-                var id = $(this).parent().parent().data('id');
-
-                remove_user(id, function(status, message){
-                    if (status != 0)
-                    {
-                        alert(message);
-                    }
-                });
-            };
-        });
-
-        remove_user = function(user_id, completion)
-        {
-            $.ajax({
-                url: '/api/admin',
-                type: 'PUT',
-                data: {
-                    'id': user_id,
-                    'action_type': 'delete'
-                },
-                success: function(data) {
-                    var status = data['status'];
-                    var message = data['message'];
-                    completion(status, message);
-                    location.reload();
-                }
-            });
-
-            return false;
-        };
-
-        $('.btn_suspend').click(function(){
-            var id = $(this).parent().parent().data('id');
-            suspend_user(id);
-        });
-
-        suspend_user = function(user_id)
-        {
-            $.ajax({
-                url: '/api/admin',
-                type: 'PUT',
-                data: {
-                    'id': user_id,
-                    'action_type': 'suspend'
-                },
-                success: function(data) {
-                    location.reload();
-                }
-            });
-
-            return false;
-        };
-
-        $('.btn_unsuspend').click(function(){
-            var id = $(this).parent().parent().data('id');
-            unsuspend_user(id);
-        });
-
-        unsuspend_user = function(user_id)
-        {
-            $.ajax({
-                url: '/api/admin',
-                type: 'PUT',
-                data: {
-                    'id': user_id,
-                    'action_type': 'unsuspend'
-                },
-                success: function(data) {
-                    location.reload();
-                }
-            });
-
-            return false;
-        };
-
-    </script>
-{% end %}
-
 {% block content %}
     <div class="row-offcanvas">
         <table class="table table-hover">
@@ -115,12 +23,64 @@
                         <td>{{ user.email or '' }}</td>
                         <td>{{ user.phone or '' }}</td>
                         <td>{{ user.facebook_id or '' }}</td>
-                        <td>Type</td>
-                        <td>Status</td>
-                        <td>Action</td>
+                        <td>{{ UserType.tostring(user.user_type) }}</td>
+                        <td>{{ SystemStatus.tostring(user.system_status) }}</td>
+                        <td>
+                            <a class="btn btn_change_usertype" href="#" title="Change user access permissions"
+                               data-toggle="modal" data-target="#edit_user_type_modal" >
+                                <i class="glyphicon glyphicon-lock"></i>
+                            </a>
+                            <a class="btn btn_edit_user silver-color" href="#" data-toggle="modal"
+                               data-target="#edit_user_modal" title="Edit user">
+                                <i class="glyphicon glyphicon-pencil"></i>
+                            </a>
+                            <a class="btn btn_delete_user red-color" href="#" title="Delete user">
+                                <i class="glyphicon glyphicon-trash"></i>
+                            </a>
+                        </td>
                      </tr>
                 {% end %}
             </tbody>
         </table>
+    </div>
+
+<!-- Edit user permissions modal -->
+    <div class="modal fade property" id="edit_user_type_modal" tabindex="-1" role="dialog" aria-labelledby="edit_user_type_modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="edit_user_type_modalLabel"> Add tag </h4>
+                </div>
+                <div class="modal-body">
+                    <span class="label label-default">Parent tag</span>
+                    <form action="">
+                        <div class="row-fluid edit_tag_parent_tag">
+                            <select  name="type" id="edit_tag_select">
+                                <option value="0">---</option>
+                                {% for tag in tags %}
+                                    <option value="{{ tag.id }}">{{ tag.name.capitalize() }}</option>
+                                {% end %}
+                            </select>
+                        </div>
+                    </form>
+                        <div>&nbsp</div>
+
+                    <div class="category_fields">
+                        <input type="text" class="form-control" id="editing_tag_id" disabled>
+
+                        <span class="label label-default">Tag title</span>
+                        <input type="text" class="form-control" id="editing_tag_name" placeholder="Input tag title" required>
+                        <div>&nbsp</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary btn_save_edited_tag">Save</button>
+                </div>
+            </div>
+        </div>
     </div>
 {% end %}

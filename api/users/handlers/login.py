@@ -3,7 +3,7 @@ import datetime
 from random import choice
 import string
 from sqlalchemy import and_, or_
-from api.users.models import User
+from api.users.models import User, SystemStatus, UserType
 from base import ApiHandler, die, OpenApiHandler
 from helpers import route
 from utility.facebook_api import get_facebook_user, get_facebook_photo
@@ -54,6 +54,8 @@ class UserLoginHandler(ApiHandler):
                 user.created_at = datetime.datetime.utcnow()
                 user.phone = phone
                 user.first_login = True
+                user.system_status = SystemStatus.Active
+                user.user_type = UserType.Standard
                 self.session.add(user)
                 self.session.commit()
             else:
@@ -96,6 +98,8 @@ class UserLoginHandler(ApiHandler):
                 user.created_at = datetime.datetime.utcnow()
                 user.facebook_id = facebook_id
                 user.first_login = True
+                user.system_status = SystemStatus.Active
+                user.user_type = UserType.Standard
                 self.session.add(user)
                 self.session.commit()
 

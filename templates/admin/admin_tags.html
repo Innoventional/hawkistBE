@@ -2,41 +2,8 @@
 
 {% block title %}Tags{% end %}
 
-{% block js %}
-    <script>
-        $('.btn_add_tag').click(function(){
-            var parent_tag_id = $(this).parent().parent().find('#add_tag_select').val();
-            var new_tag_name = document.getElementById("new_tag_name").value;
-            add_tag(parent_tag_id, new_tag_name)
-        });
-
-        add_tag = function(parent_tag_id, new_tag_name){
-            $.ajax({
-                url: '/api/admin/tags',
-                type: 'POST',
-                data: {
-                    'parent_tag_id': parent_tag_id,
-                    'new_tag_name': new_tag_name
-                },
-                success: function(data) {
-                    var status = data['status'];
-                    var message = data['message'];
-                    if (status == 0 )
-                    {
-                        location.reload();
-                    }else
-                    {
-                        alert(message);
-                    }
-                }
-            });
-        };
-    </script>
-{% end %}
-
-
 {% block content %}
-    <button class="btn btn-primary" data-toggle="modal" data-target="#myModalPropertyRequests" href="#">Add new tag</button>
+    <button class="btn btn-primary" data-toggle="modal" data-target="#add_new_tag_modal" href="#">Add new tag</button>
     <div class="row-offcanvas">
         <table class="table table-hover">
             <thead>
@@ -44,10 +11,13 @@
                 <th>Title</th>
                 <th>Parent tag</th>
                 <th>Created at</th>
+                <th>Action</th>
             </thead>
             <tbody>
                 {% for tag in tags %}
-                    <tr data-id="{{ tag.id }}">
+                    <tr data-id="{{ tag.id }}"
+                        data-name="{{ tag.name }}"
+                        data-parent_tag_id="{{ tag.parent_tag_id }}">
                         <td>{{ tag.id }}</td>
                         <td>{{ tag.name }}</td>
                         {% try %}
@@ -58,21 +28,29 @@
                             <td></td>
                         {% end %}
                         <td>{{ tag.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                        <td>
+                            <a class="btn btn_edit_tag" href="#">
+                                <i class="glyphicon glyphicon-pencil"></i>
+                            </a>
+                            <a class="btn btn_delete_tag" href="#">
+                                <i class="glyphicon glyphicon-trash"></i>
+                            </a>
+                        </td>
                      </tr>
                 {% end %}
             </tbody>
         </table>
     </div>
 
-<!-- Modal Property Requests -->
-    <div class="modal fade property" id="myModalPropertyRequests" tabindex="-1" role="dialog" aria-labelledby="myModalPropertyRequestsLabel" aria-hidden="true">
+<!-- Add new tag modal -->
+    <div class="modal fade property" id="add_new_tag_modal" tabindex="-1" role="dialog" aria-labelledby="add_new_tag_modalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">
                     <span aria-hidden="true">&times;</span>
                     <span class="sr-only">Close</span></button>
-                    <h4 class="modal-title" id="myModalPropertyRequestsLabel"> Add tag </h4>
+                    <h4 class="modal-title" id="add_new_tag_modalLabel"> Add tag </h4>
                 </div>
                 <div class="modal-body">
                     <span class="label label-default">Parent tag</span>
@@ -88,7 +66,7 @@
                     </form>
                         <div>&nbsp</div>
 
-                    <div class="category_fields" id="category_agent_fields" style="display: block;" >
+                    <div class="category_fields" id="category_agent_fields">
                         <span class="label label-default">Tag title</span>
                         <input type="text" class="form-control" id="new_tag_name" placeholder="Input tag title" required>
                         <div>&nbsp</div>

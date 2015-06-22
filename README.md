@@ -139,7 +139,7 @@ Response:
 **Update username / email / about me / avatar**
 
     Url: 'user'
-    Method: 'PUT'
+    Method: 'POST'
 
 
 Data:

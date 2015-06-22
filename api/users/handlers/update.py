@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 @route('user')
 class UserHandler(ApiHandler):
-    allowed_methods = ('GET', 'PUT')
+    allowed_methods = ('GET', 'POST')
 
     def read(self):
 
@@ -40,7 +40,7 @@ class UserHandler(ApiHandler):
             else:
                 return self.success({'user': self.user.user_response})
 
-    def update(self):
+    def create(self):
 
         if self.user is None:
             die(401)

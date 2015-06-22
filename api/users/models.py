@@ -7,6 +7,18 @@ from orm import Base
 __author__ = 'ne_luboff'
 
 
+class UserType(Enum):
+    Standard = 0
+    Admin = 1
+    Developer = 2
+    Support = 3
+
+
+class SystemStatus(Enum):
+    Active = 0
+    Suspended = 1
+
+
 class User(Base):
     __tablename__ = 'users'
     __json_extra__ = ('user_response')
@@ -36,6 +48,10 @@ class User(Base):
     email_salt = Column(String, nullable=True, default='')
 
     first_login = Column(Boolean, nullable=False, default=False)
+
+    system_status = Column(SmallInteger, nullable=False, default=SystemStatus.Active)
+    user_type = Column(SmallInteger, nullable=False, default=UserType.Standard)
+    password = Column(String, nullable=True, default='')
 
     def __repr__(self):
         return '<User %s (%s)>' % (self.id, self.username)

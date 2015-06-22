@@ -1,0 +1,11 @@
+.btn_edit_tag {
+    color: #c0c0c0;
+}
+
+.btn_delete_tag {
+    color: red;
+}
+
+.category_fields {
+    display: block;
+}

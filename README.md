@@ -189,6 +189,31 @@ Response Failure:
         'status': 1,
         'message': '' — Error message
     }
+    
+###Tags
+    
+**Get the list of all tags**
+
+    Url: 'tags'
+    Method: 'GET'
+
+Response:
+
+    {
+        "status": 0,
+        "tags": [
+            {
+                "id": 1,
+                "parent_tag_id": "",
+                "name": "Console"
+            },
+            {
+                "id": 2,
+                "parent_tag_id": 1,
+                "name": "PS3"
+            }
+        ]
+    }
         
 **Add tags**
 
@@ -199,13 +224,36 @@ Response Failure:
 Data:
 
     {
-        "tags" : [VALID_TAGS_NUMBERS]
+        "tags" : [1, 2]
     }
 
-    VALID_TAGS_NUMBERS:
-        PS = 0
-        PC = 1
-        XBox = 2
+
+Response Success:
+    
+    {
+        'status': 0,
+        'user': USER_INFO_DICT
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '' — Error message
+    }
+    
+    
+**Delete tags**
+
+    Url: 'user/tags'
+    Method: 'DELETE'
+
+
+Data:
+
+    {
+        "tags" : [2]
+    }
 
 
 Response Success:

@@ -1,21 +1,10 @@
 import datetime
 from sqlalchemy import Column, Integer, DateTime, String, Boolean, SmallInteger, ForeignKey, Enum
 from sqlalchemy.orm import relationship, backref
+from api.tags.models import Tag
 from orm import Base
 
 __author__ = 'ne_luboff'
-
-
-class Tags(Enum):
-    PS = 0
-    PC = 1
-    XBox = 2
-
-    @classmethod
-    def tostring(cls, val):
-        for k, v in vars(cls).iteritems():
-            if v == val:
-                return k
 
 
 class User(Base):
@@ -52,15 +41,12 @@ class User(Base):
         return '<User %s (%s)>' % (self.id, self.username)
 
     def get_user_tags(self):
-        tag_names = []
-        tags = self.tags
-        for tag in tags:
-            tag_dict = dict()
-            tag_dict['id'] = tag.tag_id
-            tag_dict['name'] = Tags.tostring(tag.id)
-            tag_names.append(tag_dict)
-        return tag_names
-
+        return [
+            {
+                "id": tag.tag.id,
+                "name": tag.tag.name}
+            for tag in self.user_tags
+        ]
 
     @property
     def user_response(self):
@@ -84,6 +70,8 @@ class UserTags(Base):
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False, index=True)
-    user = relationship(User, backref=backref('tags', order_by=id, cascade="all,delete", lazy='dynamic'),
+    user = relationship(User, backref=backref('user_tags', order_by=id, cascade="all,delete", lazy='dynamic'),
                         foreign_keys=user_id)
-    tag_id = Column(String, nullable=False)
+    tag_id = Column(Integer, ForeignKey('tags.id'), nullable=False, index=True)
+    tag = relationship(Tag, backref=backref('tag_users', order_by=id, cascade="all,delete", lazy='dynamic'),
+                       foreign_keys=tag_id)

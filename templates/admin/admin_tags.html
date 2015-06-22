@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}Tags{% end %}
+
+{% block js %}
+    <script>
+        $('.btn_add_tag').click(function(){
+            var parent_tag_id = $(this).parent().parent().find('#add_tag_select').val();
+            var new_tag_name = document.getElementById("new_tag_name").value;
+            add_tag(parent_tag_id, new_tag_name)
+        });
+
+        add_tag = function(parent_tag_id, new_tag_name){
+            $.ajax({
+                url: '/api/admin/tags',
+                type: 'POST',
+                data: {
+                    'parent_tag_id': parent_tag_id,
+                    'new_tag_name': new_tag_name
+                },
+                success: function(data) {
+                    var status = data['status'];
+                    var message = data['message'];
+                    if (status == 0 )
+                    {
+                        location.reload();
+                    }else
+                    {
+                        alert(message);
+                    }
+                }
+            });
+        };
+    </script>
+{% end %}
+
+
+{% block content %}
+    <button class="btn btn-primary" data-toggle="modal" data-target="#myModalPropertyRequests" href="#">Add new tag</button>
+    <div class="row-offcanvas">
+        <table class="table table-hover">
+            <thead>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Parent tag</th>
+                <th>Created at</th>
+            </thead>
+            <tbody>
+                {% for tag in tags %}
+                    <tr data-id="{{ tag.id }}">
+                        <td>{{ tag.id }}</td>
+                        <td>{{ tag.name }}</td>
+                        {% try %}
+                        {% if tag.parent_tag.name %}
+                            <td>{{ tag.parent_tag.name}}</td>
+                        {% end %}
+                        {% except %}
+                            <td></td>
+                        {% end %}
+                        <td>{{ tag.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                     </tr>
+                {% end %}
+            </tbody>
+        </table>
+    </div>
+
+<!-- Modal Property Requests -->
+    <div class="modal fade property" id="myModalPropertyRequests" tabindex="-1" role="dialog" aria-labelledby="myModalPropertyRequestsLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalPropertyRequestsLabel"> Add tag </h4>
+                </div>
+                <div class="modal-body">
+                    <span class="label label-default">Parent tag</span>
+                    <form action="">
+                        <div class="row-fluid">
+                            <select  name="type" id="add_tag_select">
+                                <option value="0">---</option>
+                                {% for tag in tags %}
+                                    <option value="{{ tag.id }}">{{ tag.name }}</option>
+                                {% end %}
+                            </select>
+                        </div>
+                    </form>
+                        <div>&nbsp</div>
+
+                    <div class="category_fields" id="category_agent_fields" style="display: block;" >
+                        <span class="label label-default">Tag title</span>
+                        <input type="text" class="form-control" id="new_tag_name" placeholder="Input tag title" required>
+                        <div>&nbsp</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary btn_add_tag">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% end %}

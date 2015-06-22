@@ -9,6 +9,9 @@ try:
     from users.handlers.login import *
     from users.handlers.update import *
     from items.handlers import *
+    from tags.handler import *
+    from admin.handlers.tags import *
+    from admin.handlers.users import *
 except ImportError:
     logger.debug(ImportError)
 __author__ = 'ne_luboff'

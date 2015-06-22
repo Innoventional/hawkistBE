@@ -1,6 +1,7 @@
 import logging
 from sqlalchemy import and_
-from api.users.models import User, UserTags, Tags
+from api.tags.models import Tag
+from api.users.models import User, UserTags
 from base import ApiHandler, die, USER_ID, OpenApiHandler
 from helpers import route
 from utility.amazon import upload_file
@@ -171,49 +172,79 @@ class UserSocialHandler(ApiHandler):
 
 @route('user/tags')
 class UserTagsHandler(ApiHandler):
-    allowed_methods = ('PUT', )
+    allowed_methods = ('PUT', 'DELETE')
 
     def update(self):
 
         if self.user is None:
             die(401)
 
-        logger.debug('REQUEST_OBJECT_USER_TAGS')
+        logger.debug('REQUEST_OBJECT_USER_ADD_TAGS')
         logger.debug(self.request_object)
 
-        tags = []
-        warning_message = ''
+        tag_ids = []
 
         if 'tags' in self.request_object:
-            tags = self.request_object['tags']
+            tag_ids = self.request_object['tags']
 
-        if not tags:
+        if not tag_ids:
             logger.debug('No tags to be added to user %s' % self.user)
-            warning_message = 'No tags to be added'
 
-        if tags:
-            for tag in tags:
+        if tag_ids:
+            for tag_id in tag_ids:
                 # tag value to int
                 try:
-                    tag = int(tag)
-                    tag_name = Tags.tostring(tag)
-                    if tag_name:
-                        # check is this tag already added
-                        already_exists = self.session.query(UserTags).filter(and_(UserTags.tag_id == str(tag),
-                                                                                  UserTags.user_id == self.user.id)).first()
-                        if already_exists:
-                            warning_message = 'You already added tag %s' % tag_name
-                            logger.debug(warning_message)
-                        else:
-                            user_tag = UserTags()
-                            user_tag.user = self.user
-                            user_tag.tag_id = tag
-                            self.session.add(user_tag)
-                            self.session.commit()
-                    else:
-                        warning_message = 'No tag with id %s' % tag
-                        logger.debug(warning_message)
+                    tag_id = int(tag_id)
+                    tag_item = self.session.query(Tag).filter(Tag.id == tag_id)
+                    if not tag_item:
+                        return self.make_error('No tag with id %s' % tag_id)
+                    # check is this tag already added
+                    already_exists = self.session.query(UserTags).filter(and_(UserTags.tag_id == tag_id,
+                                                                              UserTags.user_id == self.user.id)).first()
+                    if already_exists:
+                        return self.make_error('You already added tag %s to your feeds' % already_exists.tag.name)
+                    user_tag = UserTags()
+                    user_tag.user = self.user
+                    user_tag.tag_id = tag_id
+                    self.session.add(user_tag)
+                    self.session.commit()
                 except ValueError:
-                    logger.debug('%s is not a number' % tag)
+                    logger.debug('%s is not a number' % tag_id)
 
-        return self.success({'user': self.user.user_response, 'warning_message': warning_message})
+        return self.success({'user': self.user.user_response})
+
+    def remove(self):
+
+        if self.user is None:
+            die(401)
+
+        logger.debug('REQUEST_OBJECT_USER_DELETE_TAGS')
+        logger.debug(self.request_object)
+
+        tag_ids = []
+
+        if 'tags' in self.request_object:
+            tag_ids = self.request_object['tags']
+
+        if not tag_ids:
+            logger.debug('No tags to be deleted from user %s' % self.user)
+
+        if tag_ids:
+            for tag_id in tag_ids:
+                # tag value to int
+                try:
+                    tag_id = int(tag_id)
+                    tag_item = self.session.query(Tag).filter(Tag.id == tag_id).first()
+                    if not tag_item:
+                        return self.make_error('No tag with id %s' % tag_id)
+                    # check is this tag already added
+                    tag_exists = self.session.query(UserTags).filter(and_(UserTags.tag_id == tag_id,
+                                                                          UserTags.user_id == self.user.id)).first()
+                    if not tag_exists:
+                        return self.make_error("You haven\'t tag %s into your feeds" % tag_item.name)
+                    self.session.delete(tag_exists)
+                    self.session.commit()
+                except ValueError:
+                    logger.debug('%s is not a number' % tag_id)
+
+        return self.success({'user': self.user.user_response})

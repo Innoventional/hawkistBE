@@ -17,6 +17,7 @@ fileConfig(config.config_file_name)
 from api.models import ApiKey
 from api.users.models import User
 from api.items.models import *
+from api.tags.models import *
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel

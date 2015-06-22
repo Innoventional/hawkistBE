@@ -32,6 +32,8 @@ def email_verification(email):
 
 # check user avability to send one more sms
 def sms_limit_check(self):
+    if not self.user:
+      return False
     if self.user.last_pin_sending:
         if self.user.sent_pins_count >= env['sms_limit_per_hour']:
             available_time = self.user.last_pin_sending + datetime.timedelta(hours=1)

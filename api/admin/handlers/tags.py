@@ -6,14 +6,13 @@ from helpers import route
 
 __author__ = 'ne_luboff'
 
-
 class AdminBaseHandler(OpenApiHandler):
     pass
 
 
 @route('admin/tags')
 class AdminTagsHandler(AdminBaseHandler):
-    allowed_methods = ('GET', 'POST')
+    allowed_methods = ('GET', 'POST', 'PUT', 'DELETE')
 
     def read(self):
         tags = self.session.query(Tag).order_by(Tag.id)
@@ -46,3 +45,39 @@ class AdminTagsHandler(AdminBaseHandler):
         self.session.commit()
         return self.success()
 
+    def update(self):
+        tag_id = self.get_argument('tag_id')
+        tag_name = self.get_argument('tag_name').lower()
+        parent_tag_id = self.get_argument('parent_tag_id')
+
+        if not tag_name:
+            return self.make_error('You must input new tag title')
+
+        if not tag_id or not parent_tag_id:
+            return self.make_error('Something wrong. Try again later')
+
+        tag = self.session.query(Tag).filter(Tag.id == tag_id).first()
+        if not tag:
+            return self.make_error('Something wrong. Try again later')
+
+        if tag.name != tag_name:
+            tag.name = tag_name
+
+        if tag.parent_tag_id != parent_tag_id:
+            if parent_tag_id == '0':
+                tag.parent_tag_id = None
+            else:
+                tag.parent_tag_id = parent_tag_id
+
+        tag.updated_at = datetime.datetime.utcnow()
+        self.session.commit()
+        return self.success()
+
+    def remove(self):
+        tag_id = self.get_arg('tag_id')
+        tag = self.session.query(Tag).filter(Tag.id == tag_id).first()
+        if not tag:
+            return self.make_error('Something wrong. Try again later')
+        self.session.delete(tag)
+        self.session.commit()
+        return self.success()

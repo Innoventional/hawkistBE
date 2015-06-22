@@ -19,17 +19,17 @@
                         data-name="{{ tag.name }}"
                         data-parent_tag_id="{{ tag.parent_tag_id }}">
                         <td>{{ tag.id }}</td>
-                        <td>{{ tag.name }}</td>
+                        <td>{{ tag.name.capitalize() }}</td>
                         {% try %}
                         {% if tag.parent_tag.name %}
-                            <td>{{ tag.parent_tag.name}}</td>
+                            <td>{{ tag.parent_tag.name.capitalize() }}</td>
                         {% end %}
                         {% except %}
                             <td></td>
                         {% end %}
                         <td>{{ tag.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
                         <td>
-                            <a class="btn btn_edit_tag" href="#">
+                            <a class="btn btn_edit_tag" href="#" data-toggle="modal" data-target="#edit_tag_modal" >
                                 <i class="glyphicon glyphicon-pencil"></i>
                             </a>
                             <a class="btn btn_delete_tag" href="#">
@@ -59,7 +59,7 @@
                             <select  name="type" id="add_tag_select">
                                 <option value="0">---</option>
                                 {% for tag in tags %}
-                                    <option value="{{ tag.id }}">{{ tag.name }}</option>
+                                    <option value="{{ tag.id }}">{{ tag.name.capitalize() }}</option>
                                 {% end %}
                             </select>
                         </div>
@@ -75,6 +75,46 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary btn_add_tag">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Edit tag modal -->
+    <div class="modal fade property" id="edit_tag_modal" tabindex="-1" role="dialog" aria-labelledby="add_new_tag_modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="edit_tag_modalLabel"> Add tag </h4>
+                </div>
+                <div class="modal-body">
+                    <span class="label label-default">Parent tag</span>
+                    <form action="">
+                        <div class="row-fluid edit_tag_parent_tag">
+                            <select  name="type" id="edit_tag_select">
+                                <option value="0">---</option>
+                                {% for tag in tags %}
+                                    <option value="{{ tag.id }}">{{ tag.name.capitalize() }}</option>
+                                {% end %}
+                            </select>
+                        </div>
+                    </form>
+                        <div>&nbsp</div>
+
+                    <div class="category_fields">
+                        <input type="text" class="form-control" id="editing_tag_id" disabled>
+
+                        <span class="label label-default">Tag title</span>
+                        <input type="text" class="form-control" id="editing_tag_name" placeholder="Input tag title" required>
+                        <div>&nbsp</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary btn_save_edited_tag">Save</button>
                 </div>
             </div>
         </div>

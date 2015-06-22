@@ -53,25 +53,6 @@
         <script src="{{ static_url('js/stripe.js') }}"></script>
         <script src="{{ static_url('js/bootstrap-select.js') }}"></script>
         <script src="{{ static_url('js/hawkist_admin_tool.js') }}"></script>
-        <script>
-            $(document).ready(function () {
-                $(window).scroll(function () {
-                    if ($(this).scrollTop() > 100) {
-                        $('.scrollup').fadeIn();
-                    } else {
-                        $('.scrollup').fadeOut();
-                    }
-                });
-
-                $('.scrollup').click(function () {
-                    $("html, body").animate({
-                        scrollTop: 0
-                    }, 600);
-                    return false;
-                });
-
-            });
-        </script>
         {% block js %}{% end %}
     <a href="#" class="scrollup">Top</a>
     </body>

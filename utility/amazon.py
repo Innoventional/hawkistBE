@@ -3,9 +3,14 @@ from boto import connect_s3
 from boto.s3.key import Key
 
 # ne_luboff's aws credentials
-AWS_S3_BUCKET = 'social-avatars'
-AWS_ACCESS_KEY_ID = 'AKIAJKHWEWJIUIOFQTQA'
-AWS_SECRET_ACCESS_KEY = '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'
+# AWS_S3_BUCKET = 'social-avatars'
+# AWS_ACCESS_KEY_ID = 'AKIAJKHWEWJIUIOFQTQA'
+# AWS_SECRET_ACCESS_KEY = '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'
+
+# hawkist live aws credentials
+AWS_S3_BUCKET = 'hawkist-avatar'
+AWS_ACCESS_KEY_ID = 'AKIAJZDNOKN3IAAMLYJQ'
+AWS_SECRET_ACCESS_KEY = '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'
 
 LOCAL_PATH = '/backup/s3/'
 

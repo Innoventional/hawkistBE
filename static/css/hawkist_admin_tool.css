@@ -9,3 +9,11 @@
 .category_fields {
     display: block;
 }
+
+#editing_tag_id {
+    display: none;
+}
+
+#editing_tag_name {
+    text-transform: capitalize;
+}

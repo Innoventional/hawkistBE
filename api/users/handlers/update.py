@@ -54,17 +54,22 @@ class UserHandler(ApiHandler):
 
         if self.request_object:
             if 'username' in self.request_object:
-                username = str(self.request_object['username'].encode('utf-8')).lower()
+                username = self.request_object['username']
             if 'email' in self.request_object:
-                email = str(self.request_object['email']).lower()
+                email = self.request_object['email']
             if 'about_me' in self.request_object:
                 about_me = self.request_object['about_me']
+        else:
+            username = self.get_argument('username', default=None)
+            email = self.get_argument('email', default=None)
+            about_me = self.get_argument('about_me', default=None)
 
         if not username and not email and not about_me and not self.request.files:
             logger.debug('Nothing to be updated')
 
         # USERNAME handler
         if username:
+            username = str(username.encode('utf-8')).lower()
             # first validate username
             username_error = username_verification(username)
             if username_error:
@@ -79,6 +84,7 @@ class UserHandler(ApiHandler):
 
         # EMAIL handler
         if email:
+            email = str(email).lower()
             # first validate email
             email_error = email_verification(email)
             if email_error:

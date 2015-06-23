@@ -11,7 +11,7 @@ def phone_verification(phone):
     try:
         int(phone)
     except:
-        return 'Invalid number format. Example: 14697063609'
+        return 'Invalid number format. Digits only'
 
     if len(phone) < 10:
         return 'Phone number must contain at least 10 digits (country code, operator code and phone number)'

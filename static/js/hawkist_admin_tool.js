@@ -166,3 +166,11 @@ change_user_type = function(user_id, user_type_id){
         }
     });
 };
+
+$('.btn_suspend_user').click(function(){
+    alert('TODO user suspension');
+});
+
+$('.btn_activate_user').click(function(){
+    alert('TODO user activation');
+});

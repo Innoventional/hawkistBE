@@ -6,6 +6,10 @@
     color: red;
 }
 
+.green-color {
+    color: green;
+}
+
 .category_fields {
     display: block;
 }

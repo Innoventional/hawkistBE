@@ -18,6 +18,7 @@ def get_facebook_user(token):
         try:
             data['id'] = response_dict['id']
             data['email'] = response_dict['email']
+            data['username'] = response_dict['name']
         except Exception, e:
             logger.debug('Facebook response have not key %s' % str(e))
     except urllib2.HTTPError, e:

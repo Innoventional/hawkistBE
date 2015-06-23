@@ -110,7 +110,7 @@ class UserLoginHandler(ApiHandler):
                 if not fb_avatar_error:
                     user.avatar = fb_avatar_data['avatar']
                     user.thumbnail = fb_avatar_data['thumbnail']
-                    self.session.commit()
+                    # self.session.commit()
                 else:
                     logger.debug(fb_avatar_error)
 
@@ -118,10 +118,15 @@ class UserLoginHandler(ApiHandler):
                 facebook_email = facebook_data.get('email', None)
                 if facebook_email:
                     user.email = facebook_email
-                    self.session.commit()
+                    # self.session.commit()
                     email_confirmation_sending(self, user, facebook_email)
                 else:
                     logger.debug('No email address in fb response')
+
+                facebook_name = facebook_data.get('username', None)
+                if facebook_name:
+                    user.username = facebook_name
+                self.session.commit()
             else:
                 user.first_login = False
                 self.session.commit()

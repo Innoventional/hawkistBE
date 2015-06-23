@@ -114,7 +114,7 @@ class UserHandler(ApiHandler):
             try:
                 image_url = upload_file('avatar-%d' % self.user.id, img, content_type='image/png')
                 thumbnail_url = upload_file('thumbnail-%d' % self.user.id, thumbnail, content_type='image/png')
-                self.user.photo = image_url
+                self.user.avatar = image_url
                 self.user.thumbnail = thumbnail_url
                 self.session.commit()
             except Exception, e:

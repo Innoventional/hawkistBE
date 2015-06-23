@@ -31,10 +31,11 @@ class UserLoginHandler(ApiHandler):
         phone = ''
         facebook_token = ''
 
-        if 'phone' in self.request_object:
-            phone = self.request_object['phone']
-        if 'facebook_token' in self.request_object:
-            facebook_token = self.request_object['facebook_token']
+        if self.request_object:
+            if 'phone' in self.request_object:
+                phone = self.request_object['phone']
+            if 'facebook_token' in self.request_object:
+                facebook_token = self.request_object['facebook_token']
 
         if not phone and not facebook_token:
             return self.make_error('Empty authorization data')
@@ -157,18 +158,22 @@ class UserLoginHandler(ApiHandler):
         phone = ''
         pin = ''
 
-        if 'phone' in self.request_object:
-            phone = self.request_object['phone']
-        if 'pin' in self.request_object:
-            pin = str(self.request_object['pin'])
+        if self.request_object:
+            if 'phone' in self.request_object:
+                phone = self.request_object['phone']
+            if 'pin' in self.request_object:
+                pin = str(self.request_object['pin'])
 
         if not phone or not pin:
             return self.make_error('You must input phone and pin')
 
-        user = self.session.query(User).filter(and_(User.phone == phone,
-                                                    User.pin == pin)).first()
+        user = self.session.query(User).filter(User.phone == phone).first()
+
         if not user:
             return self.make_error('No user with phone number %s. Please Sign up' % phone)
+
+        if user.pin != pin:
+            return self.make_error('Wrong pin(%s). Try again enter this pin or request a new one' % pin)
 
         self.user = user
         self.session.commit()

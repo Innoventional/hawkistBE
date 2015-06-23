@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% end %}
+
+{% block content %}
+
+    <div class="login-window">
+        <form class="form-signin" role="form" method="post">
+            <h2 class="form-signin-heading">Please sign in</h2>
+            <input type="email" class="form-control" placeholder="Email address" name="email" required autofocus>
+            <input type="password" class="form-control" placeholder="Password" name="password" required>
+            {% try %}
+                {% if message %}
+                    <div class="alert alert-danger" role="alert">{{ message }}</div>
+                {% end %}
+            {% except %}
+            {% end %}
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        </form>
+    </div>
+
+{% end %}

@@ -10,7 +10,7 @@
     display: block;
 }
 
-#editing_tag_id {
+.display-none {
     display: none;
 }
 

@@ -1,7 +1,7 @@
 import datetime
 from sqlalchemy import func
 from api.tags.models import Tag
-from base import OpenApiHandler, paginate
+from base import OpenApiHandler, paginate, HttpRedirect
 from helpers import route
 
 __author__ = 'ne_luboff'
@@ -15,6 +15,9 @@ class AdminTagsHandler(AdminBaseHandler):
     allowed_methods = ('GET', 'POST', 'PUT', 'DELETE')
 
     def read(self):
+        if not self.user:
+            return HttpRedirect('/api/admin/login')
+
         tags = self.session.query(Tag).order_by(Tag.id)
 
         page = self.get_arg('p', int, 1)
@@ -25,6 +28,9 @@ class AdminTagsHandler(AdminBaseHandler):
         return self.render_string('admin/admin_tags.html', tags=tags, paginator=paginator, menu_tab_active='tab_tags')
 
     def create(self):
+        if not self.user:
+            return HttpRedirect('/api/admin/login')
+
         parent_tag_id = self.get_argument('parent_tag_id')
         new_tag_name = self.get_argument('new_tag_name').lower()
 
@@ -46,6 +52,9 @@ class AdminTagsHandler(AdminBaseHandler):
         return self.success()
 
     def update(self):
+        if not self.user:
+            return HttpRedirect('/api/admin/login')
+
         tag_id = self.get_argument('tag_id')
         tag_name = self.get_argument('tag_name').lower()
         parent_tag_id = self.get_argument('parent_tag_id')
@@ -74,6 +83,9 @@ class AdminTagsHandler(AdminBaseHandler):
         return self.success()
 
     def remove(self):
+        if not self.user:
+            return HttpRedirect('/api/admin/login')
+
         tag_id = self.get_arg('tag_id')
         tag = self.session.query(Tag).filter(Tag.id == tag_id).first()
         if not tag:

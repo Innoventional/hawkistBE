@@ -15,6 +15,9 @@ def phone_verification(phone):
 
     if len(phone) < 10:
         return 'Phone number must contain at least 10 digits (country code, operator code and phone number)'
+
+    if len(phone) > 12:
+        return 'Phone number to long. Maximum length - 12 digits'
     return False
 
 
@@ -33,7 +36,7 @@ def email_verification(email):
 # check user avability to send one more sms
 def sms_limit_check(self):
     if not self.user:
-      return False
+        return False
     if self.user.last_pin_sending:
         if self.user.sent_pins_count >= env['sms_limit_per_hour']:
             available_time = self.user.last_pin_sending + datetime.timedelta(hours=1)

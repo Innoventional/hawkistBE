@@ -21,6 +21,11 @@ $(document).ready(function () {
 
 });
 
+//for modal windows reload
+$('.btn_reload').click(function(){
+        location.reload();
+    });
+
 //tags tab functionality
 
 $('.btn_add_tag').click(function(){
@@ -123,4 +128,41 @@ delete_tag = function(tag_id, completion)
         }
     });
     return false;
+};
+
+//user tab
+$('.btn_change_user_type').click(function(){
+    user_id = $(this).parent().parent().data('id');
+    user_type = $(this).parent().parent().data('user_type');
+    $('input[name=user_type][value=' + user_type +']').attr('checked', true);
+    $('#changing_user_id').val(user_id);
+});
+
+
+$('.btn_save_usertype').click(function(){
+    user_id = document.getElementById("changing_user_id").value;
+    user_type_id = $('input[name=user_type]:checked').val();
+    change_user_type(user_id, user_type_id);
+});
+
+change_user_type = function(user_id, user_type_id){
+    $.ajax({
+        url: '/api/admin/users',
+        type: 'POST',
+        data: {
+            'user_id': user_id,
+            'user_type_id': user_type_id
+        },
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            if (status == 0 )
+            {
+                location.reload();
+            }else
+            {
+                alert(message);
+            }
+        }
+    });
 };

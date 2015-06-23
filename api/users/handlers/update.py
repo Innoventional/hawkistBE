@@ -52,12 +52,13 @@ class UserHandler(ApiHandler):
         email = ''
         about_me = ''
 
-        if 'username' in self.request_object:
-            username = str(self.request_object['username'].encode('utf-8')).lower()
-        if 'email' in self.request_object:
-            email = str(self.request_object['email']).lower()
-        if 'about_me' in self.request_object:
-            about_me = self.request_object['about_me']
+        if self.request_object:
+            if 'username' in self.request_object:
+                username = str(self.request_object['username'].encode('utf-8')).lower()
+            if 'email' in self.request_object:
+                email = str(self.request_object['email']).lower()
+            if 'about_me' in self.request_object:
+                about_me = self.request_object['about_me']
 
         if not username and not email and not about_me and not self.request.files:
             logger.debug('Nothing to be updated')
@@ -146,8 +147,9 @@ class UserSocialHandler(ApiHandler):
 
         facebook_token = ''
 
-        if 'facebook_token' in self.request_object:
-            facebook_token = self.request_object['facebook_token']
+        if self.request_object:
+            if 'facebook_token' in self.request_object:
+                facebook_token = self.request_object['facebook_token']
 
         if not facebook_token:
             return self.make_error('No facebook token')
@@ -184,8 +186,9 @@ class UserTagsHandler(ApiHandler):
 
         tag_ids = []
 
-        if 'tags' in self.request_object:
-            tag_ids = self.request_object['tags']
+        if self.request_object:
+            if 'tags' in self.request_object:
+                tag_ids = self.request_object['tags']
 
         if not tag_ids:
             logger.debug('No tags to be added to user %s' % self.user)
@@ -223,8 +226,9 @@ class UserTagsHandler(ApiHandler):
 
         tag_ids = []
 
-        if 'tags' in self.request_object:
-            tag_ids = self.request_object['tags']
+        if self.request_object:
+            if 'tags' in self.request_object:
+                tag_ids = self.request_object['tags']
 
         if not tag_ids:
             logger.debug('No tags to be deleted from user %s' % self.user)

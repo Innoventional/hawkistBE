@@ -13,7 +13,8 @@ __author__ = 'ne_luboff'
 # consumer twilio live account credentials
 account_sid = "AC21a1e1681c5c5a07068883a237a4084f"
 auth_token = "acee56df48b9700fa65966262275c041"
-from_number = "+447903596742"
+from_number = "Hawkist"
+# from_number = "+447903596742"
 
 
 def send_sms(to_number, text):
@@ -40,5 +41,6 @@ def send_sms(to_number, text):
         return error
 
 if __name__ == '__main__':
-    print send_sms("380993351739", 'test')
+    print send_sms("380937181958", 'test')
+    # print send_sms("380993351739", 'test')
 

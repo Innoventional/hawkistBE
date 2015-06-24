@@ -162,6 +162,7 @@ change_user_type = function(user_id, user_type_id){
             }else
             {
                 alert(message);
+                location.reload();
             }
         }
     });
@@ -212,3 +213,36 @@ $('.btn_activate_user').click(function(){
         }
     });
 });
+
+$('.btn_edit_user').click(function(){
+    alert('TODO editing');
+});
+
+$('.btn_delete_user').click(function(){
+    if (confirm('Do you really want to delete this user?'))
+    {
+        var id = $(this).parent().parent().data('id');
+
+        delete_user(id, function(status, message){
+            if (status != 0)
+            {
+                alert(message);
+            }
+        });
+    }
+});
+
+delete_user = function(user_id, completion)
+{
+    $.ajax({
+        url: '/api/admin/users?' + $.param({'user_id': user_id}, true),
+        type: 'DELETE',
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            completion(status, message);
+            location.reload();
+        }
+    });
+    return false;
+};

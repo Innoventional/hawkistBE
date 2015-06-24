@@ -12,7 +12,7 @@ __author__ = 'ne_luboff'
 
 @route('admin/users')
 class AdminUsersHandler(AdminBaseHandler):
-    allowed_methods = ('GET', 'POST', 'PUT')
+    allowed_methods = ('GET', 'POST', 'PUT', 'DELETE')
 
     def read(self):
         if not self.user:
@@ -90,5 +90,17 @@ class AdminUsersHandler(AdminBaseHandler):
         if not user:
             return self.make_error('Something wrong. Try again later')
         user.system_status = new_system_status
+        self.session.commit()
+        return self.success()
+
+    def remove(self):
+        if not self.user:
+            return HttpRedirect('/api/admin/login')
+
+        user_id = self.get_arg('user_id')
+        user = self.session.query(User).filter(User.id == user_id).first()
+        if not user:
+            return self.make_error('Something wrong. Try again later')
+        self.session.delete(user)
         self.session.commit()
         return self.success()

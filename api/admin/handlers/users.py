@@ -12,7 +12,7 @@ __author__ = 'ne_luboff'
 
 @route('admin/users')
 class AdminUsersHandler(AdminBaseHandler):
-    allowed_methods = ('GET', 'POST')
+    allowed_methods = ('GET', 'POST', 'PUT')
 
     def read(self):
         if not self.user:
@@ -69,4 +69,26 @@ class AdminUsersHandler(AdminBaseHandler):
             self.session.commit()
             subject = 'Permissions changed'
             send_email(text, subject=subject, recipient=user.email)
+        return self.success()
+
+    def update(self):
+        if not self.user:
+            return HttpRedirect('/api/admin/login')
+
+        user_id = self.get_arg('user_id')
+        action = self.get_arg('action')
+
+        new_system_status = 0
+
+        if action == 'suspend':
+            new_system_status = 1
+        elif action == 'unsuspend':
+            new_system_status = 0
+
+        # get user to be changed
+        user = self.session.query(User).filter(User.id == user_id).first()
+        if not user:
+            return self.make_error('Something wrong. Try again later')
+        user.system_status = new_system_status
+        self.session.commit()
         return self.success()

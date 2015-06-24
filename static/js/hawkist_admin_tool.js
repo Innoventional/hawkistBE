@@ -168,9 +168,47 @@ change_user_type = function(user_id, user_type_id){
 };
 
 $('.btn_suspend_user').click(function(){
-    alert('TODO user suspension');
+    user_id = $(this).parent().parent().data('id');
+    $.ajax({
+        url: '/api/admin/users',
+        type: 'PUT',
+        data: {
+            'user_id': user_id,
+            'action': 'suspend'
+        },
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            if (status == 0 )
+            {
+                location.reload();
+            }else
+            {
+                alert(message);
+            }
+        }
+    });
 });
 
 $('.btn_activate_user').click(function(){
-    alert('TODO user activation');
+    user_id = $(this).parent().parent().data('id');
+    $.ajax({
+        url: '/api/admin/users',
+        type: 'PUT',
+        data: {
+            'user_id': user_id,
+            'action': 'unsuspend'
+        },
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            if (status == 0 )
+            {
+                location.reload();
+            }else
+            {
+                alert(message);
+            }
+        }
+    });
 });

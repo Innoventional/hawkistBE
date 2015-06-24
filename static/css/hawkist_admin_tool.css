@@ -21,3 +21,15 @@
 #editing_tag_name {
     text-transform: capitalize;
 }
+
+.red-hoover:hover {
+    color: red;
+}
+
+.green-hoover:hover {
+    color: green;
+}
+
+.op-06 {
+    opacity: .6;
+}

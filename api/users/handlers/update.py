@@ -45,9 +45,6 @@ class UserHandler(ApiHandler):
         if self.user is None:
             die(401)
 
-        logger.debug('REQUEST_OBJECT_USER_UPDATE')
-        logger.debug(self.request_object)
-
         username = ''
         email = ''
         about_me = ''
@@ -66,6 +63,11 @@ class UserHandler(ApiHandler):
 
         if not username and not email and not about_me and not self.request.files:
             logger.debug('Nothing to be updated')
+
+        logger.debug('REQUEST_OBJECT_USER_UPDATE')
+        logger.debug('username %s' % username)
+        logger.debug('email %s' % email)
+        logger.debug('about_me %s' % about_me)
 
         # USERNAME handler
         if username:

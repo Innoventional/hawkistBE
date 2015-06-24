@@ -22,7 +22,9 @@ def phone_verification(phone):
 
 
 def username_verification(username):
-    if not re.match('^\w[\w.-]+$', username.decode('utf-8'), re.U):
+    if len(username) > 50:
+        return 'Too long username. Max length - 50 symbols'
+    if not re.match('^\w[\w\s.-]+$', username.decode('utf-8'), re.U):
         return 'Username can consist of string, digits, dash symbols and dots'
     return False
 

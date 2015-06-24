@@ -16,8 +16,8 @@ def phone_verification(phone):
     if len(phone) < 10:
         return 'Phone number must contain at least 10 digits (country code, operator code and phone number)'
 
-    if len(phone) > 12:
-        return 'Phone number to long. Maximum length - 12 digits'
+    if len(phone) > 15:
+        return 'Phone number to long. Maximum length - 15 digits'
     return False
 
 

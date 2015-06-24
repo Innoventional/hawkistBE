@@ -1,5 +1,5 @@
 import logging
-from sqlalchemy import and_
+from sqlalchemy import and_, func
 from api.tags.models import Tag
 from api.users.models import User, UserTags
 from base import ApiHandler, die, USER_ID, OpenApiHandler
@@ -71,14 +71,14 @@ class UserHandler(ApiHandler):
 
         # USERNAME handler
         if username:
-            username = str(username.encode('utf-8')).lower()
+            username = str(username.encode('utf-8'))
             # first validate username
             username_error = username_verification(username)
             if username_error:
                 return self.make_error(username_error)
 
             already_used = self.session.query(User).filter(and_(User.id != self.user.id,
-                                                                User.username == username)).first()
+                                                                func.lower(User.username) == username.lower())).first()
             if already_used:
                 return self.make_error("Sorry, username '%s' already used by another user" % username)
 

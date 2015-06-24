@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import re
 import datetime
 from environment import env
@@ -30,7 +31,7 @@ def username_verification(username):
 
 
 def email_verification(email):
-    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+    if not re.match(r"^([\w+_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$", email.decode('utf-8'), re.U):
         return 'Invalid email format. Example: your@mail.com'
     return False
 

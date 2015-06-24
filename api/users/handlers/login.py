@@ -175,6 +175,10 @@ class UserLoginHandler(ApiHandler):
         if not phone or not pin:
             return self.make_error('You must input phone and pin')
 
+        # first of all delete + symbol
+        phone = str(phone)
+        phone = phone.replace('+', '')
+
         user = self.session.query(User).filter(User.phone == phone).first()
 
         if not user:

@@ -42,6 +42,9 @@ class UserLoginHandler(ApiHandler):
 
         # for phone number authorization
         if phone:
+            # first of all delete + symbol
+            phone = str(phone)
+            phone = phone.replace('+', '')
             # first verify number
             phone_error = phone_verification(phone)
             if phone_error:

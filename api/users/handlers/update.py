@@ -86,7 +86,7 @@ class UserHandler(ApiHandler):
 
         # EMAIL handler
         if email:
-            email = str(email).lower()
+            email = str(email.encode('utf-8')).lower()
             # first validate email
             email_error = email_verification(email)
             if email_error:

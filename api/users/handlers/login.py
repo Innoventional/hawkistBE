@@ -77,13 +77,14 @@ class UserLoginHandler(ApiHandler):
             # and send it to user
             error = send_sms(phone, message_body)
             if error:
-                return self.make_error(error)
+                self.session.delete(user)
+                return {'status': 2,
+                        'message': error}
 
             user.pin = confirm_code
             user.last_pin_sending = datetime.datetime.utcnow()
             user.sent_pins_count += 1
             user.updated_at = datetime.datetime.utcnow()
-            # self.session.add(user)
             self.session.commit()
         elif facebook_token:
             facebook_response = get_facebook_user(facebook_token)

@@ -60,7 +60,7 @@ class UserLoginHandler(ApiHandler):
                 user.first_login = True
                 user.system_status = SystemStatus.Active
                 user.user_type = UserType.Standard
-                self.session.add(user)
+                self.session.flush(user)
             else:
                 user.first_login = False
                 self.session.commit()
@@ -77,7 +77,6 @@ class UserLoginHandler(ApiHandler):
             # and send it to user
             error = send_sms(phone, message_body)
             if error:
-                self.session.delete(user)
                 return {'status': 2,
                         'message': error}
 

@@ -34,7 +34,31 @@
     opacity: .6;
 }
 
-.login-logo {
-    margin-top: -185px;
-    margin-left: -70px;
+.wrapper {
+  border : 2px solid #000;
+  overflow:hidden;
+}
+
+.wrapper div {
+   min-height: 200px;
+   padding: 10px;
+}
+#one {
+  float:left;
+  margin-right:20px;
+  width:140px;
+}
+#two {
+  overflow:hidden;
+  margin:10px;
+  min-height:170px;
+}
+
+@media screen and (max-width: 500px) {
+   #one {
+    float: none;
+    margin-left: 100px;
+    width:auto;
+    border:0;
+  }
 }

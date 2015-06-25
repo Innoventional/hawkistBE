@@ -42,7 +42,7 @@ class AdminUsersHandler(AdminBaseHandler):
             return self.make_error("Forbidden action.\nThis user has no email address in profile")
 
         if not user.email_status:
-            return self.make_error("Forbidden action.\nThis user don't confirm his email address yet")
+            return self.make_error("Forbidden action.\nThis user didn't confirm his email address yet")
 
         if user.user_type != new_user_type:
             text = ''
@@ -63,7 +63,7 @@ class AdminUsersHandler(AdminBaseHandler):
                 user.password = encrypted_pass
                 # send email with pass
                 text = 'Congrats!\nYou were added to Hawkist %s user group. Go to %s  and use your email address and ' \
-                       'this temporary password to log in administration tool:\n%s.\nEnjoy!' % \
+                       'this temporary password to log in administration tool:\n%s\nEnjoy!' % \
                        (UserType.tostring(new_user_type), env['server_address'] + '/api/admin/login', password)
             user.user_type = new_user_type
             self.session.commit()

@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import func
+from sqlalchemy import func, and_
 from api.tags.models import Tag
 from base import OpenApiHandler, paginate, HttpRedirect
 from helpers import route
@@ -37,7 +37,13 @@ class AdminTagsHandler(AdminBaseHandler):
         if not new_tag_name:
             return self.make_error('You must input new tag title')
 
-        already_exists = self.session.query(Tag).filter(func.lower(Tag.name) == new_tag_name).first()
+        if int(parent_tag_id) != 0:
+            already_exists = self.session.query(Tag).filter(and_(func.lower(Tag.name) == new_tag_name,
+                                                                 Tag.parent_tag_id == parent_tag_id)).first()
+        else:
+            already_exists = self.session.query(Tag).filter(and_(func.lower(Tag.name) == new_tag_name,
+                                                                 Tag.parent_tag_id == None)).first()
+
         if already_exists:
             return self.make_error('Tag with name %s already exists' % new_tag_name.upper())
 

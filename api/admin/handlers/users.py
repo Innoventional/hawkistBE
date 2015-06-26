@@ -69,7 +69,7 @@ class AdminUsersHandler(AdminBaseHandler):
             self.session.commit()
             subject = 'Permissions changed'
             send_email(text, subject=subject, recipient=user.email)
-        return self.success()
+        return self.success({'message': 'User has been added to %s user group' % UserType.tostring(new_user_type)})
 
     def update(self):
         if not self.user:

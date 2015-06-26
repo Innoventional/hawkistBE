@@ -158,6 +158,8 @@ change_user_type = function(user_id, user_type_id){
             var message = data['message'];
             if (status == 0 )
             {
+                $("#close_modal").click();
+                alert(message);
                 location.reload();
             }else
             {

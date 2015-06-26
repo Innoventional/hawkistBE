@@ -7,6 +7,14 @@ from helpers import route, encrypt_password
 __author__ = 'ne_luboff'
 
 
+@route('admin')
+class AdminHandler(AdminBaseHandler):
+    allowed_methods = ('GET', )
+
+    def read(self):
+        return HttpRedirect('/api/admin/login')
+
+
 @route('admin/login')
 class AdminLoginHandler(AdminBaseHandler):
     allowed_methods = ('GET', 'POST')

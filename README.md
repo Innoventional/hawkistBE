@@ -114,6 +114,7 @@ Response:
 
     {...} - Full user info dict or 404 error if user was not found
     
+---
     
 **Logout**
 
@@ -133,7 +134,6 @@ Response:
         'status': 0
     }
     
----
 
 ###User profile
 
@@ -148,6 +148,7 @@ Response:
         "status": 0,
         "user": USER_INFO_DICT
     }
+    
 ---
 
 **Update username / email / about me / avatar**
@@ -177,6 +178,8 @@ Response Failure:
         'status': 1,
         'message': '' — Error message
     }
+    
+---
     
 **Link facebook to profile**
 
@@ -228,7 +231,9 @@ Response:
             }
         ]
     }
-        
+
+---
+
 **Add tags**
 
     Url: 'user/tags'
@@ -256,6 +261,7 @@ Response Failure:
         'message': '' — Error message
     }
     
+---
     
 **Delete tags**
 
@@ -343,3 +349,85 @@ Response:
     }
     
 ---
+
+### Items
+
+   
+**Create item**
+
+    Url: 'items'
+    Method: 'POST'
+
+
+Data:
+
+    {
+        "title": string,
+        "description": string,
+        "platform": PLATFORM_VALUE,
+        "category": CATEGORY_VALUE,
+        "condition": CONDITION_VALUE,
+        "color": [COLOR_VALUES],
+        "retail_price": float,
+        "selling_price": float,         - not required -
+        "shipping_price": float,
+        "collection_only": int,
+        "barcode": "http://amazon.link_to_barcode_photo",         - not required -
+        "photos": ["http://amazon.link_to_photo"]
+    }
+
+PLATFORM_VALUEs:
+
+    PC = 0
+    MAC = 1
+    Playstation = 2
+    XBOX = 3
+    Nintendo = 4
+    Sega = 5
+
+
+CATEGORY_VALUEs:
+
+    Consoles = 0
+    Games = 1
+    Handhelp = 2
+    Accessories = 3
+
+    
+CONDITION_VALUEs:
+
+    BrandNewInBox = 0
+    LikeNew = 1
+    Used = 2
+    Refurbished = 3
+    NotWorkingOrPartsOnly = 4
+
+
+COLOR_VALUEs:
+
+    Black = 0
+    White = 1
+    Red = 2
+    Blue = 3
+    Green = 4
+    Orange = 5
+    Yellow = 6
+    Purple = 7
+    Other = 8
+    NotApplicable = 9
+
+
+Response Success:
+    
+    {
+        'status': 0,
+        'item': ITEM_INFO_DICT
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '' — Error message
+    }
+    

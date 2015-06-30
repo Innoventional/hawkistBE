@@ -108,6 +108,9 @@ class ItemsHandler(ApiHandler):
         item.title = title
         item.description = description
 
+        if barcode:
+            item.barcode = barcode
+
         # check platforms
         if platform not in [i for i in xrange(6)]:
             return self.make_error('Invalid platform')
@@ -143,16 +146,24 @@ class ItemsHandler(ApiHandler):
 
         # price handler
         item.retail_price = retail_price
+        if selling_price:
+            if selling_price == retail_price:
+                return self.make_error("Retail and selling prices are the same!")
+            if selling_price > retail_price:
+                return self.make_error("Selling price can't be more than retail price!")
+            item.selling_price = selling_price
+            # calculate discount value
+            discount = int(round((retail_price - selling_price) / retail_price * 100))
+            item.discount = discount
 
-        self.session.add(item)
-        self.session.commit()
+        self.session.flush(item)
+        # self.session.commit()
+
+        # photos
+        if len(photos) > 3:
+            return self.make_error('You can add only 3 photos')
 
         for photo in photos:
-            # check number of photo
-            photo_count = self.session.query(ItemPhoto).filter(ItemPhoto.item == item).count()
-            if photo_count > 4:
-                warning_message = 'Item can have only 4 photos'
-                logger.debug(warning_message)
             item_photo = ItemPhoto()
             item_photo.created_at = datetime.datetime.utcnow()
             item_photo.item = item
@@ -160,7 +171,5 @@ class ItemsHandler(ApiHandler):
             self.session.add(item_photo)
             self.session.commit()
 
-        response = self.success({'item': sa_object_to_dict(item)})
-        if warning_message:
-            response['warning'] = warning_message
-        return response
+        self.session.commit()
+        return self.success({'item': sa_object_to_dict(item)})

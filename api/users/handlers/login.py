@@ -85,6 +85,7 @@ class UserLoginHandler(ApiHandler):
             user.last_pin_sending = datetime.datetime.utcnow()
             user.sent_pins_count += 1
             user.updated_at = datetime.datetime.utcnow()
+            self.session.add(user)
             self.session.commit()
         elif facebook_token:
             facebook_response = get_facebook_user(facebook_token)

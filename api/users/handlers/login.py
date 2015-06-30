@@ -60,6 +60,7 @@ class UserLoginHandler(ApiHandler):
                 user.first_login = True
                 user.system_status = SystemStatus.Active
                 user.user_type = UserType.Standard
+                user.sent_pins_count = 0
                 self.session.flush(user)
             else:
                 user.first_login = False

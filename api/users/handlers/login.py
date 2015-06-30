@@ -174,7 +174,10 @@ class UserLoginHandler(ApiHandler):
 
         if not phone or not pin:
             # return self.make_error('You must input phone and pin')
-            return self.make_error('You must input a mobile number and a pin to sign in.')
+            return {
+                'status': 5,
+                'message': 'You must input a mobile number and a pin to sign in.'
+            }
 
         # first of all delete + symbol
         phone = str(phone)
@@ -183,13 +186,16 @@ class UserLoginHandler(ApiHandler):
         user = self.session.query(User).filter(User.phone == phone).first()
 
         if not user:
-            # return self.make_error('No user with phone number %s. Please Sign up' % phone)
-            return self.make_error('There is no user with mobile number %s. Please check the mobile number or sign up.'
-                                   % phone)
+            return {
+                'status': 3,
+                'message': 'There is no user with mobile number %s. Please check the mobile number or sign up.' % phone
+            }
 
         if user.pin != pin:
-            # return self.make_error('Wrong pin(%s). Try again enter this pin or request a new one' % pin)
-            return self.make_error('The pin %s is incorrect. Please try again or request a new pin.' % pin)
+            return {
+                'status': 4,
+                'message': 'The pin %s is incorrect. Please try again or request a new pin.' % pin
+            }
 
         self.user = user
         self.session.commit()

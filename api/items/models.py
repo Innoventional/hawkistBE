@@ -68,7 +68,7 @@ class Item(Base):
 
     # price
     retail_price = Column(Integer, nullable=False)
-    selling_price = Column(Integer, nullable=False)
+    selling_price = Column(Integer, nullable=True)
     discount = Column(Integer, nullable=True)
 
     shipping_price = Column(Integer, nullable=True)

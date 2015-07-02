@@ -25,5 +25,5 @@ class Tag(Base):
         return {
             'id': self.id,
             'name': self.name,
-            'parent_tag_id': self.parent_tag_id or ''
+            # 'parent_tag_id': self.parent_tag_id or ''
         }

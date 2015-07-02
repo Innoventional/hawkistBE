@@ -9,9 +9,19 @@ __author__ = 'ne_luboff'
 logger = logging.getLogger(__name__)
 
 
-@route('items')
+@route('user/items')
 class ItemsHandler(ApiHandler):
-    allowed_methods = ('POST', )
+    allowed_methods = ('GET', 'POST', )
+
+    def read(self):
+
+        if not self.user:
+            die(401)
+
+        items = self.session.query(Item).order_by(Item.id)
+        print items
+
+        return self.success({'items': [i.item_response for i in items]})
 
     def create(self):
 
@@ -87,6 +97,9 @@ class ItemsHandler(ApiHandler):
 
         if not color_list:
             return self.make_error('Undefined item colour')
+        for color in color_list:
+            if not color:
+                return self.make_error('Undefined item colour')
 
         if not retail_price:
             return self.make_error('Undefined item price')
@@ -100,6 +113,9 @@ class ItemsHandler(ApiHandler):
 
         if not photos:
             return self.make_error('Undefined item photos')
+        for photo in photos:
+            if not photo:
+                return self.make_error('Undefined item photos')
 
         item = Item()
         item.user = self.user
@@ -112,34 +128,34 @@ class ItemsHandler(ApiHandler):
             item.barcode = barcode
 
         # check platforms
-        if platform not in [i for i in xrange(6)]:
+        if int(platform) not in [i for i in xrange(6)]:
             return self.make_error('Invalid platform')
 
         item.platform = platform
 
         # check category
-        if category not in [i for i in xrange(4)]:
+        if int(category) not in [i for i in xrange(4)]:
             return self.make_error('Invalid category')
 
         item.category = category
 
         # check condition
-        if condition not in [i for i in xrange(5)]:
+        if int(condition) not in [i for i in xrange(5)]:
             return self.make_error('Invalid condition')
 
         item.condition = condition
 
         # color check
         # check is OTHER or NOT APPLICABLE in selected color list with other colors
-        if len(color_list) > 1:
-            if 8 in color_list:
-                return self.make_error("You can't choose OTHER tag with other options")
-            elif 9 in color_list:
-                return self.make_error("You can't choose NOT APPLICABLE tag with other options")
+        # if len(color_list) > 1:
+        #     if 8 in color_list:
+        #         return self.make_error("You can't choose OTHER tag with other options")
+        #     elif 9 in color_list:
+        #         return self.make_error("You can't choose NOT APPLICABLE tag with other options")
 
         item_color_field = []
         for color in color_list:
-            if color not in [i for i in xrange(10)]:
+            if int(color) not in [i for i in xrange(10)]:
                 return self.make_error('Invalid colour')
             item_color_field.append(color)
         item.color = str(item_color_field).replace('[', '').replace(']', '')
@@ -156,7 +172,13 @@ class ItemsHandler(ApiHandler):
             discount = int(round((retail_price - selling_price) / retail_price * 100))
             item.discount = discount
 
-        self.session.flush(item)
+        if shipping_price:
+            item.shipping_price = shipping_price
+            item.collection_only = False
+        elif collection_only:
+            item.collection_only = True
+
+        # self.session.flush(item)
         # self.session.commit()
 
         # photos

@@ -355,7 +355,7 @@ Response:
    
 **Create item**
 
-    Url: 'items'
+    Url: 'user/items'
     Method: 'POST'
 
 

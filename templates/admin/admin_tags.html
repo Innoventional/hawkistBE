@@ -22,7 +22,12 @@
                         <td>{{ tag.name.capitalize() }}</td>
                         {% try %}
                         {% if tag.parent_tag.name %}
-                            <td>{{ tag.parent_tag.name.capitalize() }}</td>
+                            <td>
+                                {{ tag.parent_tag.name.capitalize() }}
+                                {% if tag.parent_tag.parent_tag %}
+                                    ({{ tag.parent_tag.parent_tag.name.capitalize() }})
+                                {% end %}
+                            </td>
                         {% end %}
                         {% except %}
                             <td></td>

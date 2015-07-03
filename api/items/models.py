@@ -91,7 +91,7 @@ class Item(Base):
     collection_only = Column(Boolean, nullable=False, default=False)
 
     # location info info
-    post_code = Column(Integer, nullable=True)
+    post_code = Column(String, nullable=True)
     city = Column(String, nullable=True)
     location_lat = Column(Numeric, nullable=True)
     location_lon = Column(Numeric, nullable=True)

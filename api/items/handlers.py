@@ -76,7 +76,7 @@ class ItemsHandler(ApiHandler):
                 color_id = self.request_object['color']
 
             if 'retail_price' in self.request_object:
-                retail_price = self.request_object['retail_price']
+                retail_price = float(self.request_object['retail_price'])
 
             if 'selling_price' in self.request_object:
                 selling_price = float(self.request_object['selling_price'])
@@ -165,50 +165,50 @@ class ItemsHandler(ApiHandler):
         item.title = title
         item.description = description
 
+        # self.session.flush(item)
+
         if barcode:
             item.barcode = barcode
 
         # check platforms
-        return 'oj'
-        platform = self.session.query(Tag).filter(Tag.id == platform_id).first()
+        # platform = self.session.query(Tag).filter(Tag.id == platform_id).first()
+        # if not platform:
+        #     return self.make_error('No platform with id %s' % platform_id)
 
-        if not platform:
-            return self.make_error('No platform with id %s' % platform_id)
-
-        item.platform = platform
+        item.platform_id = platform_id
 
         # check category
-        category = self.session.query(Tag).filter(Tag.id == category_id).first()
-        if not category:
-            return self.make_error('No category with id %s' % category_id)
+        # category = self.session.query(Tag).filter(Tag.id == category_id).first()
+        # if not category:
+        #     return self.make_error('No category with id %s' % category_id)
 
-        item.category = category
+        item.category_id = category_id
 
         # check subcategory
-        subcategory = self.session.query(Tag).filter(Tag.id == subcategory_id).first()
-        if not subcategory:
-            return self.make_error('No subcategory with id %s' % category_id)
+        # subcategory = self.session.query(Tag).filter(Tag.id == subcategory_id).first()
+        # if not subcategory:
+        #     return self.make_error('No subcategory with id %s' % category_id)
 
-        item.category = category
+        item.subcategory_id = subcategory_id
 
         # check condition
-        condition = self.session.query(Tag).filter(Tag.id == condition_id).first()
-        if not condition:
-            return self.make_error('No condition with id %s' % condition_id)
+        # condition = self.session.query(Tag).filter(Tag.id == condition_id).first()
+        # if not condition:
+        #     return self.make_error('No condition with id %s' % condition_id)
 
-        item.condition = condition
+        item.condition_id = condition_id
 
         # check color
-        color = self.session.query(Tag).filter(Tag.id == color_id).first()
-        if not color:
-            return self.make_error('No color with id %s' % color_id)
+        # color = self.session.query(Tag).filter(Tag.id == color_id).first()
+        # if not color:
+        #     return self.make_error('No color with id %s' % color_id)
 
-        item.color = color
+        item.color_id = color_id
 
         # price handler
-        if retail_price_float < 1:
+        if retail_price < 1:
             return self.make_error(u'Retail price must be greater than £1')
-        return ';a;a;a;'
+
         item.retail_price = retail_price
 
         if selling_price > retail_price:
@@ -229,8 +229,8 @@ class ItemsHandler(ApiHandler):
         item.post_code = post_code
         item.city = city
 
-        self.session.flush(item)
-        self.session.commit()
+        # self.session.flush(item)
+        # self.session.commit()
 
         # photos
         if len(photos) > 3:
@@ -245,7 +245,7 @@ class ItemsHandler(ApiHandler):
             self.session.commit()
 
         self.session.commit()
-        return self.success({'item': sa_object_to_dict(item)})
+        return self.success({'item': item.item_response})
 
 
 @route('get_city')

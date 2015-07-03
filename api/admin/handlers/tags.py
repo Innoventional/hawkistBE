@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, or_
 from api.items.models import Item
 from api.tags.models import Tag
 from base import OpenApiHandler, paginate, HttpRedirect
@@ -95,10 +95,19 @@ class AdminTagsHandler(AdminBaseHandler):
 
         tag_id = self.get_arg('tag_id')
         tag = self.session.query(Tag).filter(Tag.id == tag_id).first()
+
+        print tag.condition_items.count()
         if not tag:
             return self.make_error('Something wrong. Try again later')
         # check is this tag using
-        used = self.session.query(Item).filter(Item)
+        used = self.session.query(Item).filter(or_(Item.platform_id == tag_id,
+                                                   Item.category_id == tag_id,
+                                                   Item.subcategory_id == tag_id,
+                                                   Item.condition_id == tag_id,
+                                                   Item.color_id == tag_id)).first()
+        if used:
+            return self.make_error('Can not delete the tag %s because it is in use on an active listing. Please update '
+                                   'the tag on the listing and try again.' % tag.name.upper())
         self.session.delete(tag)
         self.session.commit()
         return self.success()

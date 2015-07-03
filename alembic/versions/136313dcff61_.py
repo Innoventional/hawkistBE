@@ -1,13 +1,13 @@
 """empty message
 
-Revision ID: bd3d19e250d
+Revision ID: 136313dcff61
 Revises: e04883562f5
-Create Date: 2015-07-03 19:38:57.285083
+Create Date: 2015-07-03 22:01:06.044270
 
 """
 
 # revision identifiers, used by Alembic.
-revision = 'bd3d19e250d'
+revision = '136313dcff61'
 down_revision = 'e04883562f5'
 
 from alembic import op
@@ -23,6 +23,7 @@ def upgrade():
     op.add_column('items', sa.Column('subcategory_id', sa.Integer(), nullable=False))
     op.drop_column('items', u'color')
     op.drop_column('items', u'category')
+    op.drop_column('items', u'post_code')
     op.drop_column('items', u'condition')
     op.drop_column('items', u'platform')
     op.create_index(u'ix_items_category_id', 'items', ['category_id'], unique=False)
@@ -42,6 +43,7 @@ def downgrade():
     op.drop_index(u'ix_items_category_id', table_name='items')
     op.add_column('items', sa.Column(u'platform', sa.SMALLINT(), autoincrement=False, nullable=False))
     op.add_column('items', sa.Column(u'condition', sa.VARCHAR(), autoincrement=False, nullable=False))
+    op.add_column('items', sa.Column(u'post_code', sa.INTEGER(), autoincrement=False, nullable=True))
     op.add_column('items', sa.Column(u'category', sa.SMALLINT(), autoincrement=False, nullable=False))
     op.add_column('items', sa.Column(u'color', sa.VARCHAR(), autoincrement=False, nullable=False))
     op.drop_column('items', 'subcategory_id')

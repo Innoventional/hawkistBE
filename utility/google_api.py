@@ -8,7 +8,6 @@ logger = logging.getLogger(__name__)
 
 
 def get_city_by_code(post_code):
-    print '\n\n\n'
     error = ''
     city = ''
     opener = urllib2.build_opener()
@@ -52,13 +51,12 @@ def get_city_by_code(post_code):
                 """
                 finally find city name
                 """
-                searching_city = ''
                 address_components = results_with_required_zip_code_in_GB['address_components']
-                for address_component in address_components:
-                    types = address_component['types']
-                    for t in types:
-                        if t == 'postal_town':
-                            searching_city = address_component['long_name']
+                # first try get postal city
+                searching_city = get_city_by_key(address_components, 'postal_town')
+                if not searching_city:
+                    # next by administrative_area_level_2
+                    searching_city = get_city_by_key(address_components, 'administrative_area_level_2')
                 if not searching_city:
                     print url
                     error = 'No city with post code %s in GB' % post_code
@@ -73,5 +71,16 @@ def get_city_by_code(post_code):
         'data': city
     }
 
+
+def get_city_by_key(address_components, key):
+    result = ''
+    for address_component in address_components:
+        types = address_component['types']
+        for t in types:
+            if t == key:
+                result = address_component['long_name']
+    return result
+
 if __name__ == '__main__':
-    print get_city_by_code('BFPO')
+    print get_city_by_code('NR100')
+    # print get_city_by_code('BFPO')

@@ -1,8 +1,12 @@
+# -*- coding: utf-8 -*-
+
 import logging
 import datetime
 from api.items.models import Item, ItemPhoto
+from api.tags.models import Tag
 from base import ApiHandler, die
 from helpers import route, sa_object_to_dict
+from utility.google_api import get_city_by_code
 
 __author__ = 'ne_luboff'
 
@@ -33,89 +37,126 @@ class ItemsHandler(ApiHandler):
 
         title = ''
         description = ''
-        platform = ''
-        category = ''
-        condition = ''
-        color_list = ''
+        platform_id = ''
+        category_id = ''
+        subcategory_id = ''
+        condition_id = ''
+        color_id = ''
         retail_price = ''
         selling_price = ''
         shipping_price = ''
         collection_only = ''
         barcode = ''
         photos = ''
+        post_code = ''
+        city = ''
 
-        if 'title' in self.request_object:
-            title = self.request_object['title']
+        empty_field_error = []
 
-        if 'description' in self.request_object:
-            description = self.request_object['description']
+        if self.request_object:
+            if 'title' in self.request_object:
+                title = self.request_object['title']
 
-        if 'platform' in self.request_object:
-            platform = self.request_object['platform']
+            if 'description' in self.request_object:
+                description = self.request_object['description']
 
-        if 'category' in self.request_object:
-            category = self.request_object['category']
+            if 'platform' in self.request_object:
+                platform_id = self.request_object['platform']
 
-        if 'condition' in self.request_object:
-            condition = self.request_object['condition']
+            if 'category' in self.request_object:
+                category_id = self.request_object['category']
 
-        if 'color' in self.request_object:
-            color_list = self.request_object['color']
+            if 'subcategory' in self.request_object:
+                subcategory_id = self.request_object['subcategory']
 
-        if 'retail_price' in self.request_object:
-            retail_price = self.request_object['retail_price']
+            if 'condition' in self.request_object:
+                condition_id = self.request_object['condition']
 
-        if 'selling_price' in self.request_object:
-            selling_price = self.request_object['selling_price']
+            if 'color' in self.request_object:
+                color_id = self.request_object['color']
 
-        if 'shipping_price' in self.request_object:
-            shipping_price = self.request_object['shipping_price']
+            if 'retail_price' in self.request_object:
+                retail_price = self.request_object['retail_price']
 
-        if 'collection_only' in self.request_object:
-            collection_only = self.request_object['collection_only']
+            if 'selling_price' in self.request_object:
+                selling_price = float(self.request_object['selling_price'])
 
-        if 'barcode' in self.request_object:
-            barcode = self.request_object['barcode']
+            if 'shipping_price' in self.request_object:
+                shipping_price = float(self.request_object['shipping_price'])
 
-        if 'photos' in self.request_object:
-            photos = self.request_object['photos']
+            if 'collection_only' in self.request_object:
+                collection_only = self.request_object['collection_only']
+
+            if 'barcode' in self.request_object:
+                barcode = self.request_object['barcode']
+
+            if 'photos' in self.request_object:
+                photos = self.request_object['photos']
+
+            if 'post_code' in self.request_object:
+                post_code = self.request_object['post_code']
+
+            if 'city' in self.request_object:
+                city = self.request_object['city']
 
         if not title:
-            return self.make_error('Undefined item title')
+            empty_field_error.append('title')
 
         if not description:
-            return self.make_error('Undefined item description')
+            empty_field_error.append('description')
 
-        if not platform:
-            return self.make_error('Undefined item platform')
+        if not platform_id:
+            empty_field_error.append('platform')
 
-        if not category:
-            return self.make_error('Undefined item category')
+        if not category_id:
+            empty_field_error.append('category')
 
-        if not condition:
-            return self.make_error('Undefined item condition')
+        if not subcategory_id:
+            empty_field_error.append('subcategory')
 
-        if not color_list:
-            return self.make_error('Undefined item colour')
-        for color in color_list:
-            if not color:
-                return self.make_error('Undefined item colour')
+        if not condition_id:
+            empty_field_error.append('condition')
+
+        if not color_id:
+            empty_field_error.append('color')
 
         if not retail_price:
-            return self.make_error('Undefined item price')
+            empty_field_error.append('retail price')
 
-        if not shipping_price and not collection_only:
-            return self.make_error('You must choose one of shipping options:\n'
-                                   'enter shipping price or select collection only flag')
+        if not selling_price:
+            empty_field_error.append('selling price')
 
-        # if not barcode:
-        #     return self.make_error('Undefined item barcode')
+        if not shipping_price:
+            empty_field_error.append('shipping price')
+
+        if not collection_only:
+            empty_field_error.append('collection only flag')
 
         if not photos:
-            return self.make_error('Undefined item photos')
+            empty_field_error.append('photos')
+
         for photo in photos:
             if not photo:
-                return self.make_error('Undefined item photos')
+                empty_field_error.append('photos')
+                break
+
+        if not post_code:
+            empty_field_error.append('post code')
+
+        if not city:
+            empty_field_error.append('city')
+
+        if empty_field_error:
+            empty_fields = ','.join(empty_field_error)
+            return {
+                'status': 6,
+                'message': 'You must select a %s in order to create a listing.' % empty_fields,
+                'empty_fields': empty_fields
+            }
+
+        retail_price_float = float(retail_price)
+        selling_price_float = float(selling_price)
+        shipping_price_float = float(shipping_price)
 
         item = Item()
         item.user = self.user
@@ -128,58 +169,68 @@ class ItemsHandler(ApiHandler):
             item.barcode = barcode
 
         # check platforms
-        if int(platform) not in [i for i in xrange(6)]:
-            return self.make_error('Invalid platform')
+        return 'oj'
+        platform = self.session.query(Tag).filter(Tag.id == platform_id).first()
+
+        if not platform:
+            return self.make_error('No platform with id %s' % platform_id)
 
         item.platform = platform
 
         # check category
-        if int(category) not in [i for i in xrange(4)]:
-            return self.make_error('Invalid category')
+        category = self.session.query(Tag).filter(Tag.id == category_id).first()
+        if not category:
+            return self.make_error('No category with id %s' % category_id)
+
+        item.category = category
+
+        # check subcategory
+        subcategory = self.session.query(Tag).filter(Tag.id == subcategory_id).first()
+        if not subcategory:
+            return self.make_error('No subcategory with id %s' % category_id)
 
         item.category = category
 
         # check condition
-        if int(condition) not in [i for i in xrange(5)]:
-            return self.make_error('Invalid condition')
+        condition = self.session.query(Tag).filter(Tag.id == condition_id).first()
+        if not condition:
+            return self.make_error('No condition with id %s' % condition_id)
 
         item.condition = condition
 
-        # color check
-        # check is OTHER or NOT APPLICABLE in selected color list with other colors
-        # if len(color_list) > 1:
-        #     if 8 in color_list:
-        #         return self.make_error("You can't choose OTHER tag with other options")
-        #     elif 9 in color_list:
-        #         return self.make_error("You can't choose NOT APPLICABLE tag with other options")
+        # check color
+        color = self.session.query(Tag).filter(Tag.id == color_id).first()
+        if not color:
+            return self.make_error('No color with id %s' % color_id)
 
-        item_color_field = []
-        for color in color_list:
-            if int(color) not in [i for i in xrange(10)]:
-                return self.make_error('Invalid colour')
-            item_color_field.append(color)
-        item.color = str(item_color_field).replace('[', '').replace(']', '')
+        item.color = color
 
         # price handler
+        if retail_price_float < 1:
+            return self.make_error(u'Retail price must be greater than £1')
+        return ';a;a;a;'
         item.retail_price = retail_price
-        if selling_price:
-            if selling_price == retail_price:
-                return self.make_error("Retail and selling prices are the same!")
-            if selling_price > retail_price:
-                return self.make_error("Selling price can't be more than retail price!")
-            item.selling_price = selling_price
+
+        if selling_price > retail_price:
+                return self.make_error("Retail price must be greater than selling price")
+
+        item.selling_price = selling_price
+        if selling_price != retail_price:
             # calculate discount value
             discount = int(round((retail_price - selling_price) / retail_price * 100))
             item.discount = discount
 
-        if shipping_price:
-            item.shipping_price = shipping_price
-            item.collection_only = False
-        elif collection_only:
+        item.shipping_price = shipping_price
+        if collection_only:
             item.collection_only = True
+        else:
+            item.collection_only = False
 
-        # self.session.flush(item)
-        # self.session.commit()
+        item.post_code = post_code
+        item.city = city
+
+        self.session.flush(item)
+        self.session.commit()
 
         # photos
         if len(photos) > 3:
@@ -195,3 +246,33 @@ class ItemsHandler(ApiHandler):
 
         self.session.commit()
         return self.success({'item': sa_object_to_dict(item)})
+
+
+@route('get_city')
+class PostCodeHandler(ApiHandler):
+    allowed_methods = ('PUT', )
+
+    def update(self):
+
+        if self.user is None:
+            die(401)
+
+        logger.debug('REQUEST_OBJECT_GET_CITY_BY_POST_CODE')
+        logger.debug(self.request_object)
+
+        post_code = ''
+
+        if 'post_code' in self.request_object:
+            post_code = self.request_object['post_code']
+
+        if not post_code:
+            return {
+                'status': 6,
+                'message': 'You must select a post code in order to create a listing.'
+            }
+
+        google_response = get_city_by_code(post_code)
+        error, data = google_response['error'], google_response['data']
+        if error:
+            return self.make_error(error)
+        return self.success({'city': data})

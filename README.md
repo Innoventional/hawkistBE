@@ -92,7 +92,7 @@ Response Success:
 Response Failure:
 
     {
-        'status': 1,
+        'status': 1 / 2,
         'message': '' — Error message
     }
     
@@ -110,9 +110,19 @@ Data:
         [<phone, pin>] : string
     }
 
-Response:
+Response Success:
+    
+    {
+        'status': 0,
+        'user': USER_INFO_DICT
+    }
+    
+Response Failure:
 
-    {...} - Full user info dict or 404 error if user was not found
+    {
+        'status': 1 / 3 / 4 / 5,
+        'message': '' — Error message
+    }
     
 ---
     
@@ -364,58 +374,20 @@ Data:
     {
         "title": string,
         "description": string,
-        "platform": PLATFORM_VALUE,
-        "category": CATEGORY_VALUE,
-        "condition": CONDITION_VALUE,
-        "color": [COLOR_VALUES],
+        "platform": int,            -- id, platform ex: XBOX
+        "category": int,            -- id, category ex: Games
+        "subcategory": int,         -- id, subcategory ex: Shooter
+        "condition": int,
+        "color": int,
         "retail_price": float,
-        "selling_price": float,         - not required -
+        "selling_price": float,
         "shipping_price": float,
         "collection_only": int,
         "barcode": "http://amazon.link_to_barcode_photo",         - not required -
-        "photos": ["http://amazon.link_to_photo"]
+        "photos": ["http://amazon.link_to_photo"],
+        "post_code": "NR1",
+        "city": "Norwich"
     }
-
-PLATFORM_VALUEs:
-
-    PC = 0
-    MAC = 1
-    Playstation = 2
-    XBOX = 3
-    Nintendo = 4
-    Sega = 5
-
-
-CATEGORY_VALUEs:
-
-    Consoles = 0
-    Games = 1
-    Handhelp = 2
-    Accessories = 3
-
-    
-CONDITION_VALUEs:
-
-    BrandNewInBox = 0
-    LikeNew = 1
-    Used = 2
-    Refurbished = 3
-    NotWorkingOrPartsOnly = 4
-
-
-COLOR_VALUEs:
-
-    Black = 0
-    White = 1
-    Red = 2
-    Blue = 3
-    Green = 4
-    Orange = 5
-    Yellow = 6
-    Purple = 7
-    Other = 8
-    NotApplicable = 9
-
 
 Response Success:
     
@@ -427,7 +399,55 @@ Response Success:
 Response Failure:
 
     {
+        'status': 6,
+        'message': '', — Error message
+        'empty_fields': ''
+    }
+    
+or
+
+    {
         'status': 1,
         'message': '' — Error message
     }
+---
+
+**Get city by post code**
+
+    Url: 'get_city'
+    Method: 'PUT'
+
+
+Data:
+
+    {
+        "post_code": string
+    }
+
+Response Success:
+    
+    {
+        'status': 0,
+        'city': CITY_NAME
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '' — Error message
+    }
+---
+
+
+STATUS CODES FOR CUSTOM ERROR TITLE
+-----------------------------------
+    
+    Status code | Error message title
+    ---------------------------------
+        2       | Invalid Number Format
+        3       | User Not Found
+        4       | Wrong Pin
+        5       | Cannot Sign In
+        6       | (field_name) Missing
     

@@ -175,7 +175,6 @@ class UserLoginHandler(ApiHandler):
                 pin = str(self.request_object['pin'])
 
         if not phone or not pin:
-            # return self.make_error('You must input phone and pin')
             return {
                 'status': 5,
                 'message': 'You must input a mobile number and a pin to sign in.'

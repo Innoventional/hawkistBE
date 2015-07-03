@@ -1,7 +1,8 @@
 import datetime
-from sqlalchemy import Column, DateTime, ForeignKey, String, Enum, SmallInteger, Boolean, Numeric
+from sqlalchemy import Column, DateTime, ForeignKey, String, Enum, Boolean, Numeric
 from sqlalchemy import Integer
 from sqlalchemy.orm import relationship, backref
+from api.tags.models import Tag
 from api.users.models import User
 from orm import Base
 
@@ -61,17 +62,32 @@ class Item(Base):
     barcode = Column(String, nullable=False, default='')
 
     # item details (tags)
-    platform = Column(SmallInteger, nullable=False)
-    category = Column(SmallInteger, nullable=False)
-    condition = Column(SmallInteger, nullable=False)
-    color = Column(String, nullable=False)
+    platform_id = Column(Integer, ForeignKey('tags.id'), nullable=False, index=True)
+    platform = relationship('Tag', backref=backref('platform_items', order_by=id, cascade="all,delete", lazy='dynamic'),
+                            foreign_keys=platform_id)
+
+    category_id = Column(Integer, ForeignKey('tags.id'), nullable=False, index=True)
+    category = relationship('Tag', backref=backref('category_items', order_by=id, cascade="all,delete", lazy='dynamic'),
+                            foreign_keys=category_id)
+
+    subcategory_id = Column(Integer, ForeignKey('tags.id'), nullable=False, index=True)
+    subcategory = relationship('Tag', backref=backref('subcategory_items', order_by=id, cascade="all,delete",
+                                                    lazy='dynamic'), foreign_keys=subcategory_id)
+
+    condition_id = Column(Integer, ForeignKey('tags.id'), nullable=False, index=True)
+    condition = relationship('Tag', backref=backref('condition_items', order_by=id, cascade="all,delete",
+                                                  lazy='dynamic'), foreign_keys=condition_id)
+
+    color_id = Column(Integer, ForeignKey('tags.id'), nullable=False, index=True)
+    color = relationship('Tag', backref=backref('color_items', order_by=id, cascade="all,delete", lazy='dynamic'),
+                         foreign_keys=color_id)
 
     # price
-    retail_price = Column(Integer, nullable=False)
-    selling_price = Column(Integer, nullable=True)
+    retail_price = Column(Numeric, nullable=False)
+    selling_price = Column(Numeric, nullable=True)
     discount = Column(Integer, nullable=True)
 
-    shipping_price = Column(Integer, nullable=True)
+    shipping_price = Column(Numeric, nullable=True)
     collection_only = Column(Boolean, nullable=False, default=False)
 
     # location info info
@@ -90,10 +106,11 @@ class Item(Base):
             'created_at': self.created_at,
             'title': self.title,
             'description': self.description,
-            'platform': self.platform,
-            'category': self.category,
-            'condition': self.condition,
-            'color': self.color,
+            'platform': self.platform_id,
+            'category': self.category_id,
+            'subcategory': self.subcategory_id,
+            'condition': self.condition_id,
+            'color': self.color_id,
             'retail_price': self.retail_price,
             'selling_price': self.selling_price,
             'discount': self.discount,

@@ -1,5 +1,6 @@
 import datetime
 from sqlalchemy import func, and_
+from api.items.models import Item
 from api.tags.models import Tag
 from base import OpenApiHandler, paginate, HttpRedirect
 from helpers import route
@@ -96,6 +97,8 @@ class AdminTagsHandler(AdminBaseHandler):
         tag = self.session.query(Tag).filter(Tag.id == tag_id).first()
         if not tag:
             return self.make_error('Something wrong. Try again later')
+        # check is this tag using
+        used = self.session.query(Item).filter(Item)
         self.session.delete(tag)
         self.session.commit()
         return self.success()

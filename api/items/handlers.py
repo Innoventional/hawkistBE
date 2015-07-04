@@ -23,7 +23,6 @@ class ItemsHandler(ApiHandler):
             die(401)
 
         items = self.session.query(Item).order_by(Item.id)
-        print items
 
         return self.success({'items': [i.item_response for i in items]})
 
@@ -158,6 +157,34 @@ class ItemsHandler(ApiHandler):
         selling_price_float = float(selling_price)
         shipping_price_float = float(shipping_price)
 
+        # check all tags
+
+        # check platforms
+        platform = self.session.query(Tag).filter(Tag.id == platform_id).first()
+        if not platform:
+            return self.make_error('No platform with id %s' % platform_id)
+
+        # check category
+        category = self.session.query(Tag).filter(Tag.id == category_id).first()
+        if not category:
+            return self.make_error('No category with id %s' % category_id)
+
+        # check subcategory
+        subcategory = self.session.query(Tag).filter(Tag.id == subcategory_id).first()
+        if not subcategory:
+            return self.make_error('No subcategory with id %s' % category_id)
+
+        # check condition
+        condition = self.session.query(Tag).filter(Tag.id == condition_id).first()
+        if not condition:
+            return self.make_error('No condition with id %s' % condition_id)
+
+        # check color
+        color = self.session.query(Tag).filter(Tag.id == color_id).first()
+        if not color:
+            return self.make_error('No color with id %s' % color_id)
+
+        # finally create item
         item = Item()
         item.user = self.user
         item.created_at = datetime.datetime.utcnow()
@@ -165,44 +192,13 @@ class ItemsHandler(ApiHandler):
         item.title = title
         item.description = description
 
-        # self.session.flush(item)
-
         if barcode:
             item.barcode = barcode
 
-        # check platforms
-        # platform = self.session.query(Tag).filter(Tag.id == platform_id).first()
-        # if not platform:
-        #     return self.make_error('No platform with id %s' % platform_id)
-
         item.platform_id = platform_id
-
-        # check category
-        # category = self.session.query(Tag).filter(Tag.id == category_id).first()
-        # if not category:
-        #     return self.make_error('No category with id %s' % category_id)
-
         item.category_id = category_id
-
-        # check subcategory
-        # subcategory = self.session.query(Tag).filter(Tag.id == subcategory_id).first()
-        # if not subcategory:
-        #     return self.make_error('No subcategory with id %s' % category_id)
-
         item.subcategory_id = subcategory_id
-
-        # check condition
-        # condition = self.session.query(Tag).filter(Tag.id == condition_id).first()
-        # if not condition:
-        #     return self.make_error('No condition with id %s' % condition_id)
-
         item.condition_id = condition_id
-
-        # check color
-        # color = self.session.query(Tag).filter(Tag.id == color_id).first()
-        # if not color:
-        #     return self.make_error('No color with id %s' % color_id)
-
         item.color_id = color_id
 
         # price handler

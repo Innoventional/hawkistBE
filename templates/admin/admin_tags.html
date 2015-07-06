@@ -71,7 +71,11 @@
                             <select  name="type" id="add_tag_select">
                                 <option value="0">---</option>
                                 {% for tag in tags %}
-                                    <option value="{{ tag.id }}">{{ tag.name.capitalize() }}</option>
+                                    <option value="{{ tag.id }}">{{ tag.name.capitalize() }}
+                                        {% if tag.parent_tag %}
+                                            ({{ tag.parent_tag.name.capitalize() }})
+                                        {% end %}
+                                    </option>
                                 {% end %}
                             </select>
                         </div>
@@ -109,7 +113,11 @@
                             <select  name="type" id="edit_tag_select">
                                 <option value="0">---</option>
                                 {% for tag in tags %}
-                                    <option value="{{ tag.id }}">{{ tag.name.capitalize() }}</option>
+                                    <option value="{{ tag.id }}">{{ tag.name.capitalize() }}
+                                        {% if tag.parent_tag %}
+                                            ({{ tag.parent_tag.name.capitalize() }})
+                                        {% end %}
+                                    </option>
                                 {% end %}
                             </select>
                         </div>

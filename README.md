@@ -398,18 +398,36 @@ Response:
     
 Response:
     
-    {
+    {   
         "status": 0,
-        "paginator": {
-            "items_count": 1,
-            "page": 1,
-            "pages": 1
-        },
-        "items": [
+        "item": [
             {
                 ...
             }
-        ]
+        ],
+        "similar_items": [
+            {
+                ...
+            },
+                .
+                .
+                .
+            {
+                ...
+            }
+        ],
+        "user_items": [
+            {
+                ...
+            },
+                .
+                .
+                .
+            {
+                ...
+            }
+        ],
+        
     }
     
 ---

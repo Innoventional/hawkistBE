@@ -38,9 +38,15 @@
                                title="Edit tag">
                                 <i class="glyphicon glyphicon-pencil"></i>
                             </a>
+                            {% if not tag.parent_tag %}
+                            <a class="btn red-color op-04 red-hoover red-focus" href="#" title="Parent tag cant be deleted">
+                                <i class="glyphicon glyphicon-trash"></i>
+                            </a>
+                            {% else %}
                             <a class="btn btn_delete_tag red-color" href="#" title="Delete tag">
                                 <i class="glyphicon glyphicon-trash"></i>
                             </a>
+                            {% end %}
                         </td>
                      </tr>
                 {% end %}

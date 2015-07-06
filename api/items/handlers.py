@@ -2,9 +2,10 @@
 
 import logging
 import datetime
+from sqlalchemy import or_, desc
 from api.items.models import Item, ItemPhoto
 from api.tags.models import Tag
-from base import ApiHandler, die
+from base import ApiHandler, die, paginate
 from helpers import route, sa_object_to_dict
 from utility.google_api import get_city_by_code
 
@@ -22,14 +23,55 @@ class ItemsHandler(ApiHandler):
         if not self.user:
             die(401)
 
-        items = self.session.query(Item).order_by(Item.id)
+        user_tags = self.user.user_tags
+        if not user_tags:
+            return self.make_error("Your feeds are empty 'cause you don't add any tags")
 
-        return self.success({'items': [i.item_response for i in items]})
+        # check have user tags children
+        # create set with user tags
+        user_tags_set = set()
+        for tag in user_tags:
+            user_tags_set.add(tag.id)
+            children1 = tag.tag.children_tags
+            if children1.count != 0:
+                for ch1 in children1:
+                    user_tags_set.add(ch1.id)
+                    children2 = ch1.children_tags
+                    if children2.count != 0:
+                        for ch2 in children2:
+                            user_tags_set.add(ch2.id)
+
+        # finally find all ids of interesting user listings
+        item_ids = set()
+        for tag_id in user_tags_set:
+            items_with_this_tag = self.session.query(Item).filter(or_(Item.platform_id == tag_id,
+                                                                      Item.category_id == tag_id,
+                                                                      Item.subcategory_id == tag_id))
+            for item in items_with_this_tag:
+                item_ids.add(item.id)
+
+        items = self.session.query(Item).filter(Item.id.in_(list(item_ids))).order_by(desc(Item.id))
+
+        # pagination
+        page = self.get_arg('p', int, 1)
+        page_size = self.get_arg('page_size', int, 100)
+        paginator, listings = paginate(items, page, page_size)
+
+        return self.success({
+            'items': [i.item_response for i in listings],
+            'paginator': paginator
+        })
 
     def create(self):
 
         if self.user is None:
             die(401)
+
+        # check selling ability
+        if not self.user.facebook_id:
+            return self.make_error("Sorry, but you can't sale anything 'cause you don't link your FB account")
+        if not self.user.email_status:
+            return self.make_error("Sorry, but you can't sale anything 'cause you don't confirm your email address")
 
         logger.debug('REQUEST_OBJECT_NEW_ITEM')
         logger.debug(self.request_object)
@@ -128,8 +170,8 @@ class ItemsHandler(ApiHandler):
         if not shipping_price:
             empty_field_error.append('shipping price')
 
-        if not collection_only:
-            empty_field_error.append('collection only flag')
+        # if not collection_only:
+        #     empty_field_error.append('collection only flag')
 
         if not photos:
             empty_field_error.append('photos')
@@ -153,12 +195,7 @@ class ItemsHandler(ApiHandler):
                 'empty_fields': empty_fields
             }
 
-        retail_price_float = float(retail_price)
-        selling_price_float = float(selling_price)
-        shipping_price_float = float(shipping_price)
-
-        # check all tags
-
+        # first check all tags
         # check platforms
         platform = self.session.query(Tag).filter(Tag.id == platform_id).first()
         if not platform:
@@ -174,6 +211,16 @@ class ItemsHandler(ApiHandler):
         if not subcategory:
             return self.make_error('No subcategory with id %s' % category_id)
 
+        # check is this nesting right
+        platform_children_ids = [child.id for child in platform.children_tags]
+        if category_id not in platform_children_ids:
+            return self.make_error("Platform tag %s hasn't child %s. Try again" % (platform.name.upper(),
+                                                                                   category.name.upper()))
+        category_children_ids = [child.id for child in category.children_tags]
+        if subcategory_id not in category_children_ids:
+            return self.make_error("Category tag %s hasn't child %s. Try again" % (category.name.upper(),
+                                                                                   subcategory.name.upper()))
+
         # check condition
         condition = self.session.query(Tag).filter(Tag.id == condition_id).first()
         if not condition:
@@ -183,6 +230,17 @@ class ItemsHandler(ApiHandler):
         color = self.session.query(Tag).filter(Tag.id == color_id).first()
         if not color:
             return self.make_error('No color with id %s' % color_id)
+
+        # secondary check other fields
+        # price handler
+        if retail_price < 1:
+            return self.make_error(u'Retail price must be greater than £1')
+
+        if selling_price > retail_price:
+                return self.make_error("Retail price must be greater than selling price")
+
+        if len(photos) > 3:
+            return self.make_error('You can add only 3 photos')
 
         # finally create item
         item = Item()
@@ -200,17 +258,9 @@ class ItemsHandler(ApiHandler):
         item.subcategory_id = subcategory_id
         item.condition_id = condition_id
         item.color_id = color_id
-
-        # price handler
-        if retail_price < 1:
-            return self.make_error(u'Retail price must be greater than £1')
-
         item.retail_price = retail_price
-
-        if selling_price > retail_price:
-                return self.make_error("Retail price must be greater than selling price")
-
         item.selling_price = selling_price
+
         if selling_price != retail_price:
             # calculate discount value
             discount = int(round((retail_price - selling_price) / retail_price * 100))
@@ -229,9 +279,6 @@ class ItemsHandler(ApiHandler):
         # self.session.commit()
 
         # photos
-        if len(photos) > 3:
-            return self.make_error('You can add only 3 photos')
-
         for photo in photos:
             item_photo = ItemPhoto()
             item_photo.created_at = datetime.datetime.utcnow()

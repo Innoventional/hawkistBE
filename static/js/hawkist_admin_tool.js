@@ -217,7 +217,15 @@ $('.btn_activate_user').click(function(){
 });
 
 $('.btn_edit_user').click(function(){
-    alert('TODO editing');
+    alert('Editing in future');
+    //user_id = $(this).parent().parent().data('id');
+    //username = $(this).parent().parent().data('username');
+    //email = $(this).parent().parent().data('email');
+    //phone = $(this).parent().parent().data('phone');
+    //$('#editing_user_id').val(user_id);
+    //$('#editing_username').val(username);
+    //$('#editing_email').val(email);
+    //$('#editing_phone').val(phone);
 });
 
 $('.btn_delete_user').click(function(){

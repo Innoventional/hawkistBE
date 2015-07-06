@@ -43,10 +43,10 @@ Response:
     
 class UserType(Enum):
 
-    Standard = 0
-    Admin = 1
-    Developer = 2
-    Support = 3
+    Admin = 0
+    Developer = 1
+    Support = 2
+    Standard = 3
         
 class SystemStatus(Enum):
 
@@ -363,6 +363,35 @@ Response:
 ### Items
 
    
+**Get items**
+
+    Url: 'user/items?p=1'
+    Method: 'GET'
+
+Response:
+    
+    {
+        "status": 0,
+        "paginator": {
+            "items_count": 103,
+            "page": 1,
+            "pages": 2
+        },
+        "items": [
+            {
+                ...
+            },
+                .
+                .
+                .
+            {
+                ...
+            }
+        ]
+    }
+    
+---
+    
 **Create item**
 
     Url: 'user/items'
@@ -410,6 +439,7 @@ or
         'status': 1,
         'message': '' — Error message
     }
+    
 ---
 
 **Get city by post code**
@@ -437,6 +467,7 @@ Response Failure:
         'status': 1,
         'message': '' — Error message
     }
+    
 ---
 
 

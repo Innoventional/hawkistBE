@@ -26,7 +26,8 @@ class AdminUsersHandler(AdminBaseHandler):
         paginator, tags = paginate(users, page, page_size)
 
         return self.render_string('admin/admin_users.html', users=users, paginator=paginator,
-                                  menu_tab_active='tab_users', SystemStatus=SystemStatus, UserType=UserType)
+                                  menu_tab_active='tab_users', SystemStatus=SystemStatus, UserType=UserType,
+                                  current_user=self.user)
 
     def create(self):
         if not self.user:

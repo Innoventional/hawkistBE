@@ -10,10 +10,10 @@ __author__ = 'ne_luboff'
 class UserType(Enum):
     __order__ = '0 1 2 3'
 
-    Standard = 0
-    Admin = 1
-    Developer = 2
-    Support = 3
+    Admin = 0
+    Developer = 1
+    Support = 2
+    Standard = 3
 
     @classmethod
     def tostring(cls, val):

@@ -26,12 +26,20 @@
     color: red;
 }
 
+.red-focus:focus {
+    color: red;
+}
+
 .green-hoover:hover {
     color: green;
 }
 
 .op-06 {
     opacity: .6;
+}
+
+.op-04 {
+    opacity: .4;
 }
 
 .wrapper {
@@ -61,4 +69,17 @@
     width:auto;
     border:0;
   }
+}
+
+.btn_disable,
+.btn_disable:hover {
+    /*color: inherit;*/
+}
+
+.underless-link,
+.underless-link:hover,
+.underless-link:focus,
+.underless-link:active {
+    text-decoration: none;
+    color: #709cbe;
 }

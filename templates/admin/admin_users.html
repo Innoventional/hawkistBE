@@ -36,8 +36,8 @@
                         data-user_type="{{ user.user_type }}">
                         <td>{{ user.id }}</td>
                         <td align="center" id="thumbnailList1">
-                            {% if user.avatar %}
-                                <a href="{{ user.avatar }}" target="_blank"><img src="{{ user.avatar }}"></a>
+                            {% if user.thumbnail %}
+                                <a href="{{ user.thumbnail }}" target="_blank"><img src="{{ user.thumbnail }}"></a>
                             {% else %}
                                 <a href="#" title="This user hasn't avatar"><img src="{{ static_url('images/anonymous_user.png') }}"></a>
                             {% end %}

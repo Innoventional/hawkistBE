@@ -361,13 +361,12 @@ Response:
 ---
 
 ### Items
-
    
-**Get items**
+**Get all items (user feeds)**
 
-    Url: 'user/items?p=1'
+    Url: 'items'
     Method: 'GET'
-
+    
 Response:
     
     {
@@ -391,10 +390,33 @@ Response:
     }
     
 ---
+   
+**Get item by id**
+
+    Url: 'items?item_id=ITEM_ID'
+    Method: 'GET'
     
+Response:
+    
+    {
+        "status": 0,
+        "paginator": {
+            "items_count": 1,
+            "page": 1,
+            "pages": 1
+        },
+        "items": [
+            {
+                ...
+            }
+        ]
+    }
+    
+---
+
 **Create item**
 
-    Url: 'user/items'
+    Url: 'items'
     Method: 'POST'
 
 
@@ -481,4 +503,6 @@ STATUS CODES FOR CUSTOM ERROR TITLE
         4       | Wrong Pin
         5       | Cannot Sign In
         6       | (field_name) Missing
+        7       | Incorrect Post Code
+        8       | Post Code Not Found
     

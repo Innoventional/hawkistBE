@@ -2,19 +2,21 @@
 
 import logging
 import datetime
-from sqlalchemy import or_, desc
+import random
+from sqlalchemy import or_, desc, and_
 from api.items.models import Item, ItemPhoto
 from api.tags.models import Tag
 from base import ApiHandler, die, paginate
 from helpers import route, sa_object_to_dict
 from utility.google_api import get_city_by_code
+from utility.tags import interested_user_tag_ids, interested_user_item_ids
 
 __author__ = 'ne_luboff'
 
 logger = logging.getLogger(__name__)
 
 
-@route('user/items')
+@route('items')
 class ItemsHandler(ApiHandler):
     allowed_methods = ('GET', 'POST', )
 
@@ -23,44 +25,40 @@ class ItemsHandler(ApiHandler):
         if not self.user:
             die(401)
 
-        user_tags = self.user.user_tags
-        if not user_tags:
-            return self.make_error("Your feeds are empty 'cause you don't add any tags")
+        item_id = self.get_arg('item_id', int)
+        response = dict()
 
-        # check have user tags children
-        # create set with user tags
-        user_tags_set = set()
-        for tag in user_tags:
-            user_tags_set.add(tag.id)
-            children1 = tag.tag.children_tags
-            if children1.count != 0:
-                for ch1 in children1:
-                    user_tags_set.add(ch1.id)
-                    children2 = ch1.children_tags
-                    if children2.count != 0:
-                        for ch2 in children2:
-                            user_tags_set.add(ch2.id)
+        # get item by id
+        if item_id:
+            # first get this item
+            item = self.session.query(Item).filter(Item.id == item_id).first()
+            if not item:
+                return self.make_error('No item with id %s' % item_id)
 
-        # finally find all ids of interesting user listings
-        item_ids = set()
-        for tag_id in user_tags_set:
-            items_with_this_tag = self.session.query(Item).filter(or_(Item.platform_id == tag_id,
-                                                                      Item.category_id == tag_id,
-                                                                      Item.subcategory_id == tag_id))
-            for item in items_with_this_tag:
-                item_ids.add(item.id)
+            # find 6 items with similar category | platform | subcat
+            similar_items = self.session.query(Item).filter(and_(or_(Item.platform_id == item.platform_id,
+                                                                     Item.category_id == item.category_id,
+                                                                     Item.subcategory_id == item.subcategory_id),
+                                                                 Item.id != item.id)).limit(6)
+            # find 6 items of this user
+            user_items = self.session.query(Item).filter(and_(Item.user_id == item.user_id,
+                                                              Item.id != item.id)).limit(6)
+            response['item'] = [item.item_response]
+            response['similar_items'] = [i.item_response for i in similar_items]
+            response['user_items'] = [i.item_response for i in user_items]
+        # else return all items
+        else:
+            user_tags_set = interested_user_tag_ids(self)
+            item_ids = interested_user_item_ids(self, user_tags_set)
+            items = self.session.query(Item).filter(Item.id.in_(list(item_ids))).order_by(desc(Item.id))
+            # pagination
+            page = self.get_arg('p', int, 1)
+            page_size = self.get_arg('page_size', int, 100)
+            paginator, items = paginate(items, page, page_size)
+            response['paginator'] = paginator
+            response['items'] = [i.item_response for i in items]
 
-        items = self.session.query(Item).filter(Item.id.in_(list(item_ids))).order_by(desc(Item.id))
-
-        # pagination
-        page = self.get_arg('p', int, 1)
-        page_size = self.get_arg('page_size', int, 100)
-        paginator, listings = paginate(items, page, page_size)
-
-        return self.success({
-            'items': [i.item_response for i in listings],
-            'paginator': paginator
-        })
+        return self.success(response)
 
     def create(self):
 

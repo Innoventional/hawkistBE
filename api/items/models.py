@@ -103,6 +103,7 @@ class Item(Base):
     def item_response(self):
         return {
             'id': self.id,
+            'user_id': self.user_id,
             'created_at': self.created_at,
             'title': self.title,
             'description': self.description,

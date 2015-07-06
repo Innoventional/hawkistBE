@@ -32,7 +32,11 @@ def get_city_by_code(post_code):
                     if t == 'postal_code' and address_component['short_name'].lower() == post_code.lower():
                         results_with_required_zip_code.append(result)
         if not results_with_required_zip_code:
-            error = 'No location with post code %s' % post_code
+            error = {
+                'status': '8',
+                'message': 'Unable to match your Post Code with a City or Location. Please check it and try again'
+            }
+            # error = 'No location with post code %s' % post_code
         else:
             """
             next we need all results in GB
@@ -46,7 +50,11 @@ def get_city_by_code(post_code):
                         if t == 'country' and address_component['short_name'].lower() == 'GB'.lower():
                             results_with_required_zip_code_in_GB = good_result
             if not results_with_required_zip_code_in_GB:
-                error = 'No city with post code %s in GB' % post_code
+                error = {
+                    'status': '7',
+                    'message': 'Please check the Post Code to ensure that it is correctly formatted'
+                }
+                # error = 'No city with post code %s in GB' % post_code
             else:
                 """
                 finally find city name
@@ -59,11 +67,19 @@ def get_city_by_code(post_code):
                     searching_city = get_city_by_key(address_components, 'administrative_area_level_2')
                 if not searching_city:
                     print url
-                    error = 'No city with post code %s in GB' % post_code
+                    error = {
+                        'status': '7',
+                        'message': 'Please check the Post Code to ensure that it is correctly formatted'
+                    }
+                    # error = 'No city with post code %s in GB' % post_code
                 else:
                     city = searching_city
     elif request_status == 'ZERO_RESULTS':
-        error = 'Wrong post code %s' % post_code
+        error = {
+            'status': '8',
+            'message': 'Unable to match your Post Code with a City or Location. Please check it and try again'
+        }
+        # error = 'Wrong post code %s' % post_code
     else:
         error = request_status
     return {

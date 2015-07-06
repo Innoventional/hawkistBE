@@ -3,7 +3,7 @@
 import logging
 import datetime
 import random
-from sqlalchemy import or_, desc, and_
+from sqlalchemy import or_, desc, and_, func
 from api.items.models import Item, ItemPhoto
 from api.tags.models import Tag
 from base import ApiHandler, die, paginate
@@ -26,6 +26,7 @@ class ItemsHandler(ApiHandler):
             die(401)
 
         item_id = self.get_arg('item_id', int)
+        q = self.get_arg('q', str)
         response = dict()
 
         # get item by id
@@ -35,7 +36,7 @@ class ItemsHandler(ApiHandler):
             if not item:
                 return self.make_error('No item with id %s' % item_id)
 
-            # find 6 items with similar category | platform | subcat
+            # find 6 items with similar category | platform | subcategory
             similar_items = self.session.query(Item).filter(and_(or_(Item.platform_id == item.platform_id,
                                                                      Item.category_id == item.category_id,
                                                                      Item.subcategory_id == item.subcategory_id),
@@ -51,6 +52,50 @@ class ItemsHandler(ApiHandler):
             user_tags_set = interested_user_tag_ids(self)
             item_ids = interested_user_item_ids(self, user_tags_set)
             items = self.session.query(Item).filter(Item.id.in_(list(item_ids))).order_by(desc(Item.id))
+
+            # search
+            # if we have searching query we must filtered all items
+            if q:
+                # first we must get all items
+                all_items = self.session.query(Item)
+
+                # get all tags names to search.
+                # note! we can search only by platform name, category name and subcategory name
+                tag_names_to_search = set()
+                for i in items:
+                    tag_names_to_search.add(i.platform.name)
+                    tag_names_to_search.add(i.category.name)
+                    tag_names_to_search.add(i.subcategory.name)
+
+                # this is set with suitable tag names
+                right_tag_names = set()
+                for key in tag_names_to_search:
+                    if q in key:
+                        right_tag_names.add(key)
+
+                # get right tags ids
+                right_tag_ids = [t.id for t in self.session.query(Tag).filter(func.lower(Tag.name).in_(right_tag_names))]
+
+                # select items by suitable tag name
+                right_tag_item_ids = [i.id for i in all_items.filter(or_(Item.platform_id.in_(right_tag_ids),
+                                                                         Item.category_id.in_(right_tag_ids),
+                                                                         Item.subcategory_id.in_(right_tag_ids)))]
+                print right_tag_item_ids
+
+                # filtered items and get items with fit description or title
+                right_title_or_description_item_ids = [i.id for i in all_items.filter(or_(Item.title.ilike(u'%{0}%'.format(q)),
+                                                                                          Item.description.ilike(u'%{0}%'.format(q))))]
+                # finally get all items which match search terms
+                items = all_items.filter(Item.id.in_(list(set(right_tag_item_ids + right_title_or_description_item_ids)))).order_by(desc(Item.id))
+
+
+                # TODO optimize using this
+                # filtered them by platform | category | subcategory | title | condition
+                # items = all_items.filter(or_(Item.platform.name.ilike(u'%{0}%'.format(q)),
+                #                              Item.category.name.ilike(u'%{0}%'.format(q)),
+                #                              Item.subcategory.name.ilike(u'%{0}%'.format(q)),
+                #                              Item.title.ilike(u'%{0}%'.format(q)),
+                #                              Item.description.ilike(u'%{0}%'.format(q))))
             # pagination
             page = self.get_arg('p', int, 1)
             page_size = self.get_arg('page_size', int, 100)

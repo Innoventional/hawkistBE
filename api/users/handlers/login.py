@@ -66,7 +66,7 @@ class UserLoginHandler(ApiHandler):
                 user.first_login = False
                 self.session.commit()
 
-            # check user avability to send one more sms
+            # check user ability to send one more sms
             reach_sms_limit = sms_limit_check(self)
             if reach_sms_limit:
                 return self.make_error(reach_sms_limit)

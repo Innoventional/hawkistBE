@@ -1,11 +1,15 @@
 from random import choice
 import string
+import datetime
+from sqlalchemy import and_, func
 from api.admin.handlers.tags import AdminBaseHandler
 from api.users.models import User, SystemStatus, UserType
 from base import paginate, HttpRedirect
 from environment import env
 from helpers import route, encrypt_password
-from utility.send_email import send_email
+from utility.format_verification import username_verification, email_verification, phone_verification
+from utility.send_email import send_email, email_confirmation_sending
+from utility.twilio_api import send_sms
 
 __author__ = 'ne_luboff'
 
@@ -79,18 +83,93 @@ class AdminUsersHandler(AdminBaseHandler):
         user_id = self.get_arg('user_id')
         action = self.get_arg('action')
 
-        new_system_status = 0
-
-        if action == 'suspend':
-            new_system_status = 1
-        elif action == 'unsuspend':
-            new_system_status = 0
-
         # get user to be changed
         user = self.session.query(User).filter(User.id == user_id).first()
         if not user:
             return self.make_error('Something wrong. Try again later')
-        user.system_status = new_system_status
+
+        if action == 'suspend':
+            user.system_status = 1
+        elif action == 'unsuspend':
+            user.system_status = 0
+        elif action == 'edit':
+            username = self.get_arg('username')
+            email = self.get_arg('email')
+            phone = self.get_arg('phone')
+
+            # step-by-step
+            # username
+            if user.username != username and username:
+                username = str(username.encode('utf-8'))
+                username_error = username_verification(username)
+                if username_error:
+                    return self.make_error(username_error)
+
+                already_used = self.session.query(User).filter(and_(User.id != user.id,
+                                                                    func.lower(User.username) == username.lower())).first()
+                if already_used:
+                    return self.make_error("Sorry, username '%s' already used by another user" % username)
+                user.username = username
+
+            # email
+            if user.email != email and email:
+                print email
+                email = str(email.encode('utf-8')).lower()
+                # first validate email
+                email_error = email_verification(email)
+                if email_error:
+                    return self.make_error(email_error)
+
+                already_used = self.session.query(User).filter(and_(User.id != user.id,
+                                                                    User.email == email)).first()
+                if already_used:
+                    return self.make_error("Sorry, email address '%s' already used by another user" % email)
+
+                user.email = email
+
+                user.email_status = False
+                # send email confirmation
+                email_confirmation_sending(self, self.user, email)
+
+            # phone
+            if user.phone != phone and phone:
+                print phone
+                phone = str(phone)
+                phone = phone.replace('+', '')
+                # first verify number
+                phone_error = phone_verification(phone)
+                if phone_error:
+                    return self.make_error(phone_error)
+
+                already_used = self.session.query(User).filter(and_(User.id != user.id,
+                                                                    User.phone == phone)).first()
+                if already_used:
+                    return self.make_error("Sorry, phone number '%s' already used by another user" % phone)
+
+                # send message to email
+                if user.email:
+                    text = 'Hi!\nYour phone number has changed. New login pin sent to new number.\nEnjoy!'
+                    subject = 'Phone number changed'
+                    send_email(text, subject=subject, recipient=user.email)
+
+                # generate pin code
+                confirm_code = ''.join(choice(string.digits) for _ in xrange(4))
+                message_body = 'Hi! Your phone number has changed! Use this code to login:\n%s' % confirm_code
+
+                # and send it to user
+                error = send_sms(phone, message_body)
+                if error:
+                    return {'status': 2,
+                            'message': error}
+                user.phone = phone
+                user.pin = confirm_code
+                user.last_pin_sending = datetime.datetime.utcnow()
+                if user.sent_pins_count:
+                    user.sent_pins_count += 1
+                else:
+                    user.sent_pins_count = 0
+
+        user.updated_at = datetime.datetime.utcnow()
         self.session.commit()
         return self.success()
 

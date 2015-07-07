@@ -217,16 +217,51 @@ $('.btn_activate_user').click(function(){
 });
 
 $('.btn_edit_user').click(function(){
-    alert('Editing in future');
-    //user_id = $(this).parent().parent().data('id');
-    //username = $(this).parent().parent().data('username');
-    //email = $(this).parent().parent().data('email');
-    //phone = $(this).parent().parent().data('phone');
-    //$('#editing_user_id').val(user_id);
-    //$('#editing_username').val(username);
-    //$('#editing_email').val(email);
-    //$('#editing_phone').val(phone);
+    //alert('Editing in future');
+    user_id = $(this).parent().parent().data('id');
+    username = $(this).parent().parent().data('username');
+    email = $(this).parent().parent().data('email');
+    phone = $(this).parent().parent().data('phone');
+    $('#editing_user_id').val(user_id);
+    $('#editing_username').val(username);
+    $('#editing_email').val(email);
+    $('#editing_phone').val(phone);
 });
+
+$('.btn_save_editing_user').click(function(){
+    user_id = document.getElementById("editing_user_id").value;
+    username = document.getElementById("editing_username").value;
+    email = document.getElementById("editing_email").value;
+    phone = document.getElementById("editing_phone").value;
+    change_user_info(user_id, username, email, phone);
+});
+
+change_user_info = function(user_id, username, email, phone){
+    $.ajax({
+        url: '/api/admin/users',
+        type: 'PUT',
+        data: {
+            'action': 'edit',
+            'user_id': user_id,
+            'username': username,
+            'email': email,
+            'phone': phone
+        },
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            if (status == 0 )
+            {
+                location.reload();
+            }else
+            {
+                alert(message);
+                location.reload();
+            }
+        }
+    });
+};
+
 
 $('.btn_delete_user').click(function(){
     if (confirm('Do you really want to delete this user?'))

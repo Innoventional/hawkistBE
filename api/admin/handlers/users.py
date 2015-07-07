@@ -113,7 +113,6 @@ class AdminUsersHandler(AdminBaseHandler):
 
             # email
             if user.email != email and email:
-                print email
                 email = str(email.encode('utf-8')).lower()
                 # first validate email
                 email_error = email_verification(email)
@@ -133,7 +132,6 @@ class AdminUsersHandler(AdminBaseHandler):
 
             # phone
             if user.phone != phone and phone:
-                print phone
                 phone = str(phone)
                 phone = phone.replace('+', '')
                 # first verify number

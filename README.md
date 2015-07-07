@@ -429,6 +429,31 @@ Response:
         ],
         
     }
+      
+**Search in items**
+
+    Url: 'items?q=SEARCHING_QUERY'
+    Method: 'GET'
+    
+Response:
+    
+    {   
+        "status": 0,
+        "paginator": {
+            ...
+        },
+        "items": [
+            {
+                ...
+            },
+                .
+                .
+                .
+            {
+                ...
+            }
+        ]
+    }
     
 ---
 

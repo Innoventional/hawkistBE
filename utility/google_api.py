@@ -11,7 +11,8 @@ def get_city_by_code(post_code):
     error = ''
     city = ''
     opener = urllib2.build_opener()
-    url = 'http://maps.googleapis.com/maps/api/geocode/json?address={0}&sensor=false'.format(post_code.replace(' ', '%20'))
+    url = 'http://maps.googleapis.com/maps/api/geocode/json?address={0}&sensor=false'.format(post_code.replace(' ',
+                                                                                                               '%20'))
     response = opener.open(url).read()
     response_dict = json.loads(response)
     request_status = response_dict['status']
@@ -98,5 +99,6 @@ def get_city_by_key(address_components, key):
     return result
 
 if __name__ == '__main__':
-    print get_city_by_code('NR100')
+    print get_city_by_code('61606')
+    # print get_city_by_code('0NR100')
     # print get_city_by_code('BFPO')

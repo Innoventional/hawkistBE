@@ -59,7 +59,7 @@ class ItemsHandler(ApiHandler):
                 # first we must get all items
                 all_items = self.session.query(Item)
 
-                # get all tags names to search.
+                # next get all tags names to search.
                 # note! we can search only by platform name, category name and subcategory name
                 tag_names_to_search = set()
                 for i in items:
@@ -69,24 +69,38 @@ class ItemsHandler(ApiHandler):
 
                 # this is set with suitable tag names
                 right_tag_names = set()
-                for key in tag_names_to_search:
-                    if q in key:
-                        right_tag_names.add(key)
+                right_title_or_description_item_ids = set()
 
-                # get right tags ids
+                # we search by every word in phrase
+                # so separate query string by whitespace symbol
+                q_list = q.split(' ')
+
+                # go through every query word and search it in tags and items titles/descriptions
+                for q_word in q_list:
+
+                    # search in every tag key by every query word
+                    for key in tag_names_to_search:
+                        if q_word in key:
+                            right_tag_names.add(key)
+
+                    # filtered items and get items with fit description or title
+                    right_title_or_description = [i.id for i in all_items.filter(or_(Item.title.ilike(u'%{0}%'.format(q_word)),
+                                                                                     Item.description.ilike(u'%{0}%'.format(q_word))))]
+                    if right_title_or_description:
+                        for i in right_title_or_description:
+                            right_title_or_description_item_ids.add(i)
+
+                # next step - get right tags ids
                 right_tag_ids = [t.id for t in self.session.query(Tag).filter(func.lower(Tag.name).in_(right_tag_names))]
 
                 # select items by suitable tag name
                 right_tag_item_ids = [i.id for i in all_items.filter(or_(Item.platform_id.in_(right_tag_ids),
                                                                          Item.category_id.in_(right_tag_ids),
                                                                          Item.subcategory_id.in_(right_tag_ids)))]
-                print right_tag_item_ids
 
-                # filtered items and get items with fit description or title
-                right_title_or_description_item_ids = [i.id for i in all_items.filter(or_(Item.title.ilike(u'%{0}%'.format(q)),
-                                                                                          Item.description.ilike(u'%{0}%'.format(q))))]
                 # finally get all items which match search terms
-                items = all_items.filter(Item.id.in_(list(set(right_tag_item_ids + right_title_or_description_item_ids)))).order_by(desc(Item.id))
+                items = all_items.filter(Item.id.in_(list(set(right_tag_item_ids +
+                                                              list(right_title_or_description_item_ids))))).order_by(desc(Item.id))
 
 
                 # TODO optimize using this

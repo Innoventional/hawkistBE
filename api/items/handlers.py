@@ -4,7 +4,7 @@ import logging
 import datetime
 import random
 from sqlalchemy import or_, desc, and_, func
-from api.items.models import Item, ItemPhoto
+from api.items.models import Item, ItemPhoto, Listing, ListingPhoto
 from api.tags.models import Tag, Platform, Category, Subcategory, Color, Condition
 from base import ApiHandler, die, paginate
 from helpers import route, sa_object_to_dict
@@ -396,30 +396,30 @@ class ListingHandler(ApiHandler):
         if not self.user:
             die(401)
 
-        item_id = self.get_arg('item_id', int)
+        listing_id = self.get_arg('item_id', int)
         q = self.get_arg('q', str)
         response = dict()
 
         # get item by id
-        if item_id:
+        if listing_id:
             # first get this item
-            item = self.session.query(Item).filter(Item.id == item_id).first()
-            if not item:
-                return self.make_error('No item with id %s' % item_id)
+            listing = self.session.query(Listing).filter(Listing.id == listing_id).first()
+            if not listing:
+                return self.make_error('No item with id %s' % listing)
 
             # find 6 items with similar category | platform | subcategory
-            similar_items = self.session.query(Item).filter(and_(or_(Item.platform_id == item.platform_id,
-                                                                     Item.category_id == item.category_id,
-                                                                     Item.subcategory_id == item.subcategory_id),
-                                                                 Item.id != item.id)).limit(6)
+            similar_listings = self.session.query(Listing).filter(and_(or_(Listing.platform_id == listing.platform_id,
+                                                                           Listing.category_id == listing.category_id,
+                                                                           Listing.subcategory_id == listing.subcategory_id),
+                                                                       Listing.id != listing.id)).limit(6)
             # find 6 items of this user
-            user_items = self.session.query(Item).filter(and_(Item.user_id == item.user_id,
-                                                              Item.id != item.id)).limit(6)
-            current_item_response = item.item_response
-            current_item_response['user'] = item.user.user_response
-            response['item'] = current_item_response
-            response['similar_items'] = [i.item_response for i in similar_items]
-            response['user_items'] = [i.item_response for i in user_items]
+            user_listings = self.session.query(Listing).filter(and_(Listing.user_id == listing.user_id,
+                                                                    Listing.id != listing.id)).limit(6)
+            current_listing_response = listing.response
+            current_listing_response['user'] = listing.user.user_response
+            response['item'] = current_listing_response
+            response['similar_items'] = [l.response for l in similar_listings]
+            response['user_items'] = [l.response for l in user_listings]
         # else return all items
         else:
             # TODO uncomment to return items by user interests
@@ -428,25 +428,27 @@ class ListingHandler(ApiHandler):
             # items = self.session.query(Item).filter(Item.id.in_(list(item_ids))).order_by(desc(Item.id))
 
             # TODO 2015-07-08 return all items
-            items = self.session.query(Item).order_by(desc(Item.id))
+            listings = self.session.query(Listing).order_by(desc(Listing.id))
 
             # search
             # if we have searching query we must filtered all items
             if q:
                 # first we must get all items
-                all_items = self.session.query(Item)
+                all_listings = self.session.query(Listing)
 
                 # next get all tags names to search.
                 # note! we can search only by platform name, category name and subcategory name
                 tag_names_to_search = set()
-                for i in items:
-                    tag_names_to_search.add(i.platform.name)
-                    tag_names_to_search.add(i.category.name)
-                    tag_names_to_search.add(i.subcategory.name)
+                for i in all_listings:
+                    tag_names_to_search.add(i.platform.title)
+                    tag_names_to_search.add(i.category.title)
+                    tag_names_to_search.add(i.subcategory.title)
 
                 # this is set with suitable tag names
                 right_tag_names = set()
                 right_title_or_description_item_ids = set()
+
+                print tag_names_to_search
 
                 # we search by every word in phrase
                 # so separate query string by whitespace symbol
@@ -461,23 +463,32 @@ class ListingHandler(ApiHandler):
                             right_tag_names.add(key)
 
                     # filtered items and get items with fit description or title
-                    right_title_or_description = [i.id for i in all_items.filter(or_(Item.title.ilike(u'%{0}%'.format(q_word)),
-                                                                                     Item.description.ilike(u'%{0}%'.format(q_word))))]
+                    right_title_or_description = [i.id for i in all_listings.filter(or_(Listing.title.ilike(u'%{0}%'.format(q_word)),
+                                                                                        Listing.description.ilike(u'%{0}%'.format(q_word))))]
                     if right_title_or_description:
                         for i in right_title_or_description:
                             right_title_or_description_item_ids.add(i)
 
                 # next step - get right tags ids
-                right_tag_ids = [t.id for t in self.session.query(Tag).filter(func.lower(Tag.name).in_(right_tag_names))]
+                # right platforms
+                right_platforms_ids = [p.id for p in self.session.query(Platform).filter(func.lower(Platform.title).in_(right_tag_names))]
+
+                # right categories
+                right_categories_ids = [c.id for c in self.session.query(Category).filter(func.lower(Category.title).in_(right_tag_names))]
+
+                # right subcategories
+                right_subcategories_ids = [s.id for s in self.session.query(Subcategory).filter(func.lower(Subcategory.title).in_(right_tag_names))]
+
+                right_tag_ids = right_platforms_ids + right_categories_ids + right_subcategories_ids
 
                 # select items by suitable tag name
-                right_tag_item_ids = [i.id for i in all_items.filter(or_(Item.platform_id.in_(right_tag_ids),
-                                                                         Item.category_id.in_(right_tag_ids),
-                                                                         Item.subcategory_id.in_(right_tag_ids)))]
+                right_tag_item_ids = [i.id for i in all_listings.filter(or_(Item.platform_id.in_(right_tag_ids),
+                                                                            Item.category_id.in_(right_tag_ids),
+                                                                            Item.subcategory_id.in_(right_tag_ids)))]
 
                 # finally get all items which match search terms
-                items = all_items.filter(Item.id.in_(list(set(right_tag_item_ids +
-                                                              list(right_title_or_description_item_ids))))).order_by(desc(Item.id))
+                listings = all_listings.filter(Listing.id.in_(list(set(right_tag_item_ids +
+                                                                       list(right_title_or_description_item_ids))))).order_by(desc(Listing.id))
 
 
                 # TODO optimize using this
@@ -490,11 +501,11 @@ class ListingHandler(ApiHandler):
             # pagination
             page = self.get_arg('p', int, 1)
             page_size = self.get_arg('page_size', int, 100)
-            paginator, items = paginate(items, page, page_size)
+            paginator, items = paginate(listings, page, page_size)
             if paginator['pages'] < page:
-                items = []
+                listings = []
             response['paginator'] = paginator
-            response['items'] = [i.item_response for i in items]
+            response['items'] = [l.response for l in listings]
 
         return self.success(response)
 
@@ -504,10 +515,10 @@ class ListingHandler(ApiHandler):
             die(401)
 
         # check selling ability
-        if not self.user.facebook_id:
-            return self.make_error("Sorry, but you can't sale anything 'cause you don't link your FB account")
-        if not self.user.email_status:
-            return self.make_error("Sorry, but you can't sale anything 'cause you don't confirm your email address")
+        # if not self.user.facebook_id:
+        #     return self.make_error("Sorry, but you can't sale anything 'cause you don't link your FB account")
+        # if not self.user.email_status:
+        #     return self.make_error("Sorry, but you can't sale anything 'cause you don't confirm your email address")
 
         logger.debug('REQUEST_OBJECT_NEW_ITEM')
         logger.debug(self.request_object)
@@ -595,7 +606,7 @@ class ListingHandler(ApiHandler):
             empty_field_error.append('condition')
 
         if not color_id:
-            empty_field_error.append('color')
+            empty_field_error.append('colour')
 
         if not retail_price:
             empty_field_error.append('retail price')
@@ -658,22 +669,34 @@ class ListingHandler(ApiHandler):
             return self.make_error('No condition with id %s' % condition_id)
 
         # check is this nesting right
-        platform_categories = [c.id for c in platform.platform_category]
+        platform_categories = [c.id for c in platform.category_platform]
         if category_id not in platform_categories:
-            return self.make_error("Platform tag %s hasn't category %s. Try again" % (platform.title.upper(),
-                                                                                      category.title.upper()))
-        category_subcategories = [c.id for c in category.category_subcategories]
-        if subcategory_id not in category_subcategories:
-            return self.make_error("Category tag %s (%s) hasn't subcategory %s. Try again" % (category.title.upper(),
-                                                                                              category.platform.title(),
-                                                                                              subcategory.title.upper()))
+            return self.make_error("Platform tag %s hasn't category %s (%s). Try again"
+                                   % (platform.title.upper(), category.title.upper(), category.platform.title.upper()))
 
-        subcategory_color = [c.id for c in subcategory.subcategory_colour]
+        category_subcategories = [c.id for c in category.subcategory_category]
+        if subcategory_id not in category_subcategories:
+            return self.make_error("Category tag %s (%s) hasn't subcategory %s (%s -> %s). Try again"
+                                   % (category.title.upper(), category.platform.title.upper(),
+                                      subcategory.title.upper(), subcategory.category.platform.title.upper(),
+                                      subcategory.category.title.upper()))
+
+        subcategory_color = [c.id for c in subcategory.color_subcategory]
         if color_id not in subcategory_color:
-            return self.make_error("Subcategory tag %s (%s -> %s) hasn't color %s. Try again"
-                                   % (subcategory.title.upper(), subcategory.category.title.upper(),
-                                                                                              category.platform.title(),
-                                                                                              subcategory.title.upper()))
+            return self.make_error("Subcategory tag %s (%s -> %s) hasn't color %s (%s -> %s -> %s). Try again"
+                                   % (subcategory.title.upper(), subcategory.category.platform.title.upper(),
+                                      subcategory.category.title.upper(), colour.title.upper(),
+                                      colour.subcategory.category.platform.title.upper(),
+                                      colour.subcategory.category.title.upper(),
+                                      colour.subcategory.title.upper()))
+
+        subcategory_condition = [c.id for c in subcategory.condition_subcategory]
+        if condition_id not in subcategory_condition:
+            return self.make_error("Subcategory tag %s (%s -> %s) hasn't condition %s (%s -> %s -> %s). Try again"
+                                   % (subcategory.title.upper(), subcategory.category.platform.title.upper(),
+                                      subcategory.category.title.upper(), condition.title.upper(),
+                                      condition.subcategory.category.platform.title.upper(),
+                                      condition.subcategory.category.title.upper(), condition.subcategory.title.upper()))
 
         # secondary check other fields
         # price handler
@@ -686,50 +709,50 @@ class ListingHandler(ApiHandler):
         if len(photos) > 3:
             return self.make_error('You can add only 3 photos')
 
-        # finally create item
-        item = Item()
-        item.user = self.user
-        item.created_at = datetime.datetime.utcnow()
-        item.updated_at = datetime.datetime.utcnow()
-        item.title = title
-        item.description = description
+        # finally create listing
+        listing = Listing()
+        listing.user = self.user
+        listing.created_at = datetime.datetime.utcnow()
+        listing.updated_at = datetime.datetime.utcnow()
+        listing.title = title
+        listing.description = description
 
         if barcode:
-            item.barcode = barcode
+            listing.barcode = barcode
 
-        item.platform_id = platform_id
-        item.category_id = category_id
-        item.subcategory_id = subcategory_id
-        item.condition_id = condition_id
-        item.color_id = color_id
-        item.retail_price = retail_price
-        item.selling_price = selling_price
+        listing.platform_id = platform_id
+        listing.category_id = category_id
+        listing.subcategory_id = subcategory_id
+        listing.condition_id = condition_id
+        listing.color_id = color_id
+        listing.retail_price = retail_price
+        listing.selling_price = selling_price
 
         if selling_price != retail_price:
             # calculate discount value
             discount = int(round((retail_price - selling_price) / retail_price * 100))
-            item.discount = discount
+            listing.discount = discount
 
-        item.shipping_price = shipping_price
+        listing.shipping_price = shipping_price
         if collection_only:
-            item.collection_only = True
+            listing.collection_only = True
         else:
-            item.collection_only = False
+            listing.collection_only = False
 
-        item.post_code = post_code
-        item.city = city
+        listing.post_code = post_code
+        listing.city = city
 
         # self.session.flush(item)
         # self.session.commit()
 
         # photos
         for photo in photos:
-            item_photo = ItemPhoto()
-            item_photo.created_at = datetime.datetime.utcnow()
-            item_photo.item = item
-            item_photo.image_url = photo
-            self.session.add(item_photo)
+            listing_photo = ListingPhoto()
+            listing_photo.created_at = datetime.datetime.utcnow()
+            listing_photo.listing = listing
+            listing_photo.image_url = photo
+            self.session.add(listing_photo)
             self.session.commit()
 
         self.session.commit()
-        return self.success({'item': item.item_response})
+        return self.success({'item': listing.response})

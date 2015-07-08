@@ -55,6 +55,7 @@ class Platform(Base):
         return {
             'id': self.id,
             'name': self.title,
+            'parent_id': None
         }
 
 
@@ -77,6 +78,7 @@ class Category(Base):
         return {
             'id': self.id,
             'name': self.title,
+            'parent_id': self.platform_id
         }
 
 
@@ -99,6 +101,7 @@ class Subcategory(Base):
         return {
             'id': self.id,
             'name': self.title,
+            'parent_id': self.category_id
         }
 
 
@@ -122,7 +125,8 @@ class Color(Base):
         return {
             'id': self.id,
             'name': self.title,
-            'rgb_code': self.code
+            'rgb_code': self.code,
+            'parent_id': self.subcategory_id
         }
 
 
@@ -145,4 +149,5 @@ class Condition(Base):
         return {
             'id': self.id,
             'name': self.title,
+            'parent_id': self.subcategory_id
         }

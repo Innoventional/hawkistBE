@@ -5,8 +5,9 @@
         <link rel="stylesheet" href="{{ static_url('css/bootstrap.min.css') }}">
         <link rel="stylesheet" href="{{ static_url('css/style.css') }}">
         <link rel="stylesheet" href="{{ static_url('css/bootstrap-select.css') }}">
+        <link rel="stylesheet" href="{{ static_url('css/bootstrap-glyphicons.css') }}">
         <link rel="stylesheet" href="{{ static_url('css/hawkist_admin_tool.css') }}">
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css">
+        <!--<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css">-->
         <link rel="shortcut icon" href="{{ static_url('images/favicon.png') }}">
     </head>
     <body>
@@ -25,6 +26,7 @@
                 <ul class="nav navbar-nav {% try %} {% if undefined_user %} display-none {% end %} {% except %} {% end %}">
                     <li {% if menu_tab_active == 'tab_users' %} class="active"{% end %}><a href="/api/admin/users">Users</a></li>
                     <li {% if menu_tab_active == 'tab_tags' %} class="active"{% end %}><a href="/api/admin/tags">Tags</a></li>
+                    <li {% if menu_tab_active == 'tab_metatags' %} class="active"{% end %}><a href="/api/admin/metatags">Metatags</a></li>
                 </ul>
                 <!--{% block logout %}{% end %}-->
                 <ul class="nav navbar-nav navbar-right {% try %} {% if undefined_user %} display-none {% end %} {% except %} {% end %}">
@@ -57,6 +59,7 @@
         <script src="{{ static_url('js/stripe.js') }}"></script>
         <script src="{{ static_url('js/bootstrap-select.js') }}"></script>
         <script src="{{ static_url('js/hawkist_admin_tool.js') }}"></script>
+        <script src="{{ static_url('js/jscolor.js') }}"></script>
         <link rel="stylesheet" href="{{ static_url('css/online-thumbnail.css') }}">
         <script src="{{ static_url('js/online-thumbnail.js') }}"></script>
         {% block js %}{% end %}

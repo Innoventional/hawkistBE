@@ -49,9 +49,13 @@ class ItemsHandler(ApiHandler):
             response['user_items'] = [i.item_response for i in user_items]
         # else return all items
         else:
-            user_tags_set = interested_user_tag_ids(self)
-            item_ids = interested_user_item_ids(self, user_tags_set)
-            items = self.session.query(Item).filter(Item.id.in_(list(item_ids))).order_by(desc(Item.id))
+            # TODO uncomment
+            # user_tags_set = interested_user_tag_ids(self)
+            # item_ids = interested_user_item_ids(self, user_tags_set)
+            # items = self.session.query(Item).filter(Item.id.in_(list(item_ids))).order_by(desc(Item.id))
+            
+            # TODO 2015-07-08 return all items
+            items = self.session.query(Item).order_by(desc(Item.id))
 
             # search
             # if we have searching query we must filtered all items
@@ -114,6 +118,8 @@ class ItemsHandler(ApiHandler):
             page = self.get_arg('p', int, 1)
             page_size = self.get_arg('page_size', int, 100)
             paginator, items = paginate(items, page, page_size)
+            if paginator['pages'] < page:
+                items = []
             response['paginator'] = paginator
             response['items'] = [i.item_response for i in items]
 

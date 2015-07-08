@@ -1,0 +1,84 @@
+{% extends '../base.html' %}
+
+{% block title %}Metatags{% end %}
+
+{% block content %}
+    <!--<a href="../metatags">Metatags</a>-->
+    <a href="../metatags/platforms">Platforms</a>
+    <a href="../metatags/categories">Categories</a>
+    <a href="#">Subcategories</a>
+    <a href="../metatags/colours">Colours</a>
+    <a href="../metatags/conditions">Conditions</a>
+    <h4>Create your subcategories using existing categories (PS1, Adventure, etc)</h4>
+    <button class="btn btn-primary" data-toggle="modal" data-target="#add_new_subcategory_modal" href="#">
+        Add new subcategory
+    </button>
+    <div class="row-offcanvas">
+        <table class="table table-hover">
+            <thead>
+                <th>ID</th>
+                <th>Subcategory Title</th>
+                <th>Parent (Platform -> Category)</th>
+                <th>Action</th>
+            </thead>
+            <tbody>
+                {% for s in subcategories %}
+                    <tr data-id="{{ s.id }}"
+                        data-title="{{ s.title }}">
+                        <td>{{ s.id }}</td>
+                        <td>{{ s.title.capitalize() }}</td>
+                        <td>{{ s.category.platform.title.capitalize() }} -> {{ s.category.title.capitalize() }}</td>
+                        <td>
+                            <a class="btn btn_edit_tag silver-color" href="#" data-toggle="modal" data-target="#edit_tag_modal"
+                               title="Edit tag">
+                                <i class="glyphicon glyphicon-pencil"></i>
+                            </a>
+                            <a class="btn btn_delete_tag red-color" href="#" title="Delete tag">
+                                <i class="glyphicon glyphicon-trash"></i>
+                            </a>
+                        </td>
+                     </tr>
+                {% end %}
+            </tbody>
+        </table>
+    </div>
+
+<!-- Add new tag modal -->
+    <div class="modal fade property" id="add_new_subcategory_modal" tabindex="-1" role="dialog" aria-labelledby="add_new_tag_modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close btn_reload" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="add_new_tag_modalLabel"> Add tag </h4>
+                </div>
+                <div class="modal-body">
+                    <span class="label label-default">Select Category</span>
+                    <form action="">
+                        <div class="row-fluid">
+                            <select  name="type" id="subcategory_category_select">
+                                <option value="0">---</option>
+                                {% for c in categories %}
+                                    <option value="{{ c.id }}">{{ c.title.capitalize() }} ({{ c.platform.title.capitalize() }})
+                                    </option>
+                                {% end %}
+                            </select>
+                        </div>
+                    </form>
+                        <div>&nbsp</div>
+
+                    <div class="category_fields" id="category_agent_fields">
+                        <span class="label label-default">New Subcategory Title</span>
+                        <input type="text" class="form-control" id="new_subcategory_title" placeholder="Input category title" required>
+                        <div>&nbsp</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn_reload" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary btn_add_subcategory">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% end %}

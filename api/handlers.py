@@ -13,6 +13,14 @@ try:
     from admin.handlers.tags import *
     from admin.handlers.users import *
     from admin.handlers.login import *
+    # metatags
+    from admin.handlers.metatags.metatags import *
+    from admin.handlers.metatags.platforms import *
+    from admin.handlers.metatags.categories import *
+    from admin.handlers.metatags.subcategories import *
+    from admin.handlers.metatags.colours import *
+    from admin.handlers.metatags.conditions import *
+    from tags.handlers_metatags import *
 except ImportError:
     logger.debug(ImportError)
 __author__ = 'ne_luboff'

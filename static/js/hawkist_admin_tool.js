@@ -291,3 +291,142 @@ delete_user = function(user_id, completion)
     });
     return false;
 };
+
+// TODO THIS IS TEST
+$('.btn_add_platform').click(function(){
+    new_platform_title = document.getElementById("new_platform_title").value;
+    new_platform_title_without_whitespaces = new_platform_title.split(' ').join('');
+    if (!new_platform_title || !new_platform_title_without_whitespaces) {
+        alert('Empty platform title')
+    } else {
+        $.ajax({
+            url: '/api/admin/metatags/platforms',
+            type: 'POST',
+            data: {
+                'new_platform_title': new_platform_title
+            },
+            success: function(data) {
+                var status = data['status'];
+                var message = data['message'];
+                if (status == 0 ) {
+                    location.reload();
+                } else {
+                    alert(message);
+                }
+            }
+        });
+    }
+});
+
+$('.btn_add_category').click(function(){
+    new_category_title = document.getElementById("new_category_title").value;
+    new_category_title_without_whitespaces = new_category_title.split(' ').join('');
+    platform_id = $(this).parent().parent().find('#category_platform_select').val();
+    if (!new_category_title || !new_category_title_without_whitespaces || platform_id == 0) {
+        alert('Empty category title / platform name')
+    } else {
+        $.ajax({
+            url: '/api/admin/metatags/categories',
+            type: 'POST',
+            data: {
+                'new_category_title': new_category_title,
+                'platform_id': platform_id
+            },
+            success: function(data) {
+                var status = data['status'];
+                var message = data['message'];
+                if (status == 0 ) {
+                    location.reload();
+                } else {
+                    alert(message);
+                }
+            }
+        });
+    }
+});
+
+$('.btn_add_subcategory').click(function(){
+    new_subcategory_title = document.getElementById("new_subcategory_title").value;
+    new_subcategory_title_without_whitespaces = new_subcategory_title.split(' ').join('');
+    category_id = $(this).parent().parent().find('#subcategory_category_select').val();
+    if (!new_subcategory_title || !new_subcategory_title_without_whitespaces || category_id == 0) {
+        alert('Empty subcategory title / category name')
+    } else {
+        $.ajax({
+            url: '/api/admin/metatags/subcategories',
+            type: 'POST',
+            data: {
+                'new_subcategory_title': new_subcategory_title,
+                'category_id': category_id
+            },
+            success: function(data) {
+                var status = data['status'];
+                var message = data['message'];
+                if (status == 0 ) {
+                    location.reload();
+                } else {
+                    alert(message);
+                }
+            }
+        });
+    }
+});
+
+
+$('.btn_add_colour').click(function(){
+    new_colour_title = document.getElementById("new_colour_title").value;
+    new_colour_title_without_whitespaces = new_colour_title.split(' ').join('');
+    subcategory_id = $(this).parent().parent().find('#colour_subcategory_select').val();
+    new_colour_code = document.getElementById("color_pickier").value;
+    disable_colour = document.getElementById('color_pickier_checkbox').checked;
+    if (!new_colour_title || !new_colour_title_without_whitespaces || subcategory_id == 0) {
+        alert('Empty subcategory title / category name')
+    } else {
+        $.ajax({
+            url: '/api/admin/metatags/colours',
+            type: 'POST',
+            data: {
+                'new_colour_title': new_colour_title,
+                'subcategory_id': subcategory_id,
+                'new_colour_code': new_colour_code,
+                'disable_colour': disable_colour
+            },
+            success: function(data) {
+                var status = data['status'];
+                var message = data['message'];
+                if (status == 0 ) {
+                    location.reload();
+                } else {
+                    alert(message);
+                }
+            }
+        });
+    }
+});
+
+$('.btn_add_condition').click(function(){
+    new_condition_title = document.getElementById("new_condition_title").value;
+    new_condition_title_without_whitespaces = new_condition_title.split(' ').join('');
+    subcategory_id = $(this).parent().parent().find('#condition_subcategory_select').val();
+    if (!new_condition_title || !new_condition_title_without_whitespaces || subcategory_id == 0) {
+        alert('Empty subcategory title / category name')
+    } else {
+        $.ajax({
+            url: '/api/admin/metatags/conditions',
+            type: 'POST',
+            data: {
+                'new_condition_title': new_condition_title,
+                'subcategory_id': subcategory_id
+            },
+            success: function(data) {
+                var status = data['status'];
+                var message = data['message'];
+                if (status == 0 ) {
+                    location.reload();
+                } else {
+                    alert(message);
+                }
+            }
+        });
+    }
+});

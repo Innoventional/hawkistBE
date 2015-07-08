@@ -1,0 +1,101 @@
+{% extends '../base.html' %}
+
+{% block title %}Metatags{% end %}
+
+{% block js %}
+<script>
+    document.getElementById('color_pickier_checkbox').onchange = function() {
+        document.getElementById('color_pickier').disabled = this.checked;
+    };
+</script>
+{% end %}
+
+{% block content %}
+    <!--<a href="../metatags">Metatags</a>-->
+    <a href="../metatags/platforms">Platforms</a>
+    <a href="../metatags/categories">Categories</a>
+    <a href="../metatags/subcategories">Subcategories</a>
+    <a href="#">Colours</a>
+    <a href="../metatags/conditions">Conditions</a>
+    <h4>Create your colours (black, yellow, green)</h4>
+    <button class="btn btn-primary" data-toggle="modal" data-target="#add_new_colour_modal" href="#">
+        Add new colour
+    </button>
+    <div class="row-offcanvas">
+        <table class="table table-hover">
+            <thead>
+                <th>ID</th>
+                <th>Colour Name</th>
+                <th>Colour preview</th>
+                <th>Parent (Platform -> Category -> Subcategory)</th>
+                <th>Action</th>
+            </thead>
+            <tbody>
+                {% for c in colours %}
+                    <tr data-id="{{ c.id }}"
+                        data-title="{{ c.title }}">
+                        <td>{{ c.id }}</td>
+                        <td>{{ c.title.capitalize() }}</td>
+                        <td>
+                            {% if c.code == "disabled_color" %}
+                                Disabled
+                            {% else %}
+                                <input class="color" value="{{ c.code }}" disabled>
+                            {% end %}
+                        </td>
+                        <td>{{ c.subcategory.category.platform.title.capitalize() }} -> {{ c.subcategory.category.title.capitalize() }} -> {{ c.subcategory.title.capitalize() }}</td>
+                        <td>
+                            <a class="btn btn_edit_tag silver-color" href="#" data-toggle="modal" data-target="#edit_tag_modal"
+                               title="Edit tag">
+                                <i class="glyphicon glyphicon-pencil"></i>
+                            </a>
+                            <a class="btn btn_delete_tag red-color" href="#" title="Delete tag">
+                                <i class="glyphicon glyphicon-trash"></i>
+                            </a>
+                        </td>
+                     </tr>
+                {% end %}
+            </tbody>
+        </table>
+    </div>
+
+<!-- Add new tag modal -->
+    <div class="modal fade property" id="add_new_colour_modal" tabindex="-1" role="dialog" aria-labelledby="add_new_tag_modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close btn_reload" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="add_new_tag_modalLabel"> Add colour </h4>
+                </div>
+                <div class="modal-body">
+                    <span class="label label-default">Select Subcategory</span>
+                    <form action="">
+                        <div class="row-fluid">
+                            <select  name="type" id="colour_subcategory_select">
+                                <option value="0">---</option>
+                                {% for s in subcategories %}
+                                    <option value="{{ s.id }}">{{ s.title.capitalize() }} ({{ s.category.platform.title.capitalize() }} ->
+                                        {{ s.category.title.capitalize() }})
+                                    </option>
+                                {% end %}
+                            </select>
+                        </div>
+                    </form>
+                        <div>&nbsp</div>
+
+                    <span class="label label-default">New Colour Title</span>
+                    <input type="text" class="form-control" id="new_colour_title" placeholder="Input colour title" required>
+                    <div>&nbsp</div>
+
+                    <input type="checkbox" id="color_pickier_checkbox"> Disable colour <input class="color" id="color_pickier">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn_reload" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary btn_add_colour">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% end %}

@@ -119,11 +119,6 @@ class AdminUsersHandler(AdminBaseHandler):
                 if email_error:
                     return self.make_error(email_error)
 
-                already_used = self.session.query(User).filter(and_(User.id != user.id,
-                                                                    User.email == email)).first()
-                if already_used:
-                    return self.make_error("Sorry, email address '%s' already used by another user" % email)
-
                 user.email = email
 
                 user.email_status = False

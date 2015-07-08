@@ -1,0 +1,121 @@
+{% extends '../base.html' %}
+
+{% block title %}Metatags{% end %}
+
+{% block content %}
+    <!--<a href="../metatags">Metatags</a>-->
+    <a href="../metatags/platforms">Platforms</a>
+    <a href="#">Categories</a>
+    <a href="../metatags/subcategories">Subcategories</a>
+    <a href="../metatags/colours">Colours</a>
+    <a href="../metatags/conditions">Conditions</a>
+    <h4>Create your categories using existing platforms (Games, Consoles, etc)</h4>
+    <button class="btn btn-primary" data-toggle="modal" data-target="#add_new_category_modal" href="#">
+        Add new category
+    </button>
+    <div class="row-offcanvas">
+        <table class="table table-hover">
+            <thead>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Platform Title</th>
+                <th>Action</th>
+            </thead>
+            <tbody>
+                {% for c in categories %}
+                    <tr data-id="{{ c.id }}"
+                        data-title="{{ c.title }}">
+                        <td>{{ c.id }}</td>
+                        <td>{{ c.title.capitalize() }}</td>
+                        <td>{{ c.platform.title.capitalize() }}</td>
+                        <td>
+                            <a class="btn btn_edit_tag silver-color" href="#" data-toggle="modal" data-target="#edit_tag_modal"
+                               title="Edit tag">
+                                <i class="glyphicon glyphicon-pencil"></i>
+                            </a>
+                            <a class="btn btn_delete_tag red-color" href="#" title="Delete tag">
+                                <i class="glyphicon glyphicon-trash"></i>
+                            </a>
+                        </td>
+                     </tr>
+                {% end %}
+            </tbody>
+        </table>
+    </div>
+
+<!-- Add new tag modal -->
+    <div class="modal fade property" id="add_new_category_modal" tabindex="-1" role="dialog" aria-labelledby="add_new_tag_modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close btn_reload" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="add_new_tag_modalLabel"> Add tag </h4>
+                </div>
+                <div class="modal-body">
+                    <span class="label label-default">Select Platform</span>
+                    <form action="">
+                        <div class="row-fluid">
+                            <select  name="type" id="category_platform_select">
+                                <option value="0">---</option>
+                                {% for p in platforms %}
+                                    <option value="{{ p.id }}">{{ p.title.capitalize() }}
+                                    </option>
+                                {% end %}
+                            </select>
+                        </div>
+                    </form>
+                        <div>&nbsp</div>
+
+                    <div class="category_fields" id="category_agent_fields">
+                        <span class="label label-default">New Category Title</span>
+                        <input type="text" class="form-control" id="new_category_title" placeholder="Input category title" required>
+                        <div>&nbsp</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn_reload" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary btn_add_category">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Edit tag modal -->
+    <div class="modal fade property" id="edit_tag_modal" tabindex="-1" role="dialog" aria-labelledby="add_new_tag_modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close btn_reload" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="edit_tag_modalLabel"> Add tag </h4>
+                </div>
+                <div class="modal-body">
+                    <span class="label label-default">Parent tag</span>
+                    <form action="">
+                        <div class="row-fluid edit_tag_parent_tag">
+                            <select  name="type" id="edit_tag_select">
+                                <option value="0">---</option>
+                            </select>
+                        </div>
+                    </form>
+                    <div>&nbsp</div>
+
+                    <div class="category_fields">
+                        <input type="text" class="form-control display-none" id="editing_tag_id" disabled>
+
+                        <span class="label label-default">Tag title</span>
+                        <input type="text" class="form-control" id="editing_tag_name" placeholder="Input tag title" required>
+                        <div>&nbsp</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn_reload" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary btn_save_edited_tag">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% end %}

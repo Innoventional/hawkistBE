@@ -92,11 +92,6 @@ class UserHandler(ApiHandler):
             if email_error:
                 return self.make_error(email_error)
 
-            already_used = self.session.query(User).filter(and_(User.id != self.user.id,
-                                                                User.email == email)).first()
-            if already_used:
-                return self.make_error("Sorry, email address '%s' already used by another user" % email)
-
             self.user.email = email
 
             # send email confirmation

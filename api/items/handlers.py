@@ -44,12 +44,14 @@ class ItemsHandler(ApiHandler):
             # find 6 items of this user
             user_items = self.session.query(Item).filter(and_(Item.user_id == item.user_id,
                                                               Item.id != item.id)).limit(6)
-            response['item'] = [item.item_response]
+            current_item_response = item.item_response
+            current_item_response['user'] = item.user.user_response
+            response['item'] = current_item_response
             response['similar_items'] = [i.item_response for i in similar_items]
             response['user_items'] = [i.item_response for i in user_items]
         # else return all items
         else:
-            # TODO uncomment
+            # TODO uncomment to return items by user interests
             # user_tags_set = interested_user_tag_ids(self)
             # item_ids = interested_user_item_ids(self, user_tags_set)
             # items = self.session.query(Item).filter(Item.id.in_(list(item_ids))).order_by(desc(Item.id))

@@ -9,43 +9,6 @@ from orm import Base
 __author__ = 'ne_luboff'
 
 
-class ItemCondition(Enum):
-    BrandNewInBox = 0
-    LikeNew = 1
-    Used = 2
-    Refurbished = 3
-    NotWorkingOrPartsOnly = 4
-
-
-class ItemColor(Enum):
-    Black = 0
-    White = 1
-    Red = 2
-    Blue = 3
-    Green = 4
-    Orange = 5
-    Yellow = 6
-    Purple = 7
-    Other = 8
-    NotApplicable = 9
-
-
-class ItemPlatform(Enum):
-    PC = 0
-    MAC = 1
-    Playstation = 2
-    XBOX = 3
-    Nintendo = 4
-    Sega = 5
-
-
-class ItemCategory(Enum):
-    Consoles = 0
-    Games = 1
-    Handhelp = 2
-    Accessories = 3
-
-
 class Item(Base):
     __tablename__ = 'items'
 

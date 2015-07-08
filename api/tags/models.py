@@ -122,6 +122,7 @@ class Color(Base):
         return {
             'id': self.id,
             'name': self.title,
+            'rgb_code': self.code
         }
 
 

@@ -20,13 +20,9 @@ try:
     from admin.handlers.metatags.subcategories import *
     from admin.handlers.metatags.colours import *
     from admin.handlers.metatags.conditions import *
-    from tags.handlers_metatags import *
 except ImportError:
     logger.debug(ImportError)
 __author__ = 'ne_luboff'
-
-
-
 
 @route('test')
 class Test(OpenApiHandler):

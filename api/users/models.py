@@ -78,6 +78,34 @@ class User(Base):
             for tag in self.user_tags
         ]
 
+    def get_user_metatags(self):
+        response = []
+        user_metatags = self.user_metatags
+        for m in user_metatags:
+            # we must define type
+            if m.platform:
+                response.append({
+                    'id': m.id,
+                    'type': 'platform',
+                    'metatag_id': m.platform.id,
+                    'metatag_title': m.platform.title
+                })
+            if m.category:
+                response.append({
+                    'id': m.id,
+                    'type': 'category',
+                    'metatag_id': m.category.id,
+                    'metatag_title': m.category.title
+                })
+            if m.subcategory:
+                response.append({
+                    'id': m.id,
+                    'type': 'subcategory',
+                    'metatag_id': m.subcategory.id,
+                    'metatag_title': m.subcategory.title
+                })
+        return response
+
     @property
     def user_response(self):
         return {
@@ -92,6 +120,7 @@ class User(Base):
             'email_status': self.email_status,
             'first_login': self.first_login,
             'tags': self.get_user_tags(),
+            'metatags': self.get_user_metatags(),
             'user_type': self.user_type,
             'system_status': self.system_status,
         }
@@ -109,12 +138,18 @@ class UserTags(Base):
                        foreign_keys=tag_id)
 
 
+class UserMetaTagType(Enum):
+    Platform = 0
+    Category = 1
+    Subcategory = 1
+
+
 class UserMetaTag(Base):
     __tablename__ = 'users_metatags'
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False, index=True)
-    user = relationship(User, backref=backref('user_metatags', order_by=id, cascade="all,delete", lazy='dynamic'),
+    user = relationship('User', backref=backref('user_metatags', order_by=id, cascade="all,delete", lazy='dynamic'),
                         foreign_keys=user_id)
 
     # selected metatags for user feeds can be 3 types: platform, category and subcategory

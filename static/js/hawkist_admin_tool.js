@@ -262,7 +262,6 @@ change_user_info = function(user_id, username, email, phone){
     });
 };
 
-
 $('.btn_delete_user').click(function(){
     if (confirm('Do you really want to delete this user?'))
     {
@@ -293,6 +292,7 @@ delete_user = function(user_id, completion)
 };
 
 // TODO THIS IS TEST
+// TODO platforms
 $('.btn_add_platform').click(function(){
     new_platform_title = document.getElementById("new_platform_title").value;
     new_platform_title_without_whitespaces = new_platform_title.split(' ').join('');
@@ -317,6 +317,68 @@ $('.btn_add_platform').click(function(){
         });
     }
 });
+
+$('.btn_edit_platform').click(function(){
+    platform_id = $(this).parent().parent().data('id');
+    platform_title = $(this).parent().parent().data('title');
+    $('#editing_platform_id').val(platform_id);
+    $('#editing_platform_title').val(platform_title);
+});
+
+$('.btn_save_edited_platform').click(function(){
+    platform_id = document.getElementById("editing_platform_id").value;
+    platform_title = document.getElementById("editing_platform_title").value;
+    $.ajax({
+        url: '/api/admin/metatags/platforms',
+        type: 'PUT',
+        data: {
+            'platform_id': platform_id,
+            'platform_title': platform_title
+        },
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            if (status == 0 )
+            {
+                location.reload();
+            }else
+            {
+                alert(message);
+            }
+        }
+    });
+});
+
+$('.btn_delete_platform').click(function(){
+    if (confirm('Do you really want to delete this platform and all his children?'))
+    {
+        platform_id = $(this).parent().parent().data('id');
+
+        delete_platform(platform_id, function(status, message){
+            if (status != 0)
+            {
+                alert(message);
+            }
+        });
+    }
+});
+
+delete_platform = function(tag_id, completion)
+{
+    $.ajax({
+        url: '/api/admin/metatags/platforms?' + $.param({'platform_id': platform_id}, true),
+        type: 'DELETE',
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            completion(status, message);
+            location.reload();
+        }
+    });
+    return false;
+};
+
+
 
 $('.btn_add_category').click(function(){
     new_category_title = document.getElementById("new_category_title").value;

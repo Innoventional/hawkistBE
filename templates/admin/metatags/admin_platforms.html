@@ -32,7 +32,7 @@
                                title="Edit platform">
                                 <i class="glyphicon glyphicon-pencil"></i>
                             </a>
-                            <a class="btn btn_delete_tag red-color" href="#" title="Delete tag">
+                            <a class="btn btn_delete_platform red-color" href="#" title="Delete platform">
                                 <i class="glyphicon glyphicon-trash"></i>
                             </a>
                         </td>
@@ -65,38 +65,26 @@
         </div>
     </div>
 
-<!-- Edit tag modal -->
-    <div class="modal fade property" id="edit_tag_modal" tabindex="-1" role="dialog" aria-labelledby="add_new_tag_modalLabel" aria-hidden="true">
+<!-- Edit platform modal -->
+    <div class="modal fade property" id="edit_platform_modal" tabindex="-1" role="dialog" aria-labelledby="add_new_tag_modalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close btn_reload" data-dismiss="modal">
                     <span aria-hidden="true">&times;</span>
                     <span class="sr-only">Close</span></button>
-                    <h4 class="modal-title" id="edit_tag_modalLabel"> Add tag </h4>
+                    <h4 class="modal-title" id="edit_tag_modalLabel"> Edit platform </h4>
                 </div>
                 <div class="modal-body">
-                    <span class="label label-default">Parent tag</span>
-                    <form action="">
-                        <div class="row-fluid edit_tag_parent_tag">
-                            <select  name="type" id="edit_tag_select">
-                                <option value="0">---</option>
-                            </select>
-                        </div>
-                    </form>
+                    <input type="text" class="form-control display-none" id="editing_platform_id" disabled>
+
+                    <span class="label label-default">Platform title</span>
+                    <input type="text" class="form-control" id="editing_platform_title">
                     <div>&nbsp</div>
-
-                    <div class="category_fields">
-                        <input type="text" class="form-control display-none" id="editing_tag_id" disabled>
-
-                        <span class="label label-default">Tag title</span>
-                        <input type="text" class="form-control" id="editing_tag_name" placeholder="Input tag title" required>
-                        <div>&nbsp</div>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default btn_reload" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary btn_save_edited_tag">Save</button>
+                    <button type="button" class="btn btn-primary btn_save_edited_platform">Save</button>
                 </div>
             </div>
         </div>

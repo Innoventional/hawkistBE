@@ -28,8 +28,7 @@ def send_sms(to_number, text):
         exception_text = str(e)
         if 'is not a valid phone number' in exception_text:
             logger.debug('https://www.twilio.com/docs/errors/21211')
-            error = 'Only mobile numbers of the format "07" should be recognised as valid input. For example: ' \
-                    '07446263710.'
+            error = "Please input a mobile number starting in '07'. Or else Sign Up with a Facebook account."
         if 'Trial accounts cannot send messages to unverified numbers' in exception_text:
             logger.debug('https://www.twilio.com/docs/errors/21608')
             error = 'Trial accounts cannot send messages to unverified numbers. Ask account owner verify your number ' \

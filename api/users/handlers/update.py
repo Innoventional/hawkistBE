@@ -1,4 +1,5 @@
 import logging
+import datetime
 from sqlalchemy import and_, func, or_
 from api.tags.models import Tag, Platform, Category, Subcategory
 from api.users.models import User, UserTags, UserMetaTag
@@ -69,6 +70,8 @@ class UserHandler(ApiHandler):
         logger.debug('email %s' % email)
         logger.debug('about_me %s' % about_me)
 
+        need_commit = False
+
         # USERNAME handler
         if username:
             username = str(username.encode('utf-8'))
@@ -82,7 +85,10 @@ class UserHandler(ApiHandler):
             if already_used:
                 return self.make_error("Sorry, username '%s' already used by another user" % username)
 
-            self.user.username = username
+            # save username in case if usernames not the same
+            if self.user.username != username:
+                self.user.username = username
+                need_commit = True
 
         # EMAIL handler
         if email:
@@ -92,16 +98,17 @@ class UserHandler(ApiHandler):
             if email_error:
                 return self.make_error(email_error)
 
-            self.user.email = email
-
-            # send email confirmation
-            email_confirmation_sending(self, self.user, email)
+            if self.user.email != email:
+                self.user.email = email
+                # send email confirmation
+                email_confirmation_sending(self, self.user, email)
+                need_commit = True
 
         # about me handler
         if about_me:
-            self.user.info = about_me
-
-        self.session.commit()
+            if self.user.info != about_me:
+                self.user.info = about_me
+                need_commit = True
 
         # avatar handler
         if self.request.files:
@@ -113,9 +120,13 @@ class UserHandler(ApiHandler):
                 thumbnail_url = upload_file('thumbnail-%d' % self.user.id, thumbnail, content_type='image/png')
                 self.user.avatar = image_url
                 self.user.thumbnail = thumbnail_url
-                self.session.commit()
+                need_commit = True
             except Exception, e:
                 logger.debug(e)
+
+        if need_commit:
+            self.user.updated_at = datetime.datetime.utcnow()
+            self.session.commit()
 
         return self.success({'user': self.user.user_response})
 
@@ -343,7 +354,14 @@ class UserMetaTagsHandler(ApiHandler):
             logger.debug('No tags to be deleted from user %s' % self.user)
 
         if metatag_ids:
-            for metatag_id in metatag_ids:
+            # matatag to be added for user consists of metatag type and id
+            for metatag in metatag_ids:
+                metatag_id = metatag['id']
+                metatag_type = metatag['type']
+                if not metatag_id:
+                    return self.make_error('No metatag id')
+                if not metatag_type:
+                    return self.make_error('No metatag type')
                 # tag value to int
                 try:
                     metatag_id = int(metatag_id)

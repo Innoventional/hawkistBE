@@ -3,12 +3,14 @@
 {% block title %}Metatags{% end %}
 
 {% block content %}
-    <!--<a href="../metatags">Metatags</a>-->
-    <a href="../metatags/platforms">Platforms</a>
-    <a href="../metatags/categories">Categories</a>
-    <a href="#">Subcategories</a>
-    <a href="../metatags/colours">Colours</a>
-    <a href="../metatags/conditions">Conditions</a>
+    <div class="tag_navigation_div">
+        <!--<a href="../metatags">Metatags</a>-->
+        <a href="../metatags/platforms">Platforms</a>
+        <a href="../metatags/categories">Categories</a>
+        <a href="#" id="current_link">Subcategories</a>
+        <a href="../metatags/colours">Colours</a>
+        <a href="../metatags/conditions">Conditions</a>
+    </div>
     <h4>Create your subcategories using existing categories (PS1, Adventure, etc)</h4>
     <button class="btn btn-primary" data-toggle="modal" data-target="#add_new_subcategory_modal" href="#">
         Add new subcategory
@@ -18,22 +20,23 @@
             <thead>
                 <th>ID</th>
                 <th>Subcategory Title</th>
-                <th>Parent (Platform -> Category)</th>
+                <th>Parent (Platform > Category)</th>
                 <th>Action</th>
             </thead>
             <tbody>
                 {% for s in subcategories %}
                     <tr data-id="{{ s.id }}"
-                        data-title="{{ s.title }}">
+                        data-title="{{ s.title }}"
+                        data-category_id="{{ s.category.id }}">
                         <td>{{ s.id }}</td>
                         <td>{{ s.title.capitalize() }}</td>
-                        <td>{{ s.category.platform.title.capitalize() }} -> {{ s.category.title.capitalize() }}</td>
+                        <td>{{ s.category.platform.title.capitalize() }} > {{ s.category.title.capitalize() }}</td>
                         <td>
-                            <a class="btn btn_edit_tag silver-color" href="#" data-toggle="modal" data-target="#edit_tag_modal"
-                               title="Edit tag">
+                            <a class="btn btn_edit_subcategory silver-color" href="#" data-toggle="modal"
+                               data-target="#edit_subcategory_modal" title="Edit subcategory">
                                 <i class="glyphicon glyphicon-pencil"></i>
                             </a>
-                            <a class="btn btn_delete_tag red-color" href="#" title="Delete tag">
+                            <a class="btn btn_delete_subcategory red-color" href="#" title="Delete subcategory">
                                 <i class="glyphicon glyphicon-trash"></i>
                             </a>
                         </td>
@@ -43,7 +46,7 @@
         </table>
     </div>
 
-<!-- Add new tag modal -->
+<!-- Add new subcategory modal -->
     <div class="modal fade property" id="add_new_subcategory_modal" tabindex="-1" role="dialog" aria-labelledby="add_new_tag_modalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -51,7 +54,7 @@
                     <button type="button" class="close btn_reload" data-dismiss="modal">
                     <span aria-hidden="true">&times;</span>
                     <span class="sr-only">Close</span></button>
-                    <h4 class="modal-title" id="add_new_tag_modalLabel"> Add tag </h4>
+                    <h4 class="modal-title" id="add_new_tag_modalLabel"> Add subcategory </h4>
                 </div>
                 <div class="modal-body">
                     <span class="label label-default">Select Category</span>
@@ -77,6 +80,46 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default btn_reload" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary btn_add_subcategory">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Edit subcategory modal -->
+    <div class="modal fade property" id="edit_subcategory_modal" tabindex="-1" role="dialog" aria-labelledby="add_new_tag_modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close btn_reload" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="edit_tag_modalLabel"> Edit subcategory </h4>
+                </div>
+                <div class="modal-body">
+                    <span class="label label-default">Category</span>
+                    <form action="">
+                        <div class="row-fluid edit_tag_parent_tag">
+                            <select  name="type" id="edit_subcategory_select">
+                                {% for c in categories %}
+                                    <option value="{{ c.id }}">{{ c.title.capitalize() }} ({{ c.platform.title.capitalize() }})
+                                    </option>
+                                {% end %}
+                            </select>
+                        </div>
+                    </form>
+                    <div>&nbsp</div>
+
+                    <div class="category_fields">
+                        <input type="text" class="form-control display-none" id="editing_subcategory_id" disabled>
+
+                        <span class="label label-default">Subcategory title</span>
+                        <input type="text" class="form-control" id="editing_subcategory_title">
+                        <div>&nbsp</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn_reload" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary btn_save_edited_subcategory">Save</button>
                 </div>
             </div>
         </div>

@@ -292,6 +292,15 @@ delete_user = function(user_id, completion)
 };
 
 // TODO THIS IS TEST
+function firstToUpperCase( str ) {
+    return str.substr(0, 1).toUpperCase() + str.substr(1);
+}
+
+//current_page_url = document.URL;
+//if (current_page_url.indexOf('platforms') > -1) {
+//    document.getElementById("current_link").className = "underline";
+//}
+
 // TODO platforms
 $('.btn_add_platform').click(function(){
     new_platform_title = document.getElementById("new_platform_title").value;
@@ -320,7 +329,7 @@ $('.btn_add_platform').click(function(){
 
 $('.btn_edit_platform').click(function(){
     platform_id = $(this).parent().parent().data('id');
-    platform_title = $(this).parent().parent().data('title');
+    platform_title = firstToUpperCase($(this).parent().parent().data('title'));
     $('#editing_platform_id').val(platform_id);
     $('#editing_platform_title').val(platform_title);
 });
@@ -363,7 +372,7 @@ $('.btn_delete_platform').click(function(){
     }
 });
 
-delete_platform = function(tag_id, completion)
+delete_platform = function(platform_id, completion)
 {
     $.ajax({
         url: '/api/admin/metatags/platforms?' + $.param({'platform_id': platform_id}, true),
@@ -378,7 +387,7 @@ delete_platform = function(tag_id, completion)
     return false;
 };
 
-
+// TODO category
 
 $('.btn_add_category').click(function(){
     new_category_title = document.getElementById("new_category_title").value;
@@ -407,6 +416,71 @@ $('.btn_add_category').click(function(){
     }
 });
 
+$('.btn_edit_category').click(function(){
+    category_id = $(this).parent().parent().data('id');
+    category_title = firstToUpperCase($(this).parent().parent().data('title'));
+    platform_id = $(this).parent().parent().data('platform_id');
+    $('#editing_category_id').val(category_id);
+    $('#editing_category_title').val(category_title);
+    document.getElementById('edit_category_select').value=platform_id;
+});
+
+$('.btn_save_edited_category').click(function(){
+    category_id = document.getElementById("editing_category_id").value;
+    category_title = document.getElementById("editing_category_title").value;
+    platform_id = $(this).parent().parent().find('#edit_category_select').val();
+    $.ajax({
+        url: '/api/admin/metatags/categories',
+        type: 'PUT',
+        data: {
+            'category_id': category_id,
+            'category_title': category_title,
+            'platform_id': platform_id
+        },
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            if (status == 0 )
+            {
+                location.reload();
+            }else
+            {
+                alert(message);
+            }
+        }
+    });
+});
+
+$('.btn_delete_category').click(function(){
+    if (confirm('Do you really want to delete this category and all his children?'))
+    {
+        category_id = $(this).parent().parent().data('id');
+
+        delete_category(category_id, function(status, message){
+            if (status != 0)
+            {
+                alert(message);
+            }
+        });
+    }
+});
+
+delete_category = function(category_id, completion)
+{
+    $.ajax({
+        url: '/api/admin/metatags/categories?' + $.param({'category_id': category_id}, true),
+        type: 'DELETE',
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            completion(status, message);
+            location.reload();
+        }
+    });
+    return false;
+};
+
+// TODO subcategory
 $('.btn_add_subcategory').click(function(){
     new_subcategory_title = document.getElementById("new_subcategory_title").value;
     new_subcategory_title_without_whitespaces = new_subcategory_title.split(' ').join('');
@@ -434,6 +508,72 @@ $('.btn_add_subcategory').click(function(){
     }
 });
 
+$('.btn_edit_subcategory').click(function(){
+    subcategory_id = $(this).parent().parent().data('id');
+    subcategory_title = firstToUpperCase($(this).parent().parent().data('title'));
+    category_id = $(this).parent().parent().data('category_id');
+
+    $('#editing_subcategory_id').val(subcategory_id);
+    $('#editing_subcategory_title').val(subcategory_title);
+    document.getElementById('edit_subcategory_select').value=category_id;
+});
+
+$('.btn_save_edited_subcategory').click(function(){
+    subcategory_id = document.getElementById("editing_subcategory_id").value;
+    subcategory_title = document.getElementById("editing_subcategory_title").value;
+    category_id = $(this).parent().parent().find('#edit_subcategory_select').val();
+    $.ajax({
+        url: '/api/admin/metatags/subcategories',
+        type: 'PUT',
+        data: {
+            'category_id': category_id,
+            'subcategory_id': subcategory_id,
+            'subcategory_title': subcategory_title
+        },
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            if (status == 0 )
+            {
+                location.reload();
+            }else
+            {
+                alert(message);
+            }
+        }
+    });
+});
+
+$('.btn_delete_subcategory').click(function(){
+    if (confirm('Do you really want to delete this subcategory and all his children?'))
+    {
+        subcategory_id = $(this).parent().parent().data('id');
+
+        delete_subcategory(subcategory_id, function(status, message){
+            if (status != 0)
+            {
+                alert(message);
+            }
+        });
+    }
+});
+
+delete_subcategory = function(category_id, completion)
+{
+    $.ajax({
+        url: '/api/admin/metatags/subcategories?' + $.param({'subcategory_id': subcategory_id}, true),
+        type: 'DELETE',
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            completion(status, message);
+            location.reload();
+        }
+    });
+    return false;
+};
+
+// TODO colour
 
 $('.btn_add_colour').click(function(){
     new_colour_title = document.getElementById("new_colour_title").value;
@@ -466,6 +606,84 @@ $('.btn_add_colour').click(function(){
     }
 });
 
+$('.btn_edit_colour').click(function(){
+    colour_id = $(this).parent().parent().data('id');
+    colour_title = firstToUpperCase($(this).parent().parent().data('title'));
+    colour_code = $(this).parent().parent().data('code');
+    subcategory_id = $(this).parent().parent().data('subcategory_id');
+
+    $('#editing_colour_id').val(colour_id);
+    $('#editing_colour_title').val(colour_title);
+    document.getElementById('edit_colour_select').value=subcategory_id;
+    if (colour_code == 'disabled_color') {
+        document.getElementById('edit_color_pickier_checkbox').click();
+    } else {
+        $('#edit_color_pickier').val(colour_code);
+        // TODO show color correctly
+    }
+});
+
+$('.btn_save_edited_colour').click(function(){
+    colour_id = document.getElementById("editing_colour_id").value;
+    colour_title = document.getElementById("editing_colour_title").value;
+    subcategory_id = $(this).parent().parent().find('#edit_colour_select').val();
+    colour_code = document.getElementById("edit_color_pickier").value;
+    disable_colour = document.getElementById('edit_color_pickier_checkbox').checked;
+    $.ajax({
+        url: '/api/admin/metatags/colours',
+        type: 'PUT',
+        data: {
+            'colour_id': colour_id,
+            'colour_title': colour_title,
+            'colour_code': colour_code,
+            'disable_colour': disable_colour,
+            'subcategory_id': subcategory_id
+        },
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            if (status == 0 )
+            {
+                location.reload();
+            }else
+            {
+                alert(message);
+            }
+        }
+    });
+});
+
+$('.btn_delete_colour').click(function(){
+    if (confirm('Do you really want to delete this colour?'))
+    {
+        colour_id = $(this).parent().parent().data('id');
+
+        delete_colour(colour_id, function(status, message){
+            if (status != 0)
+            {
+                alert(message);
+            }
+        });
+    }
+});
+
+delete_colour = function(colour_id, completion)
+{
+    $.ajax({
+        url: '/api/admin/metatags/colours?' + $.param({'colour_id': colour_id}, true),
+        type: 'DELETE',
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            completion(status, message);
+            location.reload();
+        }
+    });
+    return false;
+};
+
+// TODO conditon
+
 $('.btn_add_condition').click(function(){
     new_condition_title = document.getElementById("new_condition_title").value;
     new_condition_title_without_whitespaces = new_condition_title.split(' ').join('');
@@ -492,3 +710,69 @@ $('.btn_add_condition').click(function(){
         });
     }
 });
+
+
+$('.btn_edit_condition').click(function(){
+    condition_id = $(this).parent().parent().data('id');
+    condition_title = firstToUpperCase($(this).parent().parent().data('title'));
+    subcategory_id = $(this).parent().parent().data('subcategory_id');
+
+    $('#editing_condition_id').val(condition_id);
+    $('#editing_condition_title').val(condition_title);
+    document.getElementById('edit_condition_select').value=subcategory_id;
+});
+
+$('.btn_save_edited_condition').click(function(){
+    condition_id = document.getElementById("editing_condition_id").value;
+    condition_title = document.getElementById("editing_condition_title").value;
+    subcategory_id = $(this).parent().parent().find('#edit_condition_select').val();
+    $.ajax({
+        url: '/api/admin/metatags/conditions',
+        type: 'PUT',
+        data: {
+            'condition_id': condition_id,
+            'condition_title': condition_title,
+            'subcategory_id': subcategory_id
+        },
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            if (status == 0 )
+            {
+                location.reload();
+            }else
+            {
+                alert(message);
+            }
+        }
+    });
+});
+
+$('.btn_delete_condition').click(function(){
+    if (confirm('Do you really want to delete this condition?'))
+    {
+        condition_id = $(this).parent().parent().data('id');
+
+        delete_condition(condition_id, function(status, message){
+            if (status != 0)
+            {
+                alert(message);
+            }
+        });
+    }
+});
+
+delete_condition = function(colour_id, completion)
+{
+    $.ajax({
+        url: '/api/admin/metatags/conditions?' + $.param({'condition_id': condition_id}, true),
+        type: 'DELETE',
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            completion(status, message);
+            location.reload();
+        }
+    });
+    return false;
+};

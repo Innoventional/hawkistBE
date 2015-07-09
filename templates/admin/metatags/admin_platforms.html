@@ -3,12 +3,14 @@
 {% block title %}Metatags{% end %}
 
 {% block content %}
-    <!--<a href="../metatags">Metatags</a>-->
-    <a href="#">Platforms</a>
-    <a href="../metatags/categories">Categories</a>
-    <a href="../metatags/subcategories">Subcategories</a>
-    <a href="../metatags/colours">Colours</a>
-    <a href="../metatags/conditions">Conditions</a>
+    <div class="tag_navigation_div">
+        <!--<a href="../metatags">Metatags</a>-->
+        <a href="#" id="current_link">Platforms</a>
+        <a href="../metatags/categories">Categories</a>
+        <a href="../metatags/subcategories">Subcategories</a>
+        <a href="../metatags/colours">Colours</a>
+        <a href="../metatags/conditions">Conditions</a>
+    </div>
     <h4>Create your platforms (PC, XBox, Mac)</h4>
     <button class="btn btn-primary" data-toggle="modal" data-target="#add_new_platform_modal" href="#">
         Add new platform

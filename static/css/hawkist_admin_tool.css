@@ -83,3 +83,18 @@
     text-decoration: none;
     color: #709cbe;
 }
+
+.tag_navigation_div a {
+    text-decoration: none;
+    margin-right: 15px;
+    color: darkgray;
+    font-weight: bold;
+}
+
+.tag_navigation_div a:hover {
+    color: #000000;
+}
+
+#current_link {
+    text-decoration: underline;
+}

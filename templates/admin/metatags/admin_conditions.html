@@ -3,12 +3,14 @@
 {% block title %}Metatags{% end %}
 
 {% block content %}
-    <!--<a href="../metatags">Metatags</a>-->
-    <a href="../metatags/platforms">Platforms</a>
-    <a href="../metatags/categories">Categories</a>
-    <a href="../metatags/subcategories">Subcategories</a>
-    <a href="../metatags/colours">Colours</a>
-    <a href="#">Conditions</a>
+    <div class="tag_navigation_div">
+        <!--<a href="../metatags">Metatags</a>-->
+        <a href="../metatags/platforms">Platforms</a>
+        <a href="../metatags/categories">Categories</a>
+        <a href="../metatags/subcategories">Subcategories</a>
+        <a href="../metatags/colours">Colours</a>
+        <a href="#" id="current_link">Conditions</a>
+    </div>
     <h4>Create your condition (Brand New in Box, Used)</h4>
     <button class="btn btn-primary" data-toggle="modal" data-target="#add_new_condition_modal" href="#">
         Add new condition
@@ -18,22 +20,24 @@
             <thead>
                 <th>ID</th>
                 <th>Condition Title</th>
-                <th>Parent (Platform -> Category -> Subcategory)</th>
+                <th>Parent (Platform > Category > Subcategory)</th>
                 <th>Action</th>
             </thead>
             <tbody>
                 {% for c in conditions %}
                     <tr data-id="{{ c.id }}"
-                        data-title="{{ c.title }}">
+                        data-title="{{ c.title }}"
+                        data-subcategory_id="{{ c.subcategory.id }}">
                         <td>{{ c.id }}</td>
                         <td>{{ c.title.capitalize() }}</td>
-                        <td>{{ c.subcategory.category.platform.title.capitalize() }} -> {{ c.subcategory.category.title.capitalize() }} -> {{ c.subcategory.title.capitalize() }}</td>
+                        <td>{{ c.subcategory.category.platform.title.capitalize() }} >
+                            {{ c.subcategory.category.title.capitalize() }} > {{ c.subcategory.title.capitalize() }}</td>
                         <td>
-                            <a class="btn btn_edit_tag silver-color" href="#" data-toggle="modal" data-target="#edit_tag_modal"
-                               title="Edit tag">
+                            <a class="btn btn_edit_condition silver-color" href="#" data-toggle="modal"
+                               data-target="#edit_condition_modal" title="Edit condition">
                                 <i class="glyphicon glyphicon-pencil"></i>
                             </a>
-                            <a class="btn btn_delete_tag red-color" href="#" title="Delete tag">
+                            <a class="btn btn_delete_condition red-color" href="#" title="Delete condition">
                                 <i class="glyphicon glyphicon-trash"></i>
                             </a>
                         </td>
@@ -43,7 +47,7 @@
         </table>
     </div>
 
-<!-- Add new tag modal -->
+<!-- Add new condition modal -->
     <div class="modal fade property" id="add_new_condition_modal" tabindex="-1" role="dialog" aria-labelledby="add_new_tag_modalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -76,6 +80,46 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default btn_reload" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary btn_add_condition">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Edit condition modal -->
+    <div class="modal fade property" id="edit_condition_modal" tabindex="-1" role="dialog" aria-labelledby="add_new_tag_modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close btn_reload" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="edit_condition_modalLabel"> Edit condition </h4>
+                </div>
+                <div class="modal-body">
+                    <span class="label label-default">Subcategory</span>
+                    <form action="">
+                        <div class="row-fluid">
+                            <select  name="type" id="edit_condition_select">
+                                {% for s in subcategories %}
+                                    <option value="{{ s.id }}">{{ s.title.capitalize() }}
+                                        ({{ s.category.platform.title.capitalize() }} >
+                                        {{ s.category.title.capitalize() }})
+                                    </option>
+                                {% end %}
+                            </select>
+                        </div>
+                    </form>
+                        <div>&nbsp</div>
+
+                    <input type="text" class="form-control display-none" id="editing_condition_id" disabled>
+
+                    <span class="label label-default">Condition Title</span>
+                    <input type="text" class="form-control" id="editing_condition_title">
+                    <div>&nbsp</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn_reload" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary btn_save_edited_condition">Save</button>
                 </div>
             </div>
         </div>

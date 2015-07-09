@@ -83,7 +83,7 @@ class AdminPlatformHandler(AdminBaseHandler):
         platform = self.session.query(Platform).filter(Platform.id == platform_id).first()
 
         if not platform:
-            return self.make_error('Platform whicj you try to delete does not exists')
+            return self.make_error('Platform which you try to delete does not exists')
 
         # check is this platform using
         used = self.session.query(Listing).filter(Listing.platform == platform).first()

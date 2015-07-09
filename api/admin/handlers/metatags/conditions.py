@@ -2,7 +2,8 @@ import datetime
 from sqlalchemy import and_
 from sqlalchemy import func
 from api.admin.handlers.tags import AdminBaseHandler
-from api.tags.models import Color, Condition, Subcategory
+from api.items.models import Listing
+from api.tags.models import Condition, Subcategory
 from base import HttpRedirect
 from helpers import route
 
@@ -11,7 +12,7 @@ __author__ = 'ne_luboff'
 
 @route('/admin/metatags/conditions')
 class AdminConditionHandler(AdminBaseHandler):
-    allowed_methods = ('GET', 'POST')
+    allowed_methods = ('GET', 'POST', 'PUT', 'DELETE')
 
     def read(self):
         if not self.user:
@@ -56,3 +57,76 @@ class AdminConditionHandler(AdminBaseHandler):
         self.session.add(new_condition)
         self.session.commit()
         return self.success()
+
+    def update(self):
+        if not self.user:
+            return HttpRedirect('/api/admin/login')
+
+        condition_id = self.get_argument('condition_id')
+        condition_title = self.get_argument('condition_title').lower()
+        subcategory_id = self.get_argument('subcategory_id')
+
+        if not condition_id:
+            return self.make_error("Empty condition id. Backend failure")
+
+        if not condition_title:
+            return self.make_error("You can't delete condition title")
+
+        if not subcategory_id:
+            return self.make_error("Empty subcategory id. Backend failure")
+
+        condition = self.session.query(Condition).filter(Condition.id == condition_id).first()
+        if not condition:
+            return self.make_error('No condition with id %s' % condition_id)
+
+        subcategory = self.session.query(Subcategory).filter(Subcategory.id == subcategory_id).first()
+        if not subcategory:
+            return self.make_error('No subcategory with id %s' % subcategory_id)
+
+        already_exists = self.session.query(Condition).filter(and_(func.lower(Condition.title) == condition_title,
+                                                                   Condition.subcategory == subcategory,
+                                                                   Condition.id != condition.id)).first()
+
+        if already_exists:
+            return self.make_error('Condition with name %s already exists in subcategory (%s > %s > %s)'
+                                   % (condition.title.upper(), subcategory.category.platform.title.upper(),
+                                      subcategory.category.title.upper(), subcategory.title.upper()))
+
+        need_commit = False
+        # check is title change
+        if condition.title != condition_title:
+            condition.title = condition_title
+            need_commit = True
+
+        # check is parent subcategory change
+        if condition.subcategory != subcategory:
+            condition.subcategory = subcategory
+            need_commit = True
+
+        if need_commit:
+            condition.updated_at = datetime.datetime.utcnow()
+            self.session.commit()
+
+        return self.success()
+
+    def remove(self):
+        if not self.user:
+            return HttpRedirect('/api/admin/login')
+
+        condition_id = self.get_arg('condition_id')
+        condition = self.session.query(Condition).filter(Condition.id == condition_id).first()
+
+        if not condition:
+            return self.make_error('Condition which you try to delete does not exists')
+
+        # check is this colour using
+        used = self.session.query(Listing).filter(Listing.condition == condition).first()
+        if used:
+            return self.make_error('Can not delete the tag %s (%s > %s > %s) because it is in use on an active listing. '
+                                   'Please update the tag on the listing and try again.'
+                                   % (condition.title.upper(), condition.subcategory.category.platform.title.upper(),
+                                      condition.subcategory.category.title.upper(), condition.subcategory.title.upper()))
+        self.session.delete(condition)
+        self.session.commit()
+        return self.success()
+

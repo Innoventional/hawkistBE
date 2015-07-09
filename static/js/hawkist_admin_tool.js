@@ -619,7 +619,11 @@ $('.btn_edit_colour').click(function(){
         document.getElementById('edit_color_pickier_checkbox').click();
     } else {
         $('#edit_color_pickier').val(colour_code);
-        // TODO show color correctly
+        $('#edit_color_pickier').css('background', '#' + colour_code);
+        if (colour_code == '000000') {
+            $('#edit_color_pickier').css('color', '#FFFFFF');
+        }
+
     }
 });
 

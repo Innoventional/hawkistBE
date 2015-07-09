@@ -301,7 +301,7 @@ class ItemsHandler(ApiHandler):
         if retail_price < 1:
             return self.make_error(u'Retail price must be greater than £1')
 
-        if selling_price > retail_price:
+        if selling_price > retail_price or selling_price == retail_price:
                 return self.make_error("Retail price must be greater than selling price")
 
         if len(photos) > 3:

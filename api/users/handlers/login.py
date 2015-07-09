@@ -198,7 +198,9 @@ class UserLoginHandler(ApiHandler):
                 'message': 'The pin %s is incorrect. Please try again or request a new pin.' % pin
             }
 
-        user.first_login = False
+        if user.username or user.avatar or user.email or user.about_me:
+            user.first_login = False
+            
         self.user = user
         self.session.commit()
         return self.success({'user': self.user.user_response})

@@ -24,16 +24,18 @@
             <tbody>
                 {% for c in categories %}
                     <tr data-id="{{ c.id }}"
-                        data-title="{{ c.title }}">
+                        data-title="{{ c.title }}"
+                            data-platform_id="{{ c.platform.id }}"
+                            data-platform_title="{{ c.platform.title }}">
                         <td>{{ c.id }}</td>
                         <td>{{ c.title.capitalize() }}</td>
                         <td>{{ c.platform.title.capitalize() }}</td>
                         <td>
-                            <a class="btn btn_edit_tag silver-color" href="#" data-toggle="modal" data-target="#edit_tag_modal"
-                               title="Edit tag">
+                            <a class="btn btn_edit_category silver-color" href="#" data-toggle="modal"
+                               data-target="#edit_category_modal" title="Edit category">
                                 <i class="glyphicon glyphicon-pencil"></i>
                             </a>
-                            <a class="btn btn_delete_tag red-color" href="#" title="Delete tag">
+                            <a class="btn btn_delete_category red-color" href="#" title="Delete category">
                                 <i class="glyphicon glyphicon-trash"></i>
                             </a>
                         </td>

@@ -66,6 +66,8 @@ class Item(Base):
         return {
             'id': self.id,
             'user_id': self.user_id,
+            'user_username': self.user.username,
+            'user_avatar': self.user.avatar,
             'created_at': self.created_at,
             'title': self.title,
             'description': self.description,
@@ -116,7 +118,7 @@ class Listing(Base):
     description = Column(String, nullable=False, default='')
     barcode = Column(String, nullable=False, default='')
 
-    # listing details (tags)
+    # listing details (metatags)
     platform_id = Column(Integer, ForeignKey('platforms.id'), nullable=False, index=True)
     platform = relationship('Platform', backref=backref('platform_items', order_by=id, cascade="all,delete", lazy='dynamic'),
                             foreign_keys=platform_id)
@@ -159,6 +161,8 @@ class Listing(Base):
         return {
             'id': self.id,
             'user_id': self.user_id,
+            'user_username': self.user.username,
+            'user_avatar': self.user.avatar,
             'created_at': self.created_at,
             'title': self.title,
             'description': self.description,

@@ -107,3 +107,25 @@ class UserTags(Base):
     tag_id = Column(Integer, ForeignKey('tags.id'), nullable=False, index=True)
     tag = relationship(Tag, backref=backref('tag_users', order_by=id, cascade="all,delete", lazy='dynamic'),
                        foreign_keys=tag_id)
+
+
+class UserMetaTag(Base):
+    __tablename__ = 'users_metatags'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False, index=True)
+    user = relationship(User, backref=backref('user_metatags', order_by=id, cascade="all,delete", lazy='dynamic'),
+                        foreign_keys=user_id)
+
+    # selected metatags for user feeds can be 3 types: platform, category and subcategory
+    platform_id = Column(Integer, ForeignKey('platforms.id'), nullable=True, index=True)
+    platform = relationship('Platform', backref=backref('user_interested_platforms', order_by=id, cascade="all,delete",
+                                                        lazy='dynamic'), foreign_keys=platform_id)
+
+    category_id = Column(Integer, ForeignKey('categories.id'), nullable=True, index=True)
+    category = relationship('Category', backref=backref('user_interested_categories', order_by=id, cascade="all,delete",
+                                                        lazy='dynamic'), foreign_keys=category_id)
+
+    subcategory_id = Column(Integer, ForeignKey('subcategories.id'), nullable=True, index=True)
+    subcategory = relationship('Subcategory', backref=backref('user_interested_subcategories', order_by=id,
+                                                              cascade="all,delete", lazy='dynamic'), foreign_keys=subcategory_id)

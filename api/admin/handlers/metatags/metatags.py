@@ -13,5 +13,4 @@ class AdminMetatagHandler(AdminBaseHandler):
         if not self.user:
             return HttpRedirect('/api/admin/login')
 
-        return self.render_string('admin/metatags/admin_metatags.html',
-                                  menu_tab_active='tab_metatags')
+        return self.render_string('admin/metatags/admin_metatags.html', menu_tab_active='tab_metatags')

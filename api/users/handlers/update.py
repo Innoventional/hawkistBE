@@ -1,7 +1,7 @@
 import logging
-from sqlalchemy import and_, func
-from api.tags.models import Tag
-from api.users.models import User, UserTags
+from sqlalchemy import and_, func, or_
+from api.tags.models import Tag, Platform, Category, Subcategory
+from api.users.models import User, UserTags, UserMetaTag
 from base import ApiHandler, die, USER_ID, OpenApiHandler
 from helpers import route
 from utility.amazon import upload_file
@@ -253,5 +253,112 @@ class UserTagsHandler(ApiHandler):
                     self.session.commit()
                 except ValueError:
                     logger.debug('%s is not a number' % tag_id)
+
+        return self.success({'user': self.user.user_response})
+
+@route('user/metatags')
+class UserMetaTagsHandler(ApiHandler):
+    allowed_methods = ('PUT', 'DELETE')
+
+    def update(self):
+
+        if self.user is None:
+            die(401)
+
+        logger.debug('REQUEST_OBJECT_USER_ADD_METATAGS')
+        logger.debug(self.request_object)
+
+        metatag_ids = []
+
+        if self.request_object:
+            if 'tags' in self.request_object:
+                metatag_ids = self.request_object['tags']
+
+        if not metatag_ids:
+            logger.debug('No tags to be added to user %s' % self.user)
+
+        if metatag_ids:
+            for metatag_id in metatag_ids:
+                # tag value to int
+                try:
+                    metatag_id = int(metatag_id)
+                    # try get this metatag from platform / category / subcategory
+                    platform_metatag = self.session.query(Platform).filter(Platform.id == metatag_id)
+                    category_metatag = self.session.query(Category).filter(Category.id == metatag_id)
+                    subcategory_metatag = self.session.query(Subcategory).filter(Subcategory.id == metatag_id)
+                    if not platform_metatag and not category_metatag and not subcategory_metatag:
+                        return self.make_error('No metatag with id %s' % metatag_id)
+
+                    # check for platform
+                    if platform_metatag:
+                        already_exists = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
+                                                                                     UserMetaTag.platform_id == metatag_id)).first()
+                        if already_exists:
+                            return self.make_error('You already added tag %s to your feeds' % already_exists.platform.title.upper())
+
+                    # check for category
+                    if category_metatag:
+                        already_exists = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
+                                                                                     UserMetaTag.category_id == metatag_id)).first()
+                        if already_exists:
+                            return self.make_error('You already added tag %s to your feeds' % already_exists.category.title.upper())
+
+                    # check for subcategory
+                    if subcategory_metatag:
+                        already_exists = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
+                                                                                     UserMetaTag.subcategory_id == metatag_id)).first()
+                        if already_exists:
+                            return self.make_error('You already added tag %s to your feeds' % already_exists.subcategory.title.upper())
+
+                    user_metatag = UserMetaTag()
+                    user_metatag.user = self.user
+                    if platform_metatag:
+                        user_metatag.platform_id = metatag_id
+                    elif category_metatag:
+                        user_metatag.category_id = metatag_id
+                    elif subcategory_metatag:
+                        user_metatag.subcategory_id = metatag_id
+                    self.session.add(user_metatag)
+                    self.session.commit()
+                except ValueError:
+                    logger.debug('%s is not a number' % metatag_id)
+
+        return self.success({'user': self.user.user_response})
+
+    def remove(self):
+
+        if self.user is None:
+            die(401)
+
+        logger.debug('REQUEST_OBJECT_USER_DELETE_METATAGS')
+        logger.debug(self.request_object)
+
+        metatag_ids = []
+
+        if self.request_object:
+            if 'tags' in self.request_object:
+                metatag_ids = self.request_object['tags']
+
+        if not metatag_ids:
+            logger.debug('No tags to be deleted from user %s' % self.user)
+
+        if metatag_ids:
+            for metatag_id in metatag_ids:
+                # tag value to int
+                try:
+                    metatag_id = int(metatag_id)
+
+                    # Get user metatag pair by metatag id
+                    user_metatag = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
+                                                                               or_(UserMetaTag.platform_id == metatag_id,
+                                                                                   UserMetaTag.category_id == metatag_id,
+                                                                                   UserMetaTag.subcategory_id == metatag_id))).first()
+                    if not user_metatag:
+                        logger('User %s havent metatag %s' % (self.user.id, metatag_id))
+                    else:
+                        self.session.delete(user_metatag)
+                        self.session.commit()
+                except ValueError:
+                    logger.debug('%s is not a number' % metatag_id)
 
         return self.success({'user': self.user.user_response})

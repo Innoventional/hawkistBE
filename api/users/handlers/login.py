@@ -62,9 +62,9 @@ class UserLoginHandler(ApiHandler):
                 user.user_type = UserType.Standard
                 user.sent_pins_count = 0
                 self.session.flush(user)
-            else:
-                user.first_login = False
-                self.session.commit()
+            # else:
+            #     user.first_login = False
+            #     self.session.commit()
 
             # check user ability to send one more sms
             reach_sms_limit = sms_limit_check(self)

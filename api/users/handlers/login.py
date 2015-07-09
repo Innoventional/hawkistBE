@@ -2,7 +2,7 @@ import logging
 import datetime
 from random import choice
 import string
-from sqlalchemy import and_, or_
+from sqlalchemy import or_
 from api.users.models import User, SystemStatus, UserType
 from base import ApiHandler, die, OpenApiHandler
 from helpers import route

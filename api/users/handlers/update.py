@@ -70,6 +70,12 @@ class UserHandler(ApiHandler):
         logger.debug('email %s' % email)
         logger.debug('about_me %s' % about_me)
 
+        if not username:
+            return self.make_error('Username is required')
+
+        if not email:
+            return self.make_error('Email is required')
+
         need_commit = False
 
         # USERNAME handler

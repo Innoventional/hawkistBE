@@ -11,32 +11,6 @@
         <a href="metatags/colours">Colours</a>
         <a href="metatags/conditions">Conditions</a>
     </div>
-    <h4>In current tab you can nested as you wish (Playstation -> Consoles -> PS3 -> Black -> Like new)</h4>
+    <h4>In current tab you can see all available metatags (Playstation -> Consoles -> PS3 -> Black -> Like new)</h4>
     <p>In future</p>
-    <div class="row-offcanvas">
-        <table class="table table-hover">
-            <thead>
-                <th>Platform Title</th>
-                <th>Category Title</th>
-                <th>Subcategory Title</th>
-                <th>Colour Title</th>
-                <th>Condition Title</th>
-            </thead>
-            <tbody>
-                {% for p in platforms %}
-                    <tr>
-                        <td>{{ p.title.capitalize() }}</td>
-                        <td>
-                            {% for cat in p.category_platform %}
-                                <p>{{ cat.title.capitalize() }}</p>
-                            <!--{% for sub in cat.subcategory_category %}-->
-                                <!--<td><p>{{sub.title.capitalize()}}</p></td>-->
-                            <!--{% end %}-->
-                            {% end %}
-                        </td>
-                     </tr>
-                {% end %}
-            </tbody>
-        </table>
-    </div>
 {% end %}

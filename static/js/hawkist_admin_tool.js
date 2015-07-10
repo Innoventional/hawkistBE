@@ -296,11 +296,6 @@ function firstToUpperCase( str ) {
     return str.substr(0, 1).toUpperCase() + str.substr(1);
 }
 
-//current_page_url = document.URL;
-//if (current_page_url.indexOf('platforms') > -1) {
-//    document.getElementById("current_link").className = "underline";
-//}
-
 // TODO platforms
 $('.btn_add_platform').click(function(){
     new_platform_title = document.getElementById("new_platform_title").value;
@@ -359,7 +354,7 @@ $('.btn_save_edited_platform').click(function(){
 });
 
 $('.btn_delete_platform').click(function(){
-    if (confirm('Do you really want to delete this platform and all his children?'))
+    if (confirm('Do you really want to delete this platform and all its children?'))
     {
         platform_id = $(this).parent().parent().data('id');
 
@@ -452,7 +447,7 @@ $('.btn_save_edited_category').click(function(){
 });
 
 $('.btn_delete_category').click(function(){
-    if (confirm('Do you really want to delete this category and all his children?'))
+    if (confirm('Do you really want to delete this category and all its children?'))
     {
         category_id = $(this).parent().parent().data('id');
 
@@ -545,7 +540,7 @@ $('.btn_save_edited_subcategory').click(function(){
 });
 
 $('.btn_delete_subcategory').click(function(){
-    if (confirm('Do you really want to delete this subcategory and all his children?'))
+    if (confirm('Do you really want to delete this subcategory and all its children?'))
     {
         subcategory_id = $(this).parent().parent().data('id');
 
@@ -582,7 +577,7 @@ $('.btn_add_colour').click(function(){
     new_colour_code = document.getElementById("color_pickier").value;
     disable_colour = document.getElementById('color_pickier_checkbox').checked;
     if (!new_colour_title || !new_colour_title_without_whitespaces || subcategory_id == 0) {
-        alert('Empty subcategory title / category name')
+        alert('Empty subcategory title / colour name')
     } else {
         $.ajax({
             url: '/api/admin/metatags/colours',
@@ -693,7 +688,7 @@ $('.btn_add_condition').click(function(){
     new_condition_title_without_whitespaces = new_condition_title.split(' ').join('');
     subcategory_id = $(this).parent().parent().find('#condition_subcategory_select').val();
     if (!new_condition_title || !new_condition_title_without_whitespaces || subcategory_id == 0) {
-        alert('Empty subcategory title / category name')
+        alert('Empty subcategory title / condition name')
     } else {
         $.ajax({
             url: '/api/admin/metatags/conditions',

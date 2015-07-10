@@ -425,8 +425,8 @@ class PostCodeHandler(ApiHandler):
         google_response = get_city_by_code(post_code)
         error, data = google_response['error'], google_response['data']
         if error:
-            # return error
-            return self.make_error(error)
+            return error
+            # return self.make_error(error)
         return self.success({'city': data})
 
 

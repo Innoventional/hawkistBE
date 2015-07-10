@@ -232,11 +232,8 @@ class ItemsHandler(ApiHandler):
         if not selling_price:
             empty_field_error.append('selling price')
 
-        if not shipping_price:
-            empty_field_error.append('shipping price')
-
-        # if not collection_only:
-        #     empty_field_error.append('collection only flag')
+        if not shipping_price and not collection_only:
+            empty_field_error.append('shipping price or collection only')
 
         if not photos:
             empty_field_error.append('photos')
@@ -255,7 +252,7 @@ class ItemsHandler(ApiHandler):
                 empty_field_error.append('post code')
 
         if empty_field_error:
-            empty_fields = ','.join(empty_field_error)
+            empty_fields = ', '.join(empty_field_error)
             return {
                 'status': 6,
                 'message': 'You must select a %s in order to create a listing.' % empty_fields,
@@ -344,6 +341,9 @@ class ItemsHandler(ApiHandler):
 
         if selling_price > retail_price or selling_price == retail_price:
                 return self.make_error("Retail price must be greater than selling price")
+
+        if shipping_price < 0:
+            return self.make_error('Shipping price must be greater than or equal to £0')
 
         if len(photos) > 3:
             return self.make_error('You can add only 3 photos')

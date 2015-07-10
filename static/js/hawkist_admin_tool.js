@@ -292,9 +292,6 @@ delete_user = function(user_id, completion)
 };
 
 // TODO THIS IS TEST
-function firstToUpperCase( str ) {
-    return str.substr(0, 1).toUpperCase() + str.substr(1);
-}
 
 // TODO platforms
 $('.btn_add_platform').click(function(){
@@ -324,7 +321,7 @@ $('.btn_add_platform').click(function(){
 
 $('.btn_edit_platform').click(function(){
     platform_id = $(this).parent().parent().data('id');
-    platform_title = firstToUpperCase($(this).parent().parent().data('title'));
+    platform_title = $(this).parent().parent().data('title');
     $('#editing_platform_id').val(platform_id);
     $('#editing_platform_title').val(platform_title);
 });
@@ -413,7 +410,7 @@ $('.btn_add_category').click(function(){
 
 $('.btn_edit_category').click(function(){
     category_id = $(this).parent().parent().data('id');
-    category_title = firstToUpperCase($(this).parent().parent().data('title'));
+    category_title = $(this).parent().parent().data('title');
     platform_id = $(this).parent().parent().data('platform_id');
     $('#editing_category_id').val(category_id);
     $('#editing_category_title').val(category_title);
@@ -505,7 +502,7 @@ $('.btn_add_subcategory').click(function(){
 
 $('.btn_edit_subcategory').click(function(){
     subcategory_id = $(this).parent().parent().data('id');
-    subcategory_title = firstToUpperCase($(this).parent().parent().data('title'));
+    subcategory_title = $(this).parent().parent().data('title');
     category_id = $(this).parent().parent().data('category_id');
 
     $('#editing_subcategory_id').val(subcategory_id);
@@ -603,7 +600,7 @@ $('.btn_add_colour').click(function(){
 
 $('.btn_edit_colour').click(function(){
     colour_id = $(this).parent().parent().data('id');
-    colour_title = firstToUpperCase($(this).parent().parent().data('title'));
+    colour_title = $(this).parent().parent().data('title');
     colour_code = $(this).parent().parent().data('code');
     subcategory_id = $(this).parent().parent().data('subcategory_id');
 
@@ -713,7 +710,7 @@ $('.btn_add_condition').click(function(){
 
 $('.btn_edit_condition').click(function(){
     condition_id = $(this).parent().parent().data('id');
-    condition_title = firstToUpperCase($(this).parent().parent().data('title'));
+    condition_title = $(this).parent().parent().data('title');
     subcategory_id = $(this).parent().parent().data('subcategory_id');
 
     $('#editing_condition_id').val(condition_id);

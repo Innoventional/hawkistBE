@@ -11,6 +11,71 @@
         <a href="metatags/colours">Colours</a>
         <a href="metatags/conditions">Conditions</a>
     </div>
-    <h4>In current tab you can see all available metatags (Playstation -> Consoles -> PS3 -> Black -> Like new)</h4>
-    <p>In future</p>
+    <h4>In current tab you can see all available metatags (Playstation > Consoles > PS3 > Black, White > Brand New in Box, Used)</h4>
+
+    <div class="row-offcanvas">
+        <table class="table table-hover">
+            <thead>
+                <th>Metatag (<span class="metatag_title">Platform</span> >
+                    <span class="metatag_title op-09">Category</span> >
+                    <span class="metatag_title op-08">Subcategory</span> >
+                    <span class="metatag_title op-07">Colour</span> >
+                    <span class="metatag_title op-07">Condition)</span></th>
+            </thead>
+            <tbody>
+            {% for p in platforms %}
+                <!--check has this platform categories-->
+                {% if p.category_platform.count() > 0 %}
+                    {% for cat in p.category_platform %}
+                        <!--check has this category subcategories-->
+                        {% if cat.subcategory_category.count() > 0 %}
+                            {% for subcat in cat.subcategory_category %}
+                                <!--check has this subcategory condition
+                                in this case doesn't matter has subcategory colours or not we must display all
+                                condition statements-->
+                                {% if subcat.condition_subcategory.count() > 0 %}
+                                    <tr>
+                                        <td>
+                                            <span class="metatag_title">{{p.title}}</span> >
+                                            <span class="metatag_title op-09">{{cat.title}}</span> >
+                                            <span class="metatag_title op-08">{{subcat.title}}</span> >
+                                            <span class="metatag_title op-07">
+                                                {{ ', '.join([ c.title for c in subcat.color_subcategory]) or '___' }}
+                                            </span> >
+                                            <span class="metatag_title op-06">
+                                                {{ ', '.join([ c.title for c in subcat.condition_subcategory])}}</span>
+                                        </td>
+                                    </tr>
+                                <!--else if subcategory has only color show color-->
+                                {% elif subcat.color_subcategory.count() > 0 %}
+                                    <tr>
+                                        <td>
+                                            <span class="metatag_title">{{p.title}}</span> >
+                                            <span class="metatag_title op-09">{{cat.title}}</span> >
+                                            <span class="metatag_title op-08">{{subcat.title}}</span> >
+                                            <span class="metatag_title op-07">
+                                                {{ ', '.join([ c.title for c in subcat.color_subcategory])}}</span>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                <!--else display only subcategory title-->
+                                    <tr><td><span class="metatag_title">{{p.title}}</span> >
+                                        <span class="metatag_title op-09">{{cat.title}}</span> >
+                                        <span class="metatag_title op-08">{{subcat.title}}</span></td></tr>
+                                {% end %}
+                            {% end %}
+                        <!--if category hasn't subcategories print only category name-->
+                        {% else %}
+                            <tr><td><span class="metatag_title">{{p.title}}</span> >
+                                <span class="metatag_title op-09">{{cat.title}}</span></td></tr>
+                    {% end %}
+                    {% end %}
+                <!--if platform hasn't categories print only platform name-->
+                {% else %}
+                    <tr><td><span class="metatag_title">{{p.title}}</span></td></tr>
+                {% end %}
+            {% end %}
+            </tbody>
+        </table>
+    </div>
 {% end %}

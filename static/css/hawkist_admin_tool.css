@@ -98,3 +98,19 @@
 #current_link {
     text-decoration: underline;
 }
+
+.metatag_title {
+    color: #23211c;
+}
+
+.op-09 {
+    opacity: .9;
+}
+
+.op-08 {
+    opacity: .8;
+}
+
+.op-07 {
+    opacity: .7;
+}

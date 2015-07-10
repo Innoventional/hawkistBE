@@ -69,9 +69,9 @@ class ItemsHandler(ApiHandler):
                 # note! we can search only by platform name, category name and subcategory name
                 tag_names_to_search = set()
                 for i in items:
-                    tag_names_to_search.add(i.platform.name)
-                    tag_names_to_search.add(i.category.name)
-                    tag_names_to_search.add(i.subcategory.name)
+                    tag_names_to_search.add(i.platform.name.lower())
+                    tag_names_to_search.add(i.category.name.lower())
+                    tag_names_to_search.add(i.subcategory.name.lower())
 
                 # this is set with suitable tag names
                 right_tag_names = set()
@@ -79,7 +79,7 @@ class ItemsHandler(ApiHandler):
 
                 # we search by every word in phrase
                 # so separate query string by whitespace symbol
-                q_list = q.split(' ')
+                q_list = q.lower().split(' ')
 
                 # go through every query word and search it in tags and items titles/descriptions
                 for q_word in q_list:
@@ -90,8 +90,8 @@ class ItemsHandler(ApiHandler):
                             right_tag_names.add(key)
 
                     # filtered items and get items with fit description or title
-                    right_title_or_description = [i.id for i in all_items.filter(or_(Item.title.ilike(u'%{0}%'.format(q_word)),
-                                                                                     Item.description.ilike(u'%{0}%'.format(q_word))))]
+                    right_title_or_description = [i.id for i in all_items.filter(or_(func.lower(Item.title).ilike(u'%{0}%'.format(q_word)),
+                                                                                     func.lower(Item.description).ilike(u'%{0}%'.format(q_word))))]
                     if right_title_or_description:
                         for i in right_title_or_description:
                             right_title_or_description_item_ids.add(i)
@@ -273,7 +273,7 @@ class ItemsHandler(ApiHandler):
         # check subcategory
         subcategory = self.session.query(Tag).filter(Tag.id == subcategory_id).first()
         if not subcategory:
-            return self.make_error('No subcategory with id %s' % category_id)
+            return self.make_error('No subcategory with id %s' % subcategory_id)
 
         # check is this nesting right
         platform_children_ids = [child.id for child in platform.children_tags]
@@ -493,19 +493,17 @@ class ListingHandler(ApiHandler):
                 # note! we can search only by platform name, category name and subcategory name
                 tag_names_to_search = set()
                 for i in all_listings:
-                    tag_names_to_search.add(i.platform.title)
-                    tag_names_to_search.add(i.category.title)
-                    tag_names_to_search.add(i.subcategory.title)
+                    tag_names_to_search.add(i.platform.title.lower())
+                    tag_names_to_search.add(i.category.title.lower())
+                    tag_names_to_search.add(i.subcategory.title.lower())
 
                 # this is set with suitable tag names
                 right_tag_names = set()
                 right_title_or_description_item_ids = set()
 
-                print tag_names_to_search
-
                 # we search by every word in phrase
                 # so separate query string by whitespace symbol
-                q_list = q.split(' ')
+                q_list = q.lower().split(' ')
 
                 # go through every query word and search it in tags and items titles/descriptions
                 for q_word in q_list:
@@ -516,8 +514,8 @@ class ListingHandler(ApiHandler):
                             right_tag_names.add(key)
 
                     # filtered items and get items with fit description or title
-                    right_title_or_description = [i.id for i in all_listings.filter(or_(Listing.title.ilike(u'%{0}%'.format(q_word)),
-                                                                                        Listing.description.ilike(u'%{0}%'.format(q_word))))]
+                    right_title_or_description = [i.id for i in all_listings.filter(or_(func.lower(Listing.title).ilike(u'%{0}%'.format(q_word)),
+                                                                                        func.lower(Listing.description).ilike(u'%{0}%'.format(q_word))))]
                     if right_title_or_description:
                         for i in right_title_or_description:
                             right_title_or_description_item_ids.add(i)

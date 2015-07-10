@@ -48,7 +48,10 @@ class UserLoginHandler(ApiHandler):
             # first verify number
             phone_error = phone_verification(phone)
             if phone_error:
-                return self.make_error(phone_error)
+                return {
+                    'status': 2,
+                    'message': phone_error
+                }
 
             # try get existing user
             user = self.session.query(User).filter(User.phone == phone).first()
@@ -183,6 +186,12 @@ class UserLoginHandler(ApiHandler):
         # first of all delete + symbol
         phone = str(phone)
         phone = phone.replace('+', '')
+        phone_error = phone_verification(phone)
+        if phone_error:
+            return {
+                'status': 2,
+                'message': phone_error
+            }
 
         user = self.session.query(User).filter(User.phone == phone).first()
 

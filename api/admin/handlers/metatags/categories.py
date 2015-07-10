@@ -27,7 +27,7 @@ class AdminCategoryHandler(AdminBaseHandler):
         if not self.user:
             return HttpRedirect('/api/admin/login')
 
-        new_category_title = self.get_argument('new_category_title').lower()
+        new_category_title = self.get_argument('new_category_title')
         platform_id = self.get_argument('platform_id')
 
         if not new_category_title:
@@ -40,7 +40,7 @@ class AdminCategoryHandler(AdminBaseHandler):
         if not platform:
             return self.make_error('No platform with id %s' % platform_id)
 
-        already_exists = self.session.query(Category).filter(and_(func.lower(Category.title) == new_category_title,
+        already_exists = self.session.query(Category).filter(and_(func.lower(Category.title) == new_category_title.lower(),
                                                                   Category.platform == platform)).first()
 
         if already_exists:
@@ -61,7 +61,7 @@ class AdminCategoryHandler(AdminBaseHandler):
             return HttpRedirect('/api/admin/login')
 
         category_id = self.get_argument('category_id')
-        category_title = self.get_argument('category_title').lower()
+        category_title = self.get_argument('category_title')
         platform_id = self.get_argument('platform_id')
 
         if not category_id:
@@ -81,7 +81,7 @@ class AdminCategoryHandler(AdminBaseHandler):
         if not platform:
             return self.make_error('No platform with id %s' % platform_id)
 
-        already_exists = self.session.query(Category).filter(and_(func.lower(Category.title) == category_title,
+        already_exists = self.session.query(Category).filter(and_(func.lower(Category.title) == category_title.lower(),
                                                                   Category.platform == platform,
                                                                   Category.id != category.id)).first()
 

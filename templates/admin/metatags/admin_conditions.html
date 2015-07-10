@@ -29,9 +29,9 @@
                         data-title="{{ c.title }}"
                         data-subcategory_id="{{ c.subcategory.id }}">
                         <td>{{ c.id }}</td>
-                        <td>{{ c.title.capitalize() }}</td>
-                        <td>{{ c.subcategory.category.platform.title.capitalize() }} >
-                            {{ c.subcategory.category.title.capitalize() }} > {{ c.subcategory.title.capitalize() }}</td>
+                        <td>{{ c.title }}</td>
+                        <td>{{ c.subcategory.category.platform.title }} >
+                            {{ c.subcategory.category.title }} > {{ c.subcategory.title }}</td>
                         <td>
                             <a class="btn btn_edit_condition silver-color" href="#" data-toggle="modal"
                                data-target="#edit_condition_modal" title="Edit condition">
@@ -64,8 +64,8 @@
                             <select  name="type" id="condition_subcategory_select">
                                 <option value="0">---</option>
                                 {% for s in subcategories %}
-                                    <option value="{{ s.id }}">{{ s.title.capitalize() }} ({{ s.category.platform.title.capitalize() }} ->
-                                        {{ s.category.title.capitalize() }})
+                                    <option value="{{ s.id }}">{{ s.title }} ({{ s.category.platform.title }} ->
+                                        {{ s.category.title }})
                                     </option>
                                 {% end %}
                             </select>
@@ -101,9 +101,9 @@
                         <div class="row-fluid">
                             <select  name="type" id="edit_condition_select">
                                 {% for s in subcategories %}
-                                    <option value="{{ s.id }}">{{ s.title.capitalize() }}
-                                        ({{ s.category.platform.title.capitalize() }} >
-                                        {{ s.category.title.capitalize() }})
+                                    <option value="{{ s.id }}">{{ s.title }}
+                                        ({{ s.category.platform.title }} >
+                                        {{ s.category.title }})
                                     </option>
                                 {% end %}
                             </select>

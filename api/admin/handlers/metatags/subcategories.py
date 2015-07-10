@@ -27,7 +27,7 @@ class AdminSubcategoryHandler(AdminBaseHandler):
         if not self.user:
             return HttpRedirect('/api/admin/login')
 
-        new_subcategory_title = self.get_argument('new_subcategory_title').lower()
+        new_subcategory_title = self.get_argument('new_subcategory_title')
         category_id = self.get_argument('category_id')
 
         if not new_subcategory_title:
@@ -40,7 +40,7 @@ class AdminSubcategoryHandler(AdminBaseHandler):
         if not category:
             return self.make_error('No category with id %s' % category_id)
 
-        already_exists = self.session.query(Subcategory).filter(and_(func.lower(Subcategory.title) == new_subcategory_title,
+        already_exists = self.session.query(Subcategory).filter(and_(func.lower(Subcategory.title) == new_subcategory_title.lower(),
                                                                      Subcategory.category == category)).first()
 
         if already_exists:
@@ -61,7 +61,7 @@ class AdminSubcategoryHandler(AdminBaseHandler):
             return HttpRedirect('/api/admin/login')
 
         subcategory_id = self.get_argument('subcategory_id')
-        subcategory_title = self.get_argument('subcategory_title').lower()
+        subcategory_title = self.get_argument('subcategory_title')
         category_id = self.get_argument('category_id')
 
         if not subcategory_id:
@@ -81,7 +81,7 @@ class AdminSubcategoryHandler(AdminBaseHandler):
         if not category:
             return self.make_error('No category with id %s' % category_id)
 
-        already_exists = self.session.query(Subcategory).filter(and_(func.lower(Subcategory.title) == subcategory_title,
+        already_exists = self.session.query(Subcategory).filter(and_(func.lower(Subcategory.title) == subcategory_title.lower(),
                                                                      Subcategory.category == category,
                                                                      Subcategory.id != subcategory.id)).first()
 

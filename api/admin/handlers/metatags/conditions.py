@@ -28,7 +28,7 @@ class AdminConditionHandler(AdminBaseHandler):
         if not self.user:
             return HttpRedirect('/api/admin/login')
 
-        new_condition_title = self.get_argument('new_condition_title').lower()
+        new_condition_title = self.get_argument('new_condition_title')
         subcategory_id = self.get_argument('subcategory_id')
 
         if not new_condition_title:
@@ -41,7 +41,7 @@ class AdminConditionHandler(AdminBaseHandler):
         if not subcategory:
             return self.make_error('No category with id %s' % subcategory_id)
 
-        already_exists = self.session.query(Condition).filter(and_(func.lower(Condition.title) == new_condition_title,
+        already_exists = self.session.query(Condition).filter(and_(func.lower(Condition.title) == new_condition_title.lower(),
                                                                    Condition.subcategory == subcategory)).first()
 
         if already_exists:
@@ -63,7 +63,7 @@ class AdminConditionHandler(AdminBaseHandler):
             return HttpRedirect('/api/admin/login')
 
         condition_id = self.get_argument('condition_id')
-        condition_title = self.get_argument('condition_title').lower()
+        condition_title = self.get_argument('condition_title')
         subcategory_id = self.get_argument('subcategory_id')
 
         if not condition_id:
@@ -83,7 +83,7 @@ class AdminConditionHandler(AdminBaseHandler):
         if not subcategory:
             return self.make_error('No subcategory with id %s' % subcategory_id)
 
-        already_exists = self.session.query(Condition).filter(and_(func.lower(Condition.title) == condition_title,
+        already_exists = self.session.query(Condition).filter(and_(func.lower(Condition.title) == condition_title.lower(),
                                                                    Condition.subcategory == subcategory,
                                                                    Condition.id != condition.id)).first()
 

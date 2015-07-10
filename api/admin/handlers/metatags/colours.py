@@ -27,7 +27,7 @@ class AdminColourHandler(AdminBaseHandler):
         if not self.user:
             return HttpRedirect('/api/admin/login')
 
-        new_colour_title = self.get_argument('new_colour_title').lower()
+        new_colour_title = self.get_argument('new_colour_title')
         subcategory_id = self.get_argument('subcategory_id')
         new_colour_code = self.get_argument('new_colour_code')
         disable_color = self.get_argument('disable_colour')
@@ -45,7 +45,7 @@ class AdminColourHandler(AdminBaseHandler):
         if disable_color == 'true':
             new_colour_code = 'disabled_color'
 
-        already_exists = self.session.query(Color).filter(and_(func.lower(Color.title) == new_colour_title,
+        already_exists = self.session.query(Color).filter(and_(func.lower(Color.title) == new_colour_title.lower(),
                                                                Color.subcategory == subcategory,
                                                                Color.code == new_colour_code)).first()
 
@@ -69,7 +69,7 @@ class AdminColourHandler(AdminBaseHandler):
             return HttpRedirect('/api/admin/login')
 
         colour_id = self.get_argument('colour_id')
-        colour_title = self.get_argument('colour_title').lower()
+        colour_title = self.get_argument('colour_title')
         subcategory_id = self.get_argument('subcategory_id')
         colour_code = self.get_argument('colour_code')
         disable_colour = self.get_argument('disable_colour')
@@ -97,7 +97,7 @@ class AdminColourHandler(AdminBaseHandler):
         if disable_colour == 'true':
             colour_code = 'disabled_color'
 
-        already_exists = self.session.query(Color).filter(and_(func.lower(Color.title) == colour_title,
+        already_exists = self.session.query(Color).filter(and_(func.lower(Color.title) == colour_title.lower(),
                                                                Color.code == colour_code,
                                                                Color.subcategory == subcategory,
                                                                Color.id != colour.id)).first()

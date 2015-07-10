@@ -26,12 +26,12 @@ class AdminPlatformHandler(AdminBaseHandler):
         if not self.user:
             return HttpRedirect('/api/admin/login')
 
-        new_platform_title = self.get_argument('new_platform_title').lower()
+        new_platform_title = self.get_argument('new_platform_title')
 
         if not new_platform_title:
             return self.make_error('You must input new tag title')
 
-        already_exists = self.session.query(Platform).filter(func.lower(Platform.title) == new_platform_title).first()
+        already_exists = self.session.query(Platform).filter(func.lower(Platform.title) == new_platform_title.lower()).first()
 
         if already_exists:
             return self.make_error('Platform with name %s already exists' % new_platform_title.upper())
@@ -49,7 +49,7 @@ class AdminPlatformHandler(AdminBaseHandler):
             return HttpRedirect('/api/admin/login')
 
         platform_id = self.get_argument('platform_id')
-        platform_title = self.get_argument('platform_title').lower()
+        platform_title = self.get_argument('platform_title')
 
         if not platform_id:
             return self.make_error("Empty platform id. Backend failure")
@@ -61,7 +61,7 @@ class AdminPlatformHandler(AdminBaseHandler):
         if not platform:
             return self.make_error('No platform with id %s' % platform_id)
 
-        already_exists = self.session.query(Platform).filter(and_(func.lower(Platform.title) == platform_title,
+        already_exists = self.session.query(Platform).filter(and_(func.lower(Platform.title) == platform_title.lower(),
                                                                   Platform.id != platform.id)).first()
 
         if already_exists:

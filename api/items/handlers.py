@@ -370,6 +370,8 @@ class ItemsHandler(ApiHandler):
         if selling_price != retail_price:
             # calculate discount value
             discount = int(round((retail_price - selling_price) / retail_price * 100))
+            if discount == 0:
+                discount = 1
             item.discount = discount
 
         item.shipping_price = shipping_price

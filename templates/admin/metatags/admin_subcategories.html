@@ -29,8 +29,8 @@
                         data-title="{{ s.title }}"
                         data-category_id="{{ s.category.id }}">
                         <td>{{ s.id }}</td>
-                        <td>{{ s.title.capitalize() }}</td>
-                        <td>{{ s.category.platform.title.capitalize() }} > {{ s.category.title.capitalize() }}</td>
+                        <td>{{ s.title }}</td>
+                        <td>{{ s.category.platform.title }} > {{ s.category.title }}</td>
                         <td>
                             <a class="btn btn_edit_subcategory silver-color" href="#" data-toggle="modal"
                                data-target="#edit_subcategory_modal" title="Edit subcategory">
@@ -63,7 +63,7 @@
                             <select  name="type" id="subcategory_category_select">
                                 <option value="0">---</option>
                                 {% for c in categories %}
-                                    <option value="{{ c.id }}">{{ c.title.capitalize() }} ({{ c.platform.title.capitalize() }})
+                                    <option value="{{ c.id }}">{{ c.title }} ({{ c.platform.title }})
                                     </option>
                                 {% end %}
                             </select>
@@ -101,7 +101,7 @@
                         <div class="row-fluid edit_tag_parent_tag">
                             <select  name="type" id="edit_subcategory_select">
                                 {% for c in categories %}
-                                    <option value="{{ c.id }}">{{ c.title.capitalize() }} ({{ c.platform.title.capitalize() }})
+                                    <option value="{{ c.id }}">{{ c.title }} ({{ c.platform.title }})
                                     </option>
                                 {% end %}
                             </select>

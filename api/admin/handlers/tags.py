@@ -33,16 +33,16 @@ class AdminTagsHandler(AdminBaseHandler):
             return HttpRedirect('/api/admin/login')
 
         parent_tag_id = self.get_argument('parent_tag_id')
-        new_tag_name = self.get_argument('new_tag_name').lower()
+        new_tag_name = self.get_argument('new_tag_name')
 
         if not new_tag_name:
             return self.make_error('You must input new tag title')
 
         if int(parent_tag_id) != 0:
-            already_exists = self.session.query(Tag).filter(and_(func.lower(Tag.name) == new_tag_name,
+            already_exists = self.session.query(Tag).filter(and_(func.lower(Tag.name) == new_tag_name.lower(),
                                                                  Tag.parent_tag_id == parent_tag_id)).first()
         else:
-            already_exists = self.session.query(Tag).filter(and_(func.lower(Tag.name) == new_tag_name,
+            already_exists = self.session.query(Tag).filter(and_(func.lower(Tag.name) == new_tag_name.lower(),
                                                                  Tag.parent_tag_id == None)).first()
 
         if already_exists:
@@ -63,7 +63,8 @@ class AdminTagsHandler(AdminBaseHandler):
             return HttpRedirect('/api/admin/login')
 
         tag_id = self.get_argument('tag_id')
-        tag_name = self.get_argument('tag_name').lower()
+        tag_name = self.get_argument('tag_name')
+
         parent_tag_id = self.get_argument('parent_tag_id')
 
         if not tag_name:
@@ -96,7 +97,6 @@ class AdminTagsHandler(AdminBaseHandler):
         tag_id = self.get_arg('tag_id')
         tag = self.session.query(Tag).filter(Tag.id == tag_id).first()
 
-        print tag.condition_items.count()
         if not tag:
             return self.make_error('Something wrong. Try again later')
         # check is this tag using

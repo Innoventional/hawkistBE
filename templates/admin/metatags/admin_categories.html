@@ -29,8 +29,8 @@
                         data-title="{{ c.title }}"
                         data-platform_id="{{ c.platform.id }}">
                         <td>{{ c.id }}</td>
-                        <td>{{ c.title.capitalize() }}</td>
-                        <td>{{ c.platform.title.capitalize() }}</td>
+                        <td>{{ c.title }}</td>
+                        <td>{{ c.platform.title }}</td>
                         <td>
                             <a class="btn btn_edit_category silver-color" href="#" data-toggle="modal"
                                data-target="#edit_category_modal" title="Edit category">
@@ -63,7 +63,7 @@
                             <select  name="type" id="category_platform_select">
                                 <option value="0">---</option>
                                 {% for p in platforms %}
-                                    <option value="{{ p.id }}">{{ p.title.capitalize() }}
+                                    <option value="{{ p.id }}">{{ p.title }}
                                     </option>
                                 {% end %}
                             </select>
@@ -101,7 +101,7 @@
                         <div class="row-fluid edit_tag_parent_tag">
                             <select  name="type" id="edit_category_select">
                                 {% for p in platforms %}
-                                    <option value="{{ p.id }}">{{ p.title.capitalize() }}
+                                    <option value="{{ p.id }}">{{ p.title }}
                                     </option>
                                 {% end %}
                             </select>

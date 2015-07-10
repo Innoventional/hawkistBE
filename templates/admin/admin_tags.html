@@ -19,13 +19,13 @@
                         data-name="{{ tag.name }}"
                         data-parent_tag_id="{{ tag.parent_tag_id }}">
                         <td>{{ tag.id }}</td>
-                        <td>{{ tag.name.capitalize() }}</td>
+                        <td>{{ tag.name }}</td>
                         {% try %}
                         {% if tag.parent_tag.name %}
                             <td>
-                                {{ tag.parent_tag.name.capitalize() }}
+                                {{ tag.parent_tag.name }}
                                 {% if tag.parent_tag.parent_tag %}
-                                    ({{ tag.parent_tag.parent_tag.name.capitalize() }})
+                                    ({{ tag.parent_tag.parent_tag.name }})
                                 {% end %}
                             </td>
                         {% end %}
@@ -71,9 +71,9 @@
                             <select  name="type" id="add_tag_select">
                                 <option value="0">---</option>
                                 {% for tag in tags %}
-                                    <option value="{{ tag.id }}">{{ tag.name.capitalize() }}
+                                    <option value="{{ tag.id }}">{{ tag.name }}
                                         {% if tag.parent_tag %}
-                                            ({{ tag.parent_tag.name.capitalize() }})
+                                            ({{ tag.parent_tag.name }})
                                         {% end %}
                                     </option>
                                 {% end %}
@@ -113,9 +113,9 @@
                             <select  name="type" id="edit_tag_select">
                                 <option value="0">---</option>
                                 {% for tag in tags %}
-                                    <option value="{{ tag.id }}">{{ tag.name.capitalize() }}
+                                    <option value="{{ tag.id }}">{{ tag.name }}
                                         {% if tag.parent_tag %}
-                                            ({{ tag.parent_tag.name.capitalize() }})
+                                            ({{ tag.parent_tag.name }})
                                         {% end %}
                                     </option>
                                 {% end %}

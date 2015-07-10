@@ -279,12 +279,51 @@ class ItemsHandler(ApiHandler):
         # check is this nesting right
         platform_children_ids = [child.id for child in platform.children_tags]
         if category_id not in platform_children_ids:
-            return self.make_error("Platform tag %s hasn't child %s. Try again" % (platform.name.upper(),
-                                                                                   category.name.upper()))
+            # hotfix for this build
+            # start
+            c_name = category.name.upper()
+            p_name = ''
+            p2_name = ''
+            if category.parent_tag and category.parent_tag.name != 'platform':
+                p_name = category.parent_tag.name.upper()
+                if category.parent_tag.parent_tag and category.parent_tag.parent_tag.name != 'platform':
+                    p2_name = category.parent_tag.parent_tag.name.upper()
+            if p_name:
+                if p2_name:
+                    text = "Platform tag %s hasn't child %s (%s > %s). Try again" % (platform.name.upper(), c_name,
+                                                                                     p2_name, p_name)
+                else:
+                    text = "Platform tag %s hasn't child %s (%s). Try again" % (platform.name.upper(), c_name, p_name)
+            else:
+                text = "Platform tag %s hasn't child %s. Try again" % (platform.name.upper(), c_name)
+            return self.make_error(text)
+            # end
+            # return self.make_error("Platform tag %s hasn't child %s. Try again" % (platform.name.upper(),
+            #                                                                        category.name.upper()))
+
         category_children_ids = [child.id for child in category.children_tags]
         if subcategory_id not in category_children_ids:
-            return self.make_error("Category tag %s hasn't child %s. Try again" % (category.name.upper(),
-                                                                                   subcategory.name.upper()))
+            # hotfix for this build
+            # start
+            c_name = subcategory.name.upper()
+            p_name = ''
+            p2_name = ''
+            if subcategory.parent_tag and subcategory.parent_tag.name != 'platform':
+                p_name = subcategory.parent_tag.name.upper()
+                if subcategory.parent_tag.parent_tag and subcategory.parent_tag.parent_tag.name != 'platform':
+                    p2_name = subcategory.parent_tag.parent_tag.name.upper()
+            if p_name:
+                if p2_name:
+                    text = "Category tag %s hasn't child %s (%s > %s). Try again" % (category.name.upper(), c_name,
+                                                                                     p2_name, p_name)
+                else:
+                    text = "Category tag %s hasn't child %s (%s). Try again" % (category.name.upper(), c_name, p_name)
+            else:
+                text = "Category tag %s hasn't child %s. Try again" % (category.name.upper(), c_name)
+            return self.make_error(text)
+            # end
+            # return self.make_error("Category tag %s hasn't child %s. Try again" % (category.name.upper(),
+            #                                                                        subcategory.name.upper()))
 
         # check condition
         condition = self.session.query(Tag).filter(Tag.id == condition_id).first()

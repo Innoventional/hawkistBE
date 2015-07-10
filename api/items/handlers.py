@@ -250,7 +250,9 @@ class ItemsHandler(ApiHandler):
             empty_field_error.append('post code')
 
         if not city:
-            empty_field_error.append('city')
+            logger.debug('NO CITY')
+            if 'post code' not in empty_field_error:
+                empty_field_error.append('post code')
 
         if empty_field_error:
             empty_fields = ','.join(empty_field_error)
@@ -421,6 +423,7 @@ class PostCodeHandler(ApiHandler):
         google_response = get_city_by_code(post_code)
         error, data = google_response['error'], google_response['data']
         if error:
+            # return error
             return self.make_error(error)
         return self.success({'city': data})
 

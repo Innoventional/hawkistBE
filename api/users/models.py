@@ -153,6 +153,7 @@ class UserMetaTag(Base):
                         foreign_keys=user_id)
 
     # selected metatags for user feeds can be 3 types: platform, category and subcategory
+    metatag_type = Column(SmallInteger, nullable=False)
     platform_id = Column(Integer, ForeignKey('platforms.id'), nullable=True, index=True)
     platform = relationship('Platform', backref=backref('user_interested_platforms', order_by=id, cascade="all,delete",
                                                         lazy='dynamic'), foreign_keys=platform_id)

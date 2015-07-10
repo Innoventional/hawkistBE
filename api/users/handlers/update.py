@@ -2,7 +2,7 @@ import logging
 import datetime
 from sqlalchemy import and_, func, or_
 from api.tags.models import Tag, Platform, Category, Subcategory
-from api.users.models import User, UserTags, UserMetaTag
+from api.users.models import User, UserTags, UserMetaTag, UserMetaTagType
 from base import ApiHandler, die, USER_ID, OpenApiHandler
 from helpers import route
 from utility.amazon import upload_file
@@ -295,50 +295,95 @@ class UserMetaTagsHandler(ApiHandler):
             logger.debug('No tags to be added to user %s' % self.user)
 
         if metatag_ids:
-            for metatag_id in metatag_ids:
-                # tag value to int
+            for metatag in metatag_ids:
+                """
+                every metatag which must be added to user for customization feeds consist of type (platform, category,
+                subcategory) and metatag id
+                """
+                metatag_id = metatag['id']
+                metatag_type = metatag['type']
+                if not metatag_id:
+                    return self.make_error('No metatag id')
+                if not metatag_type:
+                    return self.make_error('No metatag type')
+
+                # does client side sent digits?
                 try:
                     metatag_id = int(metatag_id)
-                    # try get this metatag from platform / category / subcategory
-                    platform_metatag = self.session.query(Platform).filter(Platform.id == metatag_id)
-                    category_metatag = self.session.query(Category).filter(Category.id == metatag_id)
-                    subcategory_metatag = self.session.query(Subcategory).filter(Subcategory.id == metatag_id)
-                    if not platform_metatag and not category_metatag and not subcategory_metatag:
-                        return self.make_error('No metatag with id %s' % metatag_id)
+                except ValueError:
+                    return self.make_error('%s is not a number' % metatag_id)
 
-                    # check for platform
-                    if platform_metatag:
-                        already_exists = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
-                                                                                     UserMetaTag.platform_id == metatag_id)).first()
-                        if already_exists:
-                            return self.make_error('You already added tag %s to your feeds' % already_exists.platform.title.upper())
+                # 'cause we have 3 types check is received metatag type valid
+                if metatag_type not in [0, 1, 2]:
+                    return self.make_error('Invalid metatag type')
 
-                    # check for category
-                    if category_metatag:
-                        already_exists = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
-                                                                                     UserMetaTag.category_id == metatag_id)).first()
-                        if already_exists:
-                            return self.make_error('You already added tag %s to your feeds' % already_exists.category.title.upper())
+                # for go through every possible type
+                if metatag_type == 0:
+                    metatag_type = UserMetaTagType.Platform
 
-                    # check for subcategory
-                    if subcategory_metatag:
-                        already_exists = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
-                                                                                     UserMetaTag.subcategory_id == metatag_id)).first()
-                        if already_exists:
-                            return self.make_error('You already added tag %s to your feeds' % already_exists.subcategory.title.upper())
+                    # check is this platform exists
+                    platform = self.session.query(Platform).filter(Platform.id == metatag_id).first()
+                    if not platform:
+                        return self.make_error('Platform which you try add does not exists. Update tag list')
 
-                    user_metatag = UserMetaTag()
-                    user_metatag.user = self.user
-                    if platform_metatag:
-                        user_metatag.platform_id = metatag_id
-                    elif category_metatag:
-                        user_metatag.category_id = metatag_id
-                    elif subcategory_metatag:
-                        user_metatag.subcategory_id = metatag_id
+                    # is this tag already exists in this user
+                    already_exists = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
+                                                                                 UserMetaTag.metatag_type == metatag_type,
+                                                                                 UserMetaTag.platform.id == platform.id)).first()
+                    if already_exists:
+                        return self.make_error('You already added platform %s to your feeds' % (platform.title.upper()))
+
+                    # else create new user metatag
+                    user_platform_tag = UserMetaTag()
+                    user_platform_tag.user = self.user
                     self.session.add(user_metatag)
                     self.session.commit()
-                except ValueError:
-                    logger.debug('%s is not a number' % metatag_id)
+                elif metatag_type == 1:
+                    metatag_type = UserMetaTagType.Category
+                elif metatag_type == 2:
+                    metatag_type = UserMetaTagType.Subcategory
+
+                return
+
+                # try get this metatag from platform / category / subcategory
+                platform_metatag = self.session.query(Platform).filter(Platform.id == metatag_id)
+                category_metatag = self.session.query(Category).filter(Category.id == metatag_id)
+                subcategory_metatag = self.session.query(Subcategory).filter(Subcategory.id == metatag_id)
+                if not platform_metatag and not category_metatag and not subcategory_metatag:
+                    return self.make_error('No metatag with id %s' % metatag_id)
+
+                # check for platform
+                if platform_metatag:
+                    already_exists = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
+                                                                                 UserMetaTag.platform_id == metatag_id)).first()
+                    if already_exists:
+                        return self.make_error('You already added tag %s to your feeds' % already_exists.platform.title.upper())
+
+                # check for category
+                if category_metatag:
+                    already_exists = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
+                                                                                 UserMetaTag.category_id == metatag_id)).first()
+                    if already_exists:
+                        return self.make_error('You already added tag %s to your feeds' % already_exists.category.title.upper())
+
+                # check for subcategory
+                if subcategory_metatag:
+                    already_exists = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
+                                                                                 UserMetaTag.subcategory_id == metatag_id)).first()
+                    if already_exists:
+                        return self.make_error('You already added tag %s to your feeds' % already_exists.subcategory.title.upper())
+
+                user_metatag = UserMetaTag()
+                user_metatag.user = self.user
+                if platform_metatag:
+                    user_metatag.platform_id = metatag_id
+                elif category_metatag:
+                    user_metatag.category_id = metatag_id
+                elif subcategory_metatag:
+                    user_metatag.subcategory_id = metatag_id
+                self.session.add(user_metatag)
+                self.session.commit()
+
 
         return self.success({'user': self.user.user_response})
 

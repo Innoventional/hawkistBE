@@ -136,7 +136,7 @@ class ItemsHandler(ApiHandler):
         # if not self.user.facebook_id:
         #     return self.make_error("Sorry, but you can't sale anything 'cause you don't link your FB account")
         if not self.user.email_status:
-            return self.make_error("Sorry, but you can't sale anything because you DIDN'T confirm your email.")
+            return self.make_error("Sorry, but you can't sale anything because you don't confirm your email.")
 
         logger.debug('REQUEST_OBJECT_NEW_ITEM')
         logger.debug(self.request_object)

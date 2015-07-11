@@ -24,9 +24,14 @@ class AdminUsersHandler(AdminBaseHandler):
 
         users = self.session.query(User).order_by(User.id)
 
+        # pagination function
+        # first get require page number
+        # if not require page number set it to 1 and return first page
         page = self.get_arg('p', int, 1)
+        # get require page size
+        # if not require page size set it to 100 and return 100 items
         page_size = self.get_arg('page_size', int, 100)
-
+        # properly pagination handler
         paginator, tags = paginate(users, page, page_size)
 
         return self.render_string('admin/admin_users.html', users=users, paginator=paginator,
@@ -39,41 +44,59 @@ class AdminUsersHandler(AdminBaseHandler):
 
         user_id = self.get_arg('user_id')
         new_user_type = int(self.get_arg('user_type_id'))
+
+        # check is user exists
         user = self.session.query(User).filter(User.id == user_id).first()
         if not user:
             return self.make_error('Something wrong. Try again later')
 
+        # has chosen user email in his profile
         if not user.email:
             return self.make_error("Forbidden action.\nThis user has no email address in profile")
 
+        # did chosen user confirm his email address
         if not user.email_status:
             return self.make_error("Forbidden action.\nThis user didn't confirm his email address yet")
 
+        # check is usertype changed
         if user.user_type != new_user_type:
+            # text for email message
             text = ''
+            # if user transferred to standard user group
             if new_user_type == 0:
                 text = 'Looks like you were excluded from Hawkist %s user group.' % UserType.tostring(user.user_type)
+            # an another cases
             else:
-                # generate password
+                # generate password to log in in admin tool
+                # select all chars - lower and upper
                 chars = string.ascii_letters
+                # generate 8 random chars
                 password = ''.join(choice(chars) for _ in xrange(8))
+                # then randomly choose digits number (min - 1, max - 4)
                 number_count = choice([i for i in range(1, 4)])
                 while number_count != 0:
+                    # randomly get digit position
                     gap_position = choice([i for i in xrange(8)])
+                    # randomly get digit
                     number = choice([i for i in xrange(10)])
+                    # set it randomly digit on randomly position in chars password
                     password = password[:gap_position] + str(number) + password[gap_position:]
                     number_count -= 1
 
+                # encrypt password and set it to user
                 encrypted_pass = encrypt_password(password=password, salt=env['password_salt'])
                 user.password = encrypted_pass
-                # send email with pass
+                # email text
                 text = 'Congrats!\nYou were added to Hawkist %s user group. Go to %s  and use your email address and ' \
                        'this temporary password to log in administration tool:\n%s\nEnjoy!' % \
                        (UserType.tostring(new_user_type), env['server_address'] + '/api/admin/login', password)
+            # change usertype
             user.user_type = new_user_type
-            self.session.commit()
+            # send email
             subject = 'Permissions changed'
             send_email(text, subject=subject, recipient=user.email)
+            # commit changes
+            self.session.commit()
         return self.success({'message': 'User has been added to %s user group' % UserType.tostring(new_user_type)})
 
     def update(self):
@@ -83,15 +106,23 @@ class AdminUsersHandler(AdminBaseHandler):
         user_id = self.get_arg('user_id')
         action = self.get_arg('action')
 
+
         # get user to be changed
         user = self.session.query(User).filter(User.id == user_id).first()
         if not user:
             return self.make_error('Something wrong. Try again later')
 
+        need_commit = False
+
+        # depending on the action do next
         if action == 'suspend':
             user.system_status = 1
+            need_commit = True
+
         elif action == 'unsuspend':
             user.system_status = 0
+            need_commit = True
+
         elif action == 'edit':
             username = self.get_arg('username')
             email = self.get_arg('email')
@@ -100,36 +131,41 @@ class AdminUsersHandler(AdminBaseHandler):
             # step-by-step
             # username
             if user.username != username and username:
+                # username verification
+                # username can consist of string, digits, dash symbols and dots
                 username = str(username.encode('utf-8'))
                 username_error = username_verification(username)
                 if username_error:
                     return self.make_error(username_error)
 
+                # check is username available
                 already_used = self.session.query(User).filter(and_(User.id != user.id,
                                                                     func.lower(User.username) == username.lower())).first()
                 if already_used:
                     return self.make_error("Sorry, username '%s' already used by another user" % username)
                 user.username = username
+                need_commit = True
 
             # email
             if user.email != email and email:
                 email = str(email.encode('utf-8')).lower()
-                # first validate email
+                # validate email
                 email_error = email_verification(email)
                 if email_error:
                     return self.make_error(email_error)
 
                 user.email = email
-
+                # change email confirmation status
                 user.email_status = False
                 # send email confirmation
                 email_confirmation_sending(self, self.user, email)
+                need_commit = True
 
             # phone
             if user.phone != phone and phone:
                 phone = str(phone)
                 phone = phone.replace('+', '')
-                # first verify number
+                # verify number
                 phone_error = phone_verification(phone)
                 if phone_error:
                     return self.make_error(phone_error)
@@ -161,9 +197,12 @@ class AdminUsersHandler(AdminBaseHandler):
                     user.sent_pins_count += 1
                 else:
                     user.sent_pins_count = 0
+                need_commit = True
 
-        user.updated_at = datetime.datetime.utcnow()
-        self.session.commit()
+        if need_commit:
+            user.updated_at = datetime.datetime.utcnow()
+            self.session.commit()
+            
         return self.success()
 
     def remove(self):

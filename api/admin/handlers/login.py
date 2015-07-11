@@ -21,7 +21,6 @@ class AdminLoginHandler(AdminBaseHandler):
 
     def read(self):
         if self.user:
-        # if self.user is not None:
             return HttpRedirect('/api/admin/users')
 
         return self.render_string('admin/admin_login.html', undefined_user=True, menu_tab_active='')
@@ -32,6 +31,8 @@ class AdminLoginHandler(AdminBaseHandler):
         password = self.get_argument('password')
         message = None
 
+        # because we store encrypted passwords (not entered user text) before user password compare we encrypted
+        # password which get from request parameters
         encrypted_pass = encrypt_password(password, env['password_salt'])
         user = self.session.query(User).filter(User.email == email).first()
 
@@ -42,7 +43,7 @@ class AdminLoginHandler(AdminBaseHandler):
             message = 'Wrong password'
 
         elif user.user_type == UserType.Standard:
-            message = 'Access denied. You user type - standard user'
+            message = 'Access denied. Your user type - standard user'
 
         if message:
             return self.render_string('admin/admin_login.html', message=message, menu_tab_active='',
@@ -59,6 +60,5 @@ class AdminLogoutHandler(AdminBaseHandler):
     def read(self):
         if self.user:
             self.user = None
-            # self.session.commit()
 
         return HttpRedirect('/api/admin/login')

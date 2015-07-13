@@ -89,7 +89,7 @@ class UserHandler(ApiHandler):
             already_used = self.session.query(User).filter(and_(User.id != self.user.id,
                                                                 func.lower(User.username) == username.lower())).first()
             if already_used:
-                return self.make_error("Sorry, username '%s' already used by another user" % username)
+                return self.make_error("Sorry, username '%s' already exists. Please choose another username." % username)
 
             # save username in case if usernames not the same
             if self.user.username != username:
@@ -180,13 +180,13 @@ class UserSocialHandler(ApiHandler):
         if facebook_error:
             return self.make_error(facebook_error)
         if not facebook_id:
-            return self.make_error('Something wrong! Try again later')
+            return self.make_error('Something is wrong. Try again later.')
 
         # check is this facebook id available
         already_used = self.session.query(User).filter(and_(User.facebook_id == facebook_id,
                                                             User.id != self.user.id)).first()
         if already_used:
-            return self.make_error('This facebook account is already used by another user.')
+            return self.make_error('This Facebook account has already been connected to another user account.')
 
         self.user.facebook_id = facebook_id
         self.session.commit()
@@ -325,14 +325,14 @@ class UserMetaTagsHandler(ApiHandler):
                     # check is this platform exists
                     platform = self.session.query(Platform).filter(Platform.id == metatag_id).first()
                     if not platform:
-                        return self.make_error('Platform which you try add does not exists. Update tag list')
+                        return self.make_error('Platform does not exist. Update tag list')
 
                     # is this tag already exists in this user
                     already_exists = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
                                                                                  UserMetaTag.metatag_type == metatag_type,
                                                                                  UserMetaTag.platform.id == platform.id)).first()
                     if already_exists:
-                        return self.make_error('You already added platform %s to your feeds' % (platform.title.upper()))
+                        return self.make_error('You already added platform %s to your feed' % (platform.title.upper()))
 
                     # else create new user metatag
                     user_platform_tag = UserMetaTag()
@@ -358,21 +358,21 @@ class UserMetaTagsHandler(ApiHandler):
                     already_exists = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
                                                                                  UserMetaTag.platform_id == metatag_id)).first()
                     if already_exists:
-                        return self.make_error('You already added tag %s to your feeds' % already_exists.platform.title.upper())
+                        return self.make_error('You already added tag %s to your feed' % already_exists.platform.title.upper())
 
                 # check for category
                 if category_metatag:
                     already_exists = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
                                                                                  UserMetaTag.category_id == metatag_id)).first()
                     if already_exists:
-                        return self.make_error('You already added tag %s to your feeds' % already_exists.category.title.upper())
+                        return self.make_error('You already added tag %s to your feed' % already_exists.category.title.upper())
 
                 # check for subcategory
                 if subcategory_metatag:
                     already_exists = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
                                                                                  UserMetaTag.subcategory_id == metatag_id)).first()
                     if already_exists:
-                        return self.make_error('You already added tag %s to your feeds' % already_exists.subcategory.title.upper())
+                        return self.make_error('You already added tag %s to your feed' % already_exists.subcategory.title.upper())
 
                 user_metatag = UserMetaTag()
                 user_metatag.user = self.user

@@ -48,15 +48,15 @@ class AdminUsersHandler(AdminBaseHandler):
         # check is user exists
         user = self.session.query(User).filter(User.id == user_id).first()
         if not user:
-            return self.make_error('Something wrong. Try again later')
+            return self.make_error('Something is wrong. Try again later.')
 
-        # has chosen user email in his profile
+        # does chosen user have email in his profile
         if not user.email:
-            return self.make_error("Forbidden action.\nThis user has no email address in profile")
+            return self.make_error("Forbidden action.\nThis user has no email address in his profile.")
 
         # did chosen user confirm his email address
         if not user.email_status:
-            return self.make_error("Forbidden action.\nThis user didn't confirm his email address yet")
+            return self.make_error("Forbidden action.\nThis user didn't confirm his email address yet.")
 
         # check is usertype changed
         if user.user_type != new_user_type:
@@ -87,8 +87,8 @@ class AdminUsersHandler(AdminBaseHandler):
                 encrypted_pass = encrypt_password(password=password, salt=env['password_salt'])
                 user.password = encrypted_pass
                 # email text
-                text = 'Congrats!\nYou were added to Hawkist %s user group. Go to %s  and use your email address and ' \
-                       'this temporary password to log in administration tool:\n%s\nEnjoy!' % \
+                text = 'Congrats,\nYou were added to Hawkist %s user group. Go to %s and use your email address and ' \
+                       'this temporary password to log in to the administration module:\n%s\nEnjoy!' % \
                        (UserType.tostring(new_user_type), env['server_address'] + '/api/admin/login', password)
             # change usertype
             user.user_type = new_user_type
@@ -109,7 +109,7 @@ class AdminUsersHandler(AdminBaseHandler):
         # get user to be changed
         user = self.session.query(User).filter(User.id == user_id).first()
         if not user:
-            return self.make_error('Something wrong. Try again later')
+            return self.make_error('Something is wrong. Try again later.')
 
         need_commit = False
 
@@ -141,7 +141,7 @@ class AdminUsersHandler(AdminBaseHandler):
                 already_used = self.session.query(User).filter(and_(User.id != user.id,
                                                                     func.lower(User.username) == username.lower())).first()
                 if already_used:
-                    return self.make_error("Sorry, username '%s' already used by another user" % username)
+                    return self.make_error("Sorry, username '%s' already taken" % username)
                 user.username = username
                 need_commit = True
 
@@ -172,17 +172,17 @@ class AdminUsersHandler(AdminBaseHandler):
                 already_used = self.session.query(User).filter(and_(User.id != user.id,
                                                                     User.phone == phone)).first()
                 if already_used:
-                    return self.make_error("Sorry, phone number '%s' already used by another user" % phone)
+                    return self.make_error("Sorry, mobile number '%s' already taken by another user" % phone)
 
                 # send message to email
                 if user.email:
-                    text = 'Hi!\nYour phone number has changed. New login pin sent to new number.\nEnjoy!'
-                    subject = 'Phone number changed'
+                    text = 'Hi,\nYour mobile number has changed. We have sent a new pin code to this number.\nHawkist'
+                    subject = 'Mobile Number Changed'
                     send_email(text, subject=subject, recipient=user.email)
 
                 # generate pin code
                 confirm_code = ''.join(choice(string.digits) for _ in xrange(4))
-                message_body = 'Hi! Your phone number has changed! Use this code to login:\n%s' % confirm_code
+                message_body = 'Hi, your mobile number has changed. Use this pin code to login:\n%s' % confirm_code
 
                 # and send it to user
                 error = send_sms(phone, message_body)
@@ -211,7 +211,7 @@ class AdminUsersHandler(AdminBaseHandler):
         user_id = self.get_arg('user_id')
         user = self.session.query(User).filter(User.id == user_id).first()
         if not user:
-            return self.make_error('Something wrong. Try again later')
+            return self.make_error('Something is wrong. Try again later.')
         self.session.delete(user)
         self.session.commit()
         return self.success()

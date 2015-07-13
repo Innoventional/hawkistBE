@@ -145,8 +145,8 @@ class AdminCategoryHandler(AdminBaseHandler):
         # check is this platform using
         used = self.session.query(Listing).filter(Listing.category == category).first()
         if used:
-            return self.make_error('Can not delete the tag %s (%s) because it is in use on an active listing. '
-                                   'Please update the tag on the listing and try again.'
+            return self.make_error('Cannot delete the tag %s (%s) because it is in use on an active listing. '
+                                   'Please update the listing with another tag and try again.'
                                    % (category.title.upper(), category.platform.title.upper()))
 
         self.session.delete(category)

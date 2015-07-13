@@ -89,7 +89,7 @@ class ItemsHandler(ApiHandler):
                         if q_word in key:
                             right_tag_names.add(key)
 
-                    # filtered items and get items with fit description or title
+                    # filter items then return items with matching title or description
                     right_title_or_description = [i.id for i in all_items.filter(or_(func.lower(Item.title).ilike(u'%{0}%'.format(q_word)),
                                                                                      func.lower(Item.description).ilike(u'%{0}%'.format(q_word))))]
                     if right_title_or_description:
@@ -110,7 +110,7 @@ class ItemsHandler(ApiHandler):
 
 
                 # TODO optimize using this
-                # filtered them by platform | category | subcategory | title | condition
+                # filtered them by platform | category | subcategory | title | description
                 # items = all_items.filter(or_(Item.platform.name.ilike(u'%{0}%'.format(q)),
                 #                              Item.category.name.ilike(u'%{0}%'.format(q)),
                 #                              Item.subcategory.name.ilike(u'%{0}%'.format(q)),
@@ -134,9 +134,9 @@ class ItemsHandler(ApiHandler):
 
         # check selling ability
         # if not self.user.facebook_id:
-        #     return self.make_error("Sorry, but you can't sale anything 'cause you don't link your FB account")
+        #     return self.make_error("Sorry, but you cannot sell on Hawkist until you have connected a Facebook account.")
         if not self.user.email_status:
-            return self.make_error("Sorry, but you can't sale anything because you don't confirm your email.")
+            return self.make_error("Sorry, but you cannot sell on Hawkist until you have confirmed an email address.")
 
         logger.debug('REQUEST_OBJECT_NEW_ITEM')
         logger.debug(self.request_object)
@@ -291,15 +291,15 @@ class ItemsHandler(ApiHandler):
                     p2_name = category.parent_tag.parent_tag.name.upper()
             if p_name:
                 if p2_name:
-                    text = "Platform tag %s hasn't child %s (%s > %s). Try again" % (platform.name.upper(), c_name,
+                    text = "Platform %s has no tag %s (%s > %s). Try again" % (platform.name.upper(), c_name,
                                                                                      p2_name, p_name)
                 else:
-                    text = "Platform tag %s hasn't child %s (%s). Try again" % (platform.name.upper(), c_name, p_name)
+                    text = "Platform %s has no tag %s (%s). Try again" % (platform.name.upper(), c_name, p_name)
             else:
-                text = "Platform tag %s hasn't child %s. Try again" % (platform.name.upper(), c_name)
+                text = "Platform %s has no tag %s. Try again" % (platform.name.upper(), c_name)
             return self.make_error(text)
             # end
-            # return self.make_error("Platform tag %s hasn't child %s. Try again" % (platform.name.upper(),
+            # return self.make_error("Platform %s has no tag %s. Try again" % (platform.name.upper(),
             #                                                                        category.name.upper()))
 
         category_children_ids = [child.id for child in category.children_tags]
@@ -315,15 +315,15 @@ class ItemsHandler(ApiHandler):
                     p2_name = subcategory.parent_tag.parent_tag.name.upper()
             if p_name:
                 if p2_name:
-                    text = "Category tag %s hasn't child %s (%s > %s). Try again" % (category.name.upper(), c_name,
+                    text = "Category %s has no tag %s (%s > %s). Try again" % (category.name.upper(), c_name,
                                                                                      p2_name, p_name)
                 else:
-                    text = "Category tag %s hasn't child %s (%s). Try again" % (category.name.upper(), c_name, p_name)
+                    text = "Category %s has no tag %s (%s). Try again" % (category.name.upper(), c_name, p_name)
             else:
-                text = "Category tag %s hasn't child %s. Try again" % (category.name.upper(), c_name)
+                text = "Category %s has no tag %s. Try again" % (category.name.upper(), c_name)
             return self.make_error(text)
             # end
-            # return self.make_error("Category tag %s hasn't child %s. Try again" % (category.name.upper(),
+            # return self.make_error("Category %s has no tag %s. Try again" % (category.name.upper(),
             #                                                                        subcategory.name.upper()))
 
         # check condition
@@ -424,7 +424,7 @@ class PostCodeHandler(ApiHandler):
         if not post_code:
             response = {
                 'status': 6,
-                'message': 'You must select a post code in order to create a listing.'
+                'message': 'You must enter a post code in order to create a listing.'
             }
             logger.debug(response)
             return response
@@ -478,7 +478,7 @@ class ListingHandler(ApiHandler):
             # get all user's tag
             user_tags = self.user.user_tags
             if not user_tags:
-                logger.debug("User %s hasn't tags" % self.user.id)
+                logger.debug("User %s has no tags" % self.user.id)
 
             for u in user_tags:
                 print u.id
@@ -521,7 +521,7 @@ class ListingHandler(ApiHandler):
                         if q_word in key:
                             right_tag_names.add(key)
 
-                    # filtered items and get items with fit description or title
+                    # filter items then return items with matching title or description
                     right_title_or_description = [i.id for i in all_listings.filter(or_(func.lower(Listing.title).ilike(u'%{0}%'.format(q_word)),
                                                                                         func.lower(Listing.description).ilike(u'%{0}%'.format(q_word))))]
                     if right_title_or_description:
@@ -551,7 +551,7 @@ class ListingHandler(ApiHandler):
 
 
                 # TODO optimize using this
-                # filtered them by platform | category | subcategory | title | condition
+                # filtered them by platform | category | subcategory | title | description
                 # items = all_items.filter(or_(Item.platform.name.ilike(u'%{0}%'.format(q)),
                 #                              Item.category.name.ilike(u'%{0}%'.format(q)),
                 #                              Item.subcategory.name.ilike(u'%{0}%'.format(q)),
@@ -575,9 +575,9 @@ class ListingHandler(ApiHandler):
 
         # check selling ability
         # if not self.user.facebook_id:
-        #     return self.make_error("Sorry, but you can't sale anything 'cause you don't link your FB account")
+        #     return self.make_error("Sorry, but you cannot sell on Hawkist until you have confirmed an email address.")
         # if not self.user.email_status:
-        #     return self.make_error("Sorry, but you can't sale anything 'cause you don't confirm your email address")
+        #     return self.make_error("Sorry, but you cannot sell on Hawkist until you have connected a Facebook account.")
 
         logger.debug('REQUEST_OBJECT_NEW_ITEM')
         logger.debug(self.request_object)
@@ -730,19 +730,19 @@ class ListingHandler(ApiHandler):
         # check is this nesting right
         platform_categories = [c.id for c in platform.category_platform]
         if category_id not in platform_categories:
-            return self.make_error("Platform tag %s hasn't category %s (%s). Try again"
+            return self.make_error("Platform %s has no category %s (%s). Try again"
                                    % (platform.title.upper(), category.title.upper(), category.platform.title.upper()))
 
         category_subcategories = [c.id for c in category.subcategory_category]
         if subcategory_id not in category_subcategories:
-            return self.make_error("Category tag %s (%s) hasn't subcategory %s (%s -> %s). Try again"
+            return self.make_error("Category %s (%s) has no subcategory %s (%s -> %s). Try again"
                                    % (category.title.upper(), category.platform.title.upper(),
                                       subcategory.title.upper(), subcategory.category.platform.title.upper(),
                                       subcategory.category.title.upper()))
 
         subcategory_color = [c.id for c in subcategory.color_subcategory]
         if color_id not in subcategory_color:
-            return self.make_error("Subcategory tag %s (%s -> %s) hasn't color %s (%s -> %s -> %s). Try again"
+            return self.make_error("Subcategory %s (%s -> %s) has no color %s (%s -> %s -> %s). Try again"
                                    % (subcategory.title.upper(), subcategory.category.platform.title.upper(),
                                       subcategory.category.title.upper(), colour.title.upper(),
                                       colour.subcategory.category.platform.title.upper(),
@@ -751,7 +751,7 @@ class ListingHandler(ApiHandler):
 
         subcategory_condition = [c.id for c in subcategory.condition_subcategory]
         if condition_id not in subcategory_condition:
-            return self.make_error("Subcategory tag %s (%s -> %s) hasn't condition %s (%s -> %s -> %s). Try again"
+            return self.make_error("Subcategory %s (%s -> %s) has no condition %s (%s -> %s -> %s). Try again"
                                    % (subcategory.title.upper(), subcategory.category.platform.title.upper(),
                                       subcategory.category.title.upper(), condition.title.upper(),
                                       condition.subcategory.category.platform.title.upper(),
@@ -763,7 +763,10 @@ class ListingHandler(ApiHandler):
             return self.make_error(u'Retail price must be greater than £1')
 
         if selling_price > retail_price:
-                return self.make_error("Retail price must be greater than selling price")
+            return self.make_error("Retail price must be greater than selling price")
+                
+        if shipping_price < 0:
+            return self.make_error('Shipping price must be greater than or equal to £0')
 
         if len(photos) > 3:
             return self.make_error('You can add only 3 photos')

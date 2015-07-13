@@ -5,7 +5,8 @@ from api.items.models import Listing
 from api.tags.models import Color, Subcategory
 from base import HttpRedirect
 from helpers import route
-from ui_messages.errors.admin_errors.tags_errors import ADMIN_TAG_EMPTY_TITLE, ADMIN_TAG_EMPTY_PARENT
+from ui_messages.errors.admin_errors.tags_errors import ADMIN_TAG_EMPTY_TITLE, ADMIN_TAG_EMPTY_PARENT, \
+    ADMIN_TAG_DOES_NOT_EXIST, ADMIN_COLOUR_ALREADY_EXISTS, ADMIN_TRY_DELETE_COLOUR_WHICH_IS_USED
 
 __author__ = 'ne_luboff'
 
@@ -41,7 +42,7 @@ class AdminColourHandler(AdminBaseHandler):
 
         subcategory = self.session.query(Subcategory).filter(Subcategory.id == subcategory_id).first()
         if not subcategory:
-            return self.make_error('No category with id %s' % subcategory_id)
+            return self.make_error(ADMIN_TAG_DOES_NOT_EXIST % ('subcategory', subcategory_id))
 
         if disable_color == 'true':
             new_colour_code = 'disabled_color'
@@ -51,9 +52,9 @@ class AdminColourHandler(AdminBaseHandler):
                                                                Color.code == new_colour_code)).first()
 
         if already_exists:
-            return self.make_error('Color with name %s already exists in subcategory %s (%s -> %s)'
-                                   % (new_colour_title.upper(), subcategory.title.upper(),
-                                      subcategory.category.platform.title.upper(), subcategory.category.title.upper()))
+            return self.make_error(ADMIN_COLOUR_ALREADY_EXISTS % (new_colour_title.upper(), subcategory.title.upper(),
+                                                                  subcategory.category.platform.title.upper(),
+                                                                  subcategory.category.title.upper()))
 
         new_color = Color()
         new_color.created_at = datetime.datetime.utcnow()
@@ -82,18 +83,18 @@ class AdminColourHandler(AdminBaseHandler):
             return self.make_error("Empty colour code. Backend failure")
 
         if not colour_title:
-            return self.make_error("You can't delete colour title")
+            return self.make_error(ADMIN_TAG_EMPTY_TITLE % 'colour')
 
         if not subcategory_id:
             return self.make_error("Empty subcategory id. Backend failure")
 
         colour = self.session.query(Color).filter(Color.id == colour_id).first()
         if not colour:
-            return self.make_error('No colour with id %s' % colour_id)
+            return self.make_error(ADMIN_TAG_DOES_NOT_EXIST % ('colour', colour_id))
 
         subcategory = self.session.query(Subcategory).filter(Subcategory.id == subcategory_id).first()
         if not subcategory:
-            return self.make_error('No subcategory with id %s' % subcategory_id)
+            return self.make_error(ADMIN_TAG_DOES_NOT_EXIST % ('subcategory', subcategory_id))
 
         if disable_colour == 'true':
             colour_code = 'disabled_color'
@@ -104,9 +105,9 @@ class AdminColourHandler(AdminBaseHandler):
                                                                Color.id != colour.id)).first()
 
         if already_exists:
-            return self.make_error('Colour with name %s already exists in subcategory (%s > %s > %s)'
-                                   % (colour.title.upper(), subcategory.category.platform.title.upper(),
-                                      subcategory.category.title.upper(), subcategory.title.upper()))
+            return self.make_error(ADMIN_COLOUR_ALREADY_EXISTS % (colour_title.upper(), subcategory.title.upper(),
+                                                                  subcategory.category.platform.title.upper(),
+                                                                  subcategory.category.title.upper()))
 
         need_commit = False
         # check is title change
@@ -138,15 +139,15 @@ class AdminColourHandler(AdminBaseHandler):
         colour = self.session.query(Color).filter(Color.id == colour_id).first()
 
         if not colour:
-            return self.make_error('Colour which you try to delete does not exists')
+            return self.make_error(ADMIN_TAG_DOES_NOT_EXIST % ('colour', colour_id))
 
         # check is this colour using
         used = self.session.query(Listing).filter(Listing.color == colour).first()
         if used:
-            return self.make_error('Can not delete the tag %s (%s > %s > %s) because it is in use on an active listing. '
-                                   'Please update the tag on the listing and try again.'
-                                   % (colour.title.upper(), colour.subcategory.category.platform.title.upper(),
-                                      colour.subcategory.category.title.upper(), colour.subcategory.title.upper()))
+            return self.make_error(ADMIN_TRY_DELETE_COLOUR_WHICH_IS_USED % (colour.title.upper(),
+                                                                            colour.subcategory.category.platform.title.upper(),
+                                                                            colour.subcategory.category.title.upper(),
+                                                                            colour.subcategory.title.upper()))
 
         self.session.delete(colour)
         self.session.commit()

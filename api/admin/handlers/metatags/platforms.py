@@ -5,6 +5,8 @@ from api.items.models import Listing
 from api.tags.models import Platform
 from base import HttpRedirect
 from helpers import route
+from ui_messages.errors.admin_errors.tags_errors import ADMIN_TAG_EMPTY_TITLE, ADMIN_PLATFORM_ALREADY_EXISTS, \
+    ADMIN_TAG_DOES_NOT_EXIST, ADMIN_TRY_DELETE_PLATFORM_WHICH_IS_USED
 
 __author__ = 'ne_luboff'
 
@@ -29,12 +31,12 @@ class AdminPlatformHandler(AdminBaseHandler):
         new_platform_title = self.get_argument('new_platform_title')
 
         if not new_platform_title:
-            return self.make_error('You must input new tag title')
+            return self.make_error(ADMIN_TAG_EMPTY_TITLE % 'platform')
 
         already_exists = self.session.query(Platform).filter(func.lower(Platform.title) == new_platform_title.lower()).first()
 
         if already_exists:
-            return self.make_error('Platform with name %s already exists' % new_platform_title.upper())
+            return self.make_error(ADMIN_PLATFORM_ALREADY_EXISTS % new_platform_title.upper())
 
         new_platform = Platform()
         new_platform.created_at = datetime.datetime.utcnow()
@@ -55,17 +57,17 @@ class AdminPlatformHandler(AdminBaseHandler):
             return self.make_error("Empty platform id. Backend failure")
 
         if not platform_title:
-            return self.make_error("You can't delete platform title")
+            return self.make_error(ADMIN_TAG_EMPTY_TITLE % 'platform')
 
         platform = self.session.query(Platform).filter(Platform.id == platform_id).first()
         if not platform:
-            return self.make_error('No platform with id %s' % platform_id)
+            return self.make_error(ADMIN_TAG_DOES_NOT_EXIST % ('platform', platform_id))
 
         already_exists = self.session.query(Platform).filter(and_(func.lower(Platform.title) == platform_title.lower(),
                                                                   Platform.id != platform.id)).first()
 
         if already_exists:
-            return self.make_error('Platform with name %s already exists' % platform_title.upper())
+            return self.make_error(ADMIN_PLATFORM_ALREADY_EXISTS % platform_title.upper())
 
         # check is title change
         if platform.title != platform_title:
@@ -83,13 +85,12 @@ class AdminPlatformHandler(AdminBaseHandler):
         platform = self.session.query(Platform).filter(Platform.id == platform_id).first()
 
         if not platform:
-            return self.make_error('Platform which you try to delete does not exists')
+            return self.make_error(ADMIN_TAG_DOES_NOT_EXIST % ('platform', platform_id))
 
         # check is this platform using
         used = self.session.query(Listing).filter(Listing.platform == platform).first()
         if used:
-            return self.make_error('Can not delete the tag %s because it is in use on an active listing. Please update '
-                                   'the tag on the listing and try again.' % platform.title.upper())
+            return self.make_error(ADMIN_TRY_DELETE_PLATFORM_WHICH_IS_USED % platform.title.upper())
 
         self.session.delete(platform)
         self.session.commit()

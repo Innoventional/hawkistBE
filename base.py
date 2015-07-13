@@ -155,7 +155,8 @@ class ApiHandler(BaseRequestHandler):
     def make_error(message=None, status=1):
 
         response = {
-            'status': status
+            'status': status,
+            'title': 'Error'
         }
 
         if message:

@@ -6,6 +6,8 @@ from api.items.models import Listing
 from api.tags.models import Condition, Subcategory
 from base import HttpRedirect
 from helpers import route
+from ui_messages.errors.admin_errors.tags_errors import ADMIN_TAG_EMPTY_TITLE, ADMIN_TAG_EMPTY_PARENT, \
+    ADMIN_TAG_DOES_NOT_EXIST, ADMIN_CONDITION_ALREADY_EXISTS, ADMIN_TRY_DELETE_CONDITION_WHICH_IS_USED
 
 __author__ = 'ne_luboff'
 
@@ -32,22 +34,23 @@ class AdminConditionHandler(AdminBaseHandler):
         subcategory_id = self.get_argument('subcategory_id')
 
         if not new_condition_title:
-            return self.make_error('You must input new condition title')
+            return self.make_error(ADMIN_TAG_EMPTY_TITLE % 'condition')
 
         if not subcategory_id:
-            return self.make_error('You must select subcategory')
+            return self.make_error(ADMIN_TAG_EMPTY_PARENT % 'subcategory')
 
         subcategory = self.session.query(Subcategory).filter(Subcategory.id == subcategory_id).first()
         if not subcategory:
-            return self.make_error('No category with id %s' % subcategory_id)
+            return self.make_error(ADMIN_TAG_DOES_NOT_EXIST % ('subcategory', subcategory_id))
 
         already_exists = self.session.query(Condition).filter(and_(func.lower(Condition.title) == new_condition_title.lower(),
                                                                    Condition.subcategory == subcategory)).first()
 
         if already_exists:
-            return self.make_error('Condition with name %s already exists in subcategory %s (%s -> %s)'
-                                   % (new_condition_title.upper(), subcategory.title.upper(),
-                                      subcategory.category.platform.title.upper(), subcategory.category.title.upper()))
+            return self.make_error(ADMIN_CONDITION_ALREADY_EXISTS % (new_condition_title.upper(),
+                                                                     subcategory.title.upper(),
+                                                                     subcategory.category.platform.title.upper(),
+                                                                     subcategory.category.title.upper()))
 
         new_condition = Condition()
         new_condition.created_at = datetime.datetime.utcnow()
@@ -70,27 +73,28 @@ class AdminConditionHandler(AdminBaseHandler):
             return self.make_error("Empty condition id. Backend failure")
 
         if not condition_title:
-            return self.make_error("You can't delete condition title")
+            return self.make_error(ADMIN_TAG_EMPTY_TITLE % 'condition')
 
         if not subcategory_id:
             return self.make_error("Empty subcategory id. Backend failure")
 
         condition = self.session.query(Condition).filter(Condition.id == condition_id).first()
         if not condition:
-            return self.make_error('No condition with id %s' % condition_id)
+            return self.make_error(ADMIN_TAG_DOES_NOT_EXIST % ('condition', condition_id))
 
         subcategory = self.session.query(Subcategory).filter(Subcategory.id == subcategory_id).first()
         if not subcategory:
-            return self.make_error('No subcategory with id %s' % subcategory_id)
+            return self.make_error(ADMIN_TAG_DOES_NOT_EXIST % ('subcategory', subcategory_id))
 
         already_exists = self.session.query(Condition).filter(and_(func.lower(Condition.title) == condition_title.lower(),
                                                                    Condition.subcategory == subcategory,
                                                                    Condition.id != condition.id)).first()
 
         if already_exists:
-            return self.make_error('Condition with name %s already exists in subcategory (%s > %s > %s)'
-                                   % (condition.title.upper(), subcategory.category.platform.title.upper(),
-                                      subcategory.category.title.upper(), subcategory.title.upper()))
+            return self.make_error(ADMIN_CONDITION_ALREADY_EXISTS % (condition.title.upper(),
+                                                                     subcategory.title.upper(),
+                                                                     subcategory.category.platform.title.upper(),
+                                                                     subcategory.category.title.upper()))
 
         need_commit = False
         # check is title change
@@ -117,15 +121,15 @@ class AdminConditionHandler(AdminBaseHandler):
         condition = self.session.query(Condition).filter(Condition.id == condition_id).first()
 
         if not condition:
-            return self.make_error('Condition which you try to delete does not exists')
+            return self.make_error(ADMIN_TAG_DOES_NOT_EXIST % ('condition', condition_id))
 
         # check is this colour using
         used = self.session.query(Listing).filter(Listing.condition == condition).first()
         if used:
-            return self.make_error('Can not delete the tag %s (%s > %s > %s) because it is in use on an active listing. '
-                                   'Please update the tag on the listing and try again.'
-                                   % (condition.title.upper(), condition.subcategory.category.platform.title.upper(),
-                                      condition.subcategory.category.title.upper(), condition.subcategory.title.upper()))
+            return self.make_error(ADMIN_TRY_DELETE_CONDITION_WHICH_IS_USED % (condition.title.upper(),
+                                                                               condition.subcategory.category.platform.title.upper(),
+                                                                               condition.subcategory.category.title.upper(),
+                                                                               condition.subcategory.title.upper()))
         self.session.delete(condition)
         self.session.commit()
         return self.success()

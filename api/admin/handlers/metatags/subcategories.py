@@ -5,6 +5,8 @@ from api.items.models import Listing
 from api.tags.models import Category, Subcategory
 from base import HttpRedirect
 from helpers import route
+from ui_messages.errors.admin_errors.tags_errors import ADMIN_TAG_EMPTY_TITLE, ADMIN_TAG_EMPTY_PARENT, \
+    ADMIN_TAG_DOES_NOT_EXIST, ADMIN_SUBCATEGORY_ALREADY_EXISTS, ADMIN_TRY_DELETE_SUBCATEGORY_WHICH_IS_USED
 
 __author__ = 'ne_luboff'
 
@@ -31,21 +33,22 @@ class AdminSubcategoryHandler(AdminBaseHandler):
         category_id = self.get_argument('category_id')
 
         if not new_subcategory_title:
-            return self.make_error('You must input new category title')
+            return self.make_error(ADMIN_TAG_EMPTY_TITLE % 'subcategory')
 
         if not category_id:
-            return self.make_error('You must select platform')
+            return self.make_error(ADMIN_TAG_EMPTY_PARENT % 'category')
 
         category = self.session.query(Category).filter(Category.id == category_id).first()
         if not category:
-            return self.make_error('No category with id %s' % category_id)
+            return self.make_error(ADMIN_TAG_DOES_NOT_EXIST % ('category', category_id))
 
         already_exists = self.session.query(Subcategory).filter(and_(func.lower(Subcategory.title) == new_subcategory_title.lower(),
                                                                      Subcategory.category == category)).first()
 
         if already_exists:
-            return self.make_error('Subcategory with name %s already exists in category %s' % (new_subcategory_title.upper(),
-                                                                                               category.title.upper()))
+            return self.make_error(ADMIN_SUBCATEGORY_ALREADY_EXISTS % (new_subcategory_title.upper(),
+                                                                       category.title.upper(),
+                                                                       category.platform.title.upper()))
 
         new_subcategory = Subcategory()
         new_subcategory.created_at = datetime.datetime.utcnow()
@@ -68,27 +71,27 @@ class AdminSubcategoryHandler(AdminBaseHandler):
             return self.make_error("Empty subcategory id. Backend failure")
 
         if not subcategory_title:
-            return self.make_error("You can't delete subcategory title")
+            return self.make_error(ADMIN_TAG_EMPTY_TITLE % 'subcategory')
 
         if not category_id:
             return self.make_error("Empty category id. Backend failure")
 
         subcategory = self.session.query(Subcategory).filter(Subcategory.id == subcategory_id).first()
         if not subcategory:
-            return self.make_error('No subcategory with id %s' % subcategory_id)
+            return self.make_error(ADMIN_TAG_DOES_NOT_EXIST % ('subcategory', subcategory_id))
 
         category = self.session.query(Category).filter(Category.id == category_id).first()
         if not category:
-            return self.make_error('No category with id %s' % category_id)
+            return self.make_error(ADMIN_TAG_DOES_NOT_EXIST % ('category', category_id))
 
         already_exists = self.session.query(Subcategory).filter(and_(func.lower(Subcategory.title) == subcategory_title.lower(),
                                                                      Subcategory.category == category,
                                                                      Subcategory.id != subcategory.id)).first()
 
         if already_exists:
-            return self.make_error('Subcategory with name %s already exists in category (%s > %s)'
-                                   % (subcategory.title.upper(), category.platform.title.upper(),
-                                      category.title.upper()))
+            return self.make_error(ADMIN_SUBCATEGORY_ALREADY_EXISTS % (subcategory.title.upper(),
+                                                                       category.platform.title.upper(),
+                                                                       category.title.upper()))
 
         need_commit = False
         # check is title change
@@ -115,15 +118,14 @@ class AdminSubcategoryHandler(AdminBaseHandler):
         subcategory = self.session.query(Subcategory).filter(Subcategory.id == subcategory_id).first()
 
         if not subcategory:
-            return self.make_error('Subcategory which you try to delete does not exists')
+            return self.make_error(ADMIN_TAG_DOES_NOT_EXIST % ('subcategory', subcategory_id))
 
         # check is this platform using
         used = self.session.query(Listing).filter(Listing.subcategory == subcategory).first()
         if used:
-            return self.make_error('Can not delete the tag %s (%s > %s) because it is in use on an active listing. '
-                                   'Please update the tag on the listing and try again.'
-                                   % (subcategory.title.upper(), subcategory.category.platform.title.upper(),
-                                      subcategory.category.title.upper()))
+            return self.make_error(ADMIN_TRY_DELETE_SUBCATEGORY_WHICH_IS_USED % (subcategory.title.upper(),
+                                                                                 subcategory.category.platform.title.upper(),
+                                                                                 subcategory.category.title.upper()))
         self.session.delete(subcategory)
         self.session.commit()
         return self.success()

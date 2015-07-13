@@ -3,6 +3,8 @@ from api.users.models import User, UserType
 from base import HttpRedirect
 from environment import env
 from helpers import route, encrypt_password
+from ui_messages.errors.admin_errors.admin_login_errors import ADMIN_LOGIN_USER_NOT_FOUND, \
+    ADMIN_LOGIN_USER_WRONG_PASSWORD, ADMIN_LOGIN_USER_ACCESS_DENIED
 
 __author__ = 'ne_luboff'
 
@@ -37,13 +39,13 @@ class AdminLoginHandler(AdminBaseHandler):
         user = self.session.query(User).filter(User.email == email).first()
 
         if not user:
-            message = 'No user with email %s' % email
+            message = ADMIN_LOGIN_USER_NOT_FOUND % email
 
         elif user.password != encrypted_pass:
-            message = 'Wrong password'
+            message = ADMIN_LOGIN_USER_WRONG_PASSWORD
 
         elif user.user_type == UserType.Standard:
-            message = 'Access denied. Your user type - standard user'
+            message = ADMIN_LOGIN_USER_ACCESS_DENIED
 
         if message:
             return self.render_string('admin/admin_login.html', message=message, menu_tab_active='',

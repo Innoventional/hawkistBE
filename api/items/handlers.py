@@ -2,12 +2,17 @@
 
 import logging
 import datetime
-import random
 from sqlalchemy import or_, desc, and_, func
 from api.items.models import Item, ItemPhoto, Listing, ListingPhoto
 from api.tags.models import Tag, Platform, Category, Subcategory, Color, Condition
 from base import ApiHandler, die, paginate
-from helpers import route, sa_object_to_dict
+from helpers import route
+from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID, CREATE_LISTING_EMPTY_FIELDS, \
+    INVALID_PLATFORM_ID, INVALID_CATEGORY_ID, INVALID_SUBCATEGORY_ID, INVALID_COLOUR_ID, INVALID_CONDITION_ID, \
+    WRONG_PLATFORM_CATEGORY_RELATION, WRONG_CATEGORY_SUBCATEGORY_RELATION, WRONG_SUBCATEGORY_COLOUR_RELATION, \
+    WRONG_SUBCATEGORY_CONDITION_RELATION, CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1, \
+    CREATE_LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE, CREATE_LISTING_TOO_MANY_PHOTOS
+from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE
 from utility.google_api import get_city_by_code
 from utility.tags import interested_user_tag_ids, interested_user_item_ids
 
@@ -457,7 +462,7 @@ class ListingHandler(ApiHandler):
             # first get this item
             listing = self.session.query(Listing).filter(Listing.id == listing_id).first()
             if not listing:
-                return self.make_error('No item with id %s' % listing)
+                return self.make_error(GET_LISTING_INVALID_ID % listing)
 
             # find 6 items with similar category | platform | subcategory
             similar_listings = self.session.query(Listing).filter(and_(or_(Listing.platform_id == listing.platform_id,
@@ -694,79 +699,83 @@ class ListingHandler(ApiHandler):
             empty_field_error.append('city')
 
         if empty_field_error:
-            empty_fields = ','.join(empty_field_error)
+            empty_fields = ', '.join(empty_field_error)
             return {
                 'status': 6,
-                'message': 'You must select a %s in order to create a listing.' % empty_fields,
-                'empty_fields': empty_fields
+                'message': CREATE_LISTING_EMPTY_FIELDS % empty_fields,
+                'title': CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields
             }
 
         # first check all tags
         # check platforms
         platform = self.session.query(Platform).filter(Platform.id == platform_id).first()
         if not platform:
-            return self.make_error('No platform with id %s' % platform_id)
+            return self.make_error(INVALID_PLATFORM_ID % platform_id)
 
         # check category
         category = self.session.query(Category).filter(Category.id == category_id).first()
         if not category:
-            return self.make_error('No category with id %s' % category_id)
+            return self.make_error(INVALID_CATEGORY_ID % category_id)
 
         # check subcategory
         subcategory = self.session.query(Subcategory).filter(Subcategory.id == subcategory_id).first()
         if not subcategory:
-            return self.make_error('No subcategory with id %s' % category_id)
+            return self.make_error(INVALID_SUBCATEGORY_ID % category_id)
 
         # check color
         colour = self.session.query(Color).filter(Color.id == color_id).first()
         if not colour:
-            return self.make_error('No color with id %s' % color_id)
+            return self.make_error(INVALID_COLOUR_ID % color_id)
 
         # check condition
         condition = self.session.query(Condition).filter(Condition.id == condition_id).first()
         if not condition:
-            return self.make_error('No condition with id %s' % condition_id)
+            return self.make_error(INVALID_CONDITION_ID % condition_id)
 
         # check is this nesting right
         platform_categories = [c.id for c in platform.category_platform]
         if category_id not in platform_categories:
-            return self.make_error("Platform tag %s hasn't category %s (%s). Try again"
-                                   % (platform.title.upper(), category.title.upper(), category.platform.title.upper()))
+            return self.make_error(WRONG_PLATFORM_CATEGORY_RELATION % (platform.title.upper(), category.title.upper(),
+                                                                       category.platform.title.upper()))
 
         category_subcategories = [c.id for c in category.subcategory_category]
         if subcategory_id not in category_subcategories:
-            return self.make_error("Category tag %s (%s) hasn't subcategory %s (%s -> %s). Try again"
-                                   % (category.title.upper(), category.platform.title.upper(),
-                                      subcategory.title.upper(), subcategory.category.platform.title.upper(),
-                                      subcategory.category.title.upper()))
+            return self.make_error(WRONG_CATEGORY_SUBCATEGORY_RELATION % (category.title.upper(),
+                                                                          category.platform.title.upper(),
+                                                                          subcategory.title.upper(),
+                                                                          subcategory.category.platform.title.upper(),
+                                                                          subcategory.category.title.upper()))
 
         subcategory_color = [c.id for c in subcategory.color_subcategory]
         if color_id not in subcategory_color:
-            return self.make_error("Subcategory tag %s (%s -> %s) hasn't color %s (%s -> %s -> %s). Try again"
-                                   % (subcategory.title.upper(), subcategory.category.platform.title.upper(),
-                                      subcategory.category.title.upper(), colour.title.upper(),
-                                      colour.subcategory.category.platform.title.upper(),
-                                      colour.subcategory.category.title.upper(),
-                                      colour.subcategory.title.upper()))
+            return self.make_error(WRONG_SUBCATEGORY_COLOUR_RELATION % (subcategory.title.upper(),
+                                                                        subcategory.category.platform.title.upper(),
+                                                                        subcategory.category.title.upper(),
+                                                                        colour.title.upper(),
+                                                                        colour.subcategory.category.platform.title.upper(),
+                                                                        colour.subcategory.category.title.upper(),
+                                                                        colour.subcategory.title.upper()))
 
         subcategory_condition = [c.id for c in subcategory.condition_subcategory]
         if condition_id not in subcategory_condition:
-            return self.make_error("Subcategory tag %s (%s -> %s) hasn't condition %s (%s -> %s -> %s). Try again"
-                                   % (subcategory.title.upper(), subcategory.category.platform.title.upper(),
-                                      subcategory.category.title.upper(), condition.title.upper(),
-                                      condition.subcategory.category.platform.title.upper(),
-                                      condition.subcategory.category.title.upper(), condition.subcategory.title.upper()))
+            return self.make_error(WRONG_SUBCATEGORY_CONDITION_RELATION % (subcategory.title.upper(),
+                                                                           subcategory.category.platform.title.upper(),
+                                                                           subcategory.category.title.upper(),
+                                                                           condition.title.upper(),
+                                                                           condition.subcategory.category.platform.title.upper(),
+                                                                           condition.subcategory.category.title.upper(),
+                                                                           condition.subcategory.title.upper()))
 
         # secondary check other fields
         # price handler
         if retail_price < 1:
-            return self.make_error(u'Retail price must be greater than £1')
+            return self.make_error(CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1)
 
         if selling_price > retail_price:
-                return self.make_error("Retail price must be greater than selling price")
+                return self.make_error(CREATE_LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE)
 
         if len(photos) > 3:
-            return self.make_error('You can add only 3 photos')
+            return self.make_error(CREATE_LISTING_TOO_MANY_PHOTOS)
 
         # finally create listing
         listing = Listing()

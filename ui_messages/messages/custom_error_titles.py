@@ -1,0 +1,22 @@
+__author__ = 'ne_luboff'
+
+# status code 2
+PHONE_VERIFICATION_INVALID_FORMAT_TITLE = 'Invalid Number Format'
+
+# status code 3
+LOG_IN_USER_NOT_FOUND_TITLE = 'User Not Found'
+
+# status code 4
+LOG_IN_INCORRECT_PIN_TITLE = 'Wrong Pin'
+
+# status code 5
+LOG_IN_EMPTY_AUTHORIZATION_DATA_TITLE = 'Can not Sign In'
+
+# status code 6
+CREATE_LISTING_EMPTY_FIELDS_TITLE = 'Missing Field %s'
+
+# status code 7
+POST_CODE_DOES_NOT_EXISTS_IN_GB_TITLE = 'Incorrect Post Code'
+
+# status code 8
+POST_CODE_DOES_NOT_EXISTS_TITLE = 'Post Code Not Found'

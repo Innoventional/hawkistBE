@@ -4,6 +4,7 @@ import smtplib
 from email.mime.text import MIMEText
 from environment import env
 from helpers import encrypt_password
+from ui_messages.messages.email import CONFIRM_EMAIL_LETTER_SUBJECT, CONFIRM_EMAIL_LETTER_TEXT
 
 __author__ = 'ne_luboff'
 
@@ -53,7 +54,6 @@ def email_confirmation_sending(self, user, email):
     user.email_salt = email_salt
     self.session.commit()
 
-    text = 'Welcome to Hawkist!\nTo confirm your email address use the link bellow:\n' + env['server_address'] \
-           + '/api/user/confirm_email/' + email_salt
-    subject = 'Email confirmation'
+    text = CONFIRM_EMAIL_LETTER_TEXT % (env['server_address'], email_salt)
+    subject = CONFIRM_EMAIL_LETTER_SUBJECT
     send_email(text, subject=subject, recipient=email)

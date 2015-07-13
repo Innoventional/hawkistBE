@@ -1,3 +1,4 @@
+import logging
 from random import choice
 import string
 import datetime
@@ -7,11 +8,23 @@ from api.users.models import User, SystemStatus, UserType
 from base import paginate, HttpRedirect
 from environment import env
 from helpers import route, encrypt_password
+from ui_messages.errors.admin_errors.admin_users_errors import ADMIN_UPDATE_USER_HAS_NOT_EMAIL, \
+    ADMIN_UPDATE_USER_NOT_CONFIRM_EMAIL
+from ui_messages.errors.users_errors.update_errors import UPDATE_USER_INFO_USERNAME_ALREADY_USED, \
+    UPDATE_USER_PHONE_ALREADY_USED
+from ui_messages.messages.admin_tool import ADMIN_USERTYPE_CHANGED_SUCCESS
+from ui_messages.messages.custom_error_titles import PHONE_VERIFICATION_INVALID_FORMAT_TITLE
+from ui_messages.messages.email import ADMIN_BACK_USER_TO_STANDARD_USERTYPE_LETTER_TEXT, ADMIN_CHANGE_USERTYPE_LETTER_TEXT, \
+    ADMIN_CHANGE_USERTYPE_LETTER_SUBJECT, ADMIN_PHONE_NUMBER_CHANGED_LETTER_TEXT, \
+    ADMIN_PHONE_NUMBER_CHANGED_LETTER_SUBJECT
+from ui_messages.messages.sms import UPDATE_USER_PHONE_NUMBER_SMS
 from utility.format_verification import username_verification, email_verification, phone_verification
 from utility.send_email import send_email, email_confirmation_sending
 from utility.twilio_api import send_sms
 
 __author__ = 'ne_luboff'
+
+logger = logging.getLogger(__name__)
 
 
 @route('admin/users')
@@ -52,11 +65,11 @@ class AdminUsersHandler(AdminBaseHandler):
 
         # has chosen user email in his profile
         if not user.email:
-            return self.make_error("Forbidden action.\nThis user has no email address in profile")
+            return self.make_error(ADMIN_UPDATE_USER_HAS_NOT_EMAIL)
 
         # did chosen user confirm his email address
         if not user.email_status:
-            return self.make_error("Forbidden action.\nThis user didn't confirm his email address yet")
+            return self.make_error(ADMIN_UPDATE_USER_NOT_CONFIRM_EMAIL)
 
         # check is usertype changed
         if user.user_type != new_user_type:
@@ -64,7 +77,7 @@ class AdminUsersHandler(AdminBaseHandler):
             text = ''
             # if user transferred to standard user group
             if new_user_type == 0:
-                text = 'Looks like you were excluded from Hawkist %s user group.' % UserType.tostring(user.user_type)
+                text = ADMIN_BACK_USER_TO_STANDARD_USERTYPE_LETTER_TEXT % UserType.tostring(user.user_type)
             # an another cases
             else:
                 # generate password to log in in admin tool
@@ -87,17 +100,16 @@ class AdminUsersHandler(AdminBaseHandler):
                 encrypted_pass = encrypt_password(password=password, salt=env['password_salt'])
                 user.password = encrypted_pass
                 # email text
-                text = 'Congrats!\nYou were added to Hawkist %s user group. Go to %s  and use your email address and ' \
-                       'this temporary password to log in administration tool:\n%s\nEnjoy!' % \
+                text = ADMIN_CHANGE_USERTYPE_LETTER_TEXT % \
                        (UserType.tostring(new_user_type), env['server_address'] + '/api/admin/login', password)
             # change usertype
             user.user_type = new_user_type
             # send email
-            subject = 'Permissions changed'
+            subject = ADMIN_CHANGE_USERTYPE_LETTER_SUBJECT
             send_email(text, subject=subject, recipient=user.email)
             # commit changes
             self.session.commit()
-        return self.success({'message': 'User has been added to %s user group' % UserType.tostring(new_user_type)})
+        return self.success({'message': ADMIN_USERTYPE_CHANGED_SUCCESS % UserType.tostring(new_user_type)})
 
     def update(self):
         if not self.user:
@@ -141,7 +153,7 @@ class AdminUsersHandler(AdminBaseHandler):
                 already_used = self.session.query(User).filter(and_(User.id != user.id,
                                                                     func.lower(User.username) == username.lower())).first()
                 if already_used:
-                    return self.make_error("Sorry, username '%s' already used by another user" % username)
+                    return self.make_error(UPDATE_USER_INFO_USERNAME_ALREADY_USED % username)
                 user.username = username
                 need_commit = True
 
@@ -172,23 +184,29 @@ class AdminUsersHandler(AdminBaseHandler):
                 already_used = self.session.query(User).filter(and_(User.id != user.id,
                                                                     User.phone == phone)).first()
                 if already_used:
-                    return self.make_error("Sorry, phone number '%s' already used by another user" % phone)
+                    return self.make_error(UPDATE_USER_PHONE_ALREADY_USED % phone)
 
                 # send message to email
                 if user.email:
-                    text = 'Hi!\nYour phone number has changed. New login pin sent to new number.\nEnjoy!'
-                    subject = 'Phone number changed'
+                    text = ADMIN_PHONE_NUMBER_CHANGED_LETTER_TEXT
+                    subject = ADMIN_PHONE_NUMBER_CHANGED_LETTER_SUBJECT
                     send_email(text, subject=subject, recipient=user.email)
 
                 # generate pin code
                 confirm_code = ''.join(choice(string.digits) for _ in xrange(4))
-                message_body = 'Hi! Your phone number has changed! Use this code to login:\n%s' % confirm_code
+                message_body = UPDATE_USER_PHONE_NUMBER_SMS % confirm_code
 
                 # and send it to user
                 error = send_sms(phone, message_body)
                 if error:
-                    return {'status': 2,
-                            'message': error}
+                    response = {
+                        'status': 2,
+                        'message': error,
+                        'title': PHONE_VERIFICATION_INVALID_FORMAT_TITLE
+                    }
+                    logger.debug(response)
+                    return response
+
                 user.phone = phone
                 user.pin = confirm_code
                 user.last_pin_sending = datetime.datetime.utcnow()

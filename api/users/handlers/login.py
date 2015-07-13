@@ -6,6 +6,11 @@ from sqlalchemy import or_
 from api.users.models import User, SystemStatus, UserType
 from base import ApiHandler, die, OpenApiHandler
 from helpers import route
+from ui_messages.errors.users_errors.login_errors import SIGN_UP_EMPTY_AUTHORIZATION_DATA, \
+    LOG_IN_EMPTY_AUTHORIZATION_DATA, LOG_IN_USER_NOT_FOUND, LOG_IN_INCORRECT_PIN
+from ui_messages.messages.custom_error_titles import PHONE_VERIFICATION_INVALID_FORMAT_TITLE, \
+    LOG_IN_EMPTY_AUTHORIZATION_DATA_TITLE, LOG_IN_USER_NOT_FOUND_TITLE, LOG_IN_INCORRECT_PIN_TITLE
+from ui_messages.messages.sms import SIGN_UP_WELCOME_SMS
 from utility.facebook_api import get_facebook_user, get_facebook_photo
 from utility.format_verification import phone_verification, sms_limit_check
 from utility.send_email import email_confirmation_sending
@@ -38,7 +43,7 @@ class UserLoginHandler(ApiHandler):
                 facebook_token = self.request_object['facebook_token']
 
         if not phone and not facebook_token:
-            return self.make_error('Empty authorization data')
+            return self.make_error(SIGN_UP_EMPTY_AUTHORIZATION_DATA)
 
         # for phone number authorization
         if phone:
@@ -50,7 +55,8 @@ class UserLoginHandler(ApiHandler):
             if phone_error:
                 response = {
                     'status': 2,
-                    'message': phone_error
+                    'message': phone_error,
+                    'title': PHONE_VERIFICATION_INVALID_FORMAT_TITLE
                 }
                 logger.debug(response)
                 return response
@@ -78,13 +84,18 @@ class UserLoginHandler(ApiHandler):
 
             # generate pin code
             confirm_code = ''.join(choice(string.digits) for _ in xrange(4))
-            message_body = 'Welcome to Hawkist! Use this code to login:\n%s' % confirm_code
+            message_body = SIGN_UP_WELCOME_SMS % confirm_code
 
             # and send it to user
             error = send_sms(phone, message_body)
             if error:
-                return {'status': 2,
-                        'message': error}
+                response = {
+                    'status': 2,
+                    'message': error,
+                    'title': PHONE_VERIFICATION_INVALID_FORMAT_TITLE
+                }
+                logger.debug(response)
+                return response
 
             user.pin = confirm_code
             user.last_pin_sending = datetime.datetime.utcnow()
@@ -182,7 +193,8 @@ class UserLoginHandler(ApiHandler):
         if not phone or not pin:
             response = {
                 'status': 5,
-                'message': 'You must input a mobile number and a pin to sign in.'
+                'message': LOG_IN_EMPTY_AUTHORIZATION_DATA,
+                'title': LOG_IN_EMPTY_AUTHORIZATION_DATA_TITLE
             }
             logger.debug(response)
             return response
@@ -194,7 +206,8 @@ class UserLoginHandler(ApiHandler):
         if phone_error:
             response = {
                 'status': 2,
-                'message': phone_error
+                'message': phone_error,
+                'title': PHONE_VERIFICATION_INVALID_FORMAT_TITLE
             }
             logger.debug(response)
             return response
@@ -204,7 +217,8 @@ class UserLoginHandler(ApiHandler):
         if not user:
             response = {
                 'status': 3,
-                'message': 'There is no user with mobile number %s. Please check the mobile number or sign up.' % phone
+                'message': LOG_IN_USER_NOT_FOUND % phone,
+                'title': LOG_IN_USER_NOT_FOUND_TITLE
             }
             logger.debug(response)
             return response
@@ -212,7 +226,8 @@ class UserLoginHandler(ApiHandler):
         if user.pin != pin:
             response = {
                 'status': 4,
-                'message': 'The pin %s is incorrect. Please try again or request a new pin.' % pin
+                'message': LOG_IN_INCORRECT_PIN % pin,
+                'title': LOG_IN_INCORRECT_PIN_TITLE
             }
             logger.debug(response)
             return response

@@ -44,12 +44,6 @@ class TagsHandler(ApiHandler):
         return self.success({'tags': response})
 
 
-def get_children(tag):
-    if tag.children_tags:
-        print [i.name for i in tag.children_tags]
-    return tag.children_tags
-
-
 @route('metatags')
 class MetaTagsHandler(ApiHandler):
     allowed_methods = ('GET', )

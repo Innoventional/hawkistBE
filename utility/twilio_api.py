@@ -1,6 +1,7 @@
 import logging
 import requests
 from twilio.rest import TwilioRestClient, exceptions
+from ui_messages.errors.utility_errors.twilio_api_errors import TWILIO_INVALID_PHONE_NUMBER, TWILIO_UNSUPPORTED_REGION
 
 logger = logging.getLogger(__name__)
 
@@ -28,15 +29,10 @@ def send_sms(to_number, text):
         exception_text = str(e)
         if 'is not a valid phone number' in exception_text:
             logger.debug('https://www.twilio.com/docs/errors/21211')
-            error = "Please input a mobile number starting in '07'. Or else Sign Up with a Facebook account."
-        if 'Trial accounts cannot send messages to unverified numbers' in exception_text:
-            logger.debug('https://www.twilio.com/docs/errors/21608')
-            error = 'Trial accounts cannot send messages to unverified numbers. Ask account owner verify your number ' \
-                    'or ask consumer purchase a Twilio number to send messages to unverified numbers'
+            error = TWILIO_INVALID_PHONE_NUMBER
         if 'Permission to send an SMS has not been enabled for the region' in exception_text:
             logger.debug('https://www.twilio.com/docs/errors/21408')
-            error = 'Permission to send an SMS has not been enabled for your region. Ask Twilio account owner add ' \
-                    'your country to supported list'
+            error = TWILIO_UNSUPPORTED_REGION
     finally:
         return error
 

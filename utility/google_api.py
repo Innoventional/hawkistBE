@@ -1,6 +1,10 @@
 import json
 import logging
 import urllib2
+from ui_messages.errors.utility_errors.google_api_errors import POST_CODE_DOES_NOT_EXISTS, \
+    POST_CODE_DOES_NOT_EXISTS_IN_GB
+from ui_messages.messages.custom_error_titles import POST_CODE_DOES_NOT_EXISTS_TITLE, \
+    POST_CODE_DOES_NOT_EXISTS_IN_GB_TITLE
 
 __author__ = 'ne_luboff'
 
@@ -35,7 +39,8 @@ def get_city_by_code(post_code):
         if not results_with_required_zip_code:
             error = {
                 'status': '8',
-                'message': 'Unable to match your Post Code with a City or Location. Please check it and try again'
+                'message': POST_CODE_DOES_NOT_EXISTS,
+                'title': POST_CODE_DOES_NOT_EXISTS_TITLE
             }
             # error = 'No location with post code %s' % post_code
         else:
@@ -53,7 +58,8 @@ def get_city_by_code(post_code):
             if not results_with_required_zip_code_in_GB:
                 error = {
                     'status': '7',
-                    'message': 'Please check the Post Code to ensure that it is correctly formatted'
+                    'message': POST_CODE_DOES_NOT_EXISTS_IN_GB,
+                    'title': POST_CODE_DOES_NOT_EXISTS_IN_GB_TITLE
                 }
                 # error = 'No city with post code %s in GB' % post_code
             else:
@@ -70,7 +76,8 @@ def get_city_by_code(post_code):
                     print url
                     error = {
                         'status': '7',
-                        'message': 'Please check the Post Code to ensure that it is correctly formatted'
+                        'message': POST_CODE_DOES_NOT_EXISTS_IN_GB,
+                        'title': POST_CODE_DOES_NOT_EXISTS_IN_GB_TITLE
                     }
                     # error = 'No city with post code %s in GB' % post_code
                 else:
@@ -78,9 +85,9 @@ def get_city_by_code(post_code):
     elif request_status == 'ZERO_RESULTS':
         error = {
             'status': '8',
-            'message': 'Unable to match your Post Code with a City or Location. Please check it and try again'
+            'message': POST_CODE_DOES_NOT_EXISTS,
+            'title': POST_CODE_DOES_NOT_EXISTS_TITLE
         }
-        # error = 'Wrong post code %s' % post_code
     else:
         error = request_status
     return {

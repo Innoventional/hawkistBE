@@ -5,6 +5,9 @@ from api.tags.models import Tag, Platform, Category, Subcategory
 from api.users.models import User, UserTags, UserMetaTag, UserMetaTagType
 from base import ApiHandler, die, USER_ID, OpenApiHandler
 from helpers import route
+from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID, UPDATE_USER_INFO_NO_USERNAME, \
+    UPDATE_USER_INFO_NO_EMAIL, UPDATE_USER_INFO_USERNAME_ALREADY_USED, INVALID_CONFIRM_EMAIL_LINK, \
+    UPDATE_USER_LINK_FB_NO_TOKEN, UPDATE_USER_FB_ALREADY_USED
 from utility.amazon import upload_file
 from utility.facebook_api import get_facebook_user
 from utility.format_verification import username_verification, email_verification
@@ -32,7 +35,7 @@ class UserHandler(ApiHandler):
         if user_id:
             user = self.session.query(User).get(user_id)
             if not user:
-                return self.make_error('No user with id %s' % user_id)
+                return self.make_error(NO_USER_WITH_ID % user_id)
             return self.success({'user': user.user_response})
         else:
             logger.debug(self.get_secure_cookie('user-id'))
@@ -71,10 +74,10 @@ class UserHandler(ApiHandler):
         logger.debug('about_me %s' % about_me)
 
         if not username:
-            return self.make_error('Username is required')
+            return self.make_error(UPDATE_USER_INFO_NO_USERNAME)
 
         if not email:
-            return self.make_error('Email is required')
+            return self.make_error(UPDATE_USER_INFO_NO_EMAIL)
 
         need_commit = False
 
@@ -89,7 +92,7 @@ class UserHandler(ApiHandler):
             already_used = self.session.query(User).filter(and_(User.id != self.user.id,
                                                                 func.lower(User.username) == username.lower())).first()
             if already_used:
-                return self.make_error("Sorry, username '%s' already used by another user" % username)
+                return self.make_error(UPDATE_USER_INFO_USERNAME_ALREADY_USED % username)
 
             # save username in case if usernames not the same
             if self.user.username != username:
@@ -147,7 +150,7 @@ class UserEmailVerificationHandler(OpenApiHandler):
         # get user by email_salt
         user = self.session.query(User).filter(User.email_salt == email_salt).first()
         if not user:
-            return self.render_string('ui/error.html', message='Invalid confirmation link. Try again later')
+            return self.render_string('ui/error.html', message=INVALID_CONFIRM_EMAIL_LINK)
 
         user.email_status = True
         self.session.commit()
@@ -173,7 +176,7 @@ class UserSocialHandler(ApiHandler):
                 facebook_token = self.request_object['facebook_token']
 
         if not facebook_token:
-            return self.make_error('No facebook token')
+            return self.make_error(UPDATE_USER_LINK_FB_NO_TOKEN)
 
         facebook_response = get_facebook_user(facebook_token)
         facebook_error, facebook_id = facebook_response['error'], facebook_response['data']
@@ -186,7 +189,7 @@ class UserSocialHandler(ApiHandler):
         already_used = self.session.query(User).filter(and_(User.facebook_id == facebook_id,
                                                             User.id != self.user.id)).first()
         if already_used:
-            return self.make_error('This facebook account is already used by another user.')
+            return self.make_error(UPDATE_USER_FB_ALREADY_USED)
 
         self.user.facebook_id = facebook_id
         self.session.commit()
@@ -273,6 +276,7 @@ class UserTagsHandler(ApiHandler):
                     logger.debug('%s is not a number' % tag_id)
 
         return self.success({'user': self.user.user_response})
+
 
 @route('user/metatags')
 class UserMetaTagsHandler(ApiHandler):

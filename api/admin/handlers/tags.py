@@ -71,11 +71,11 @@ class AdminTagsHandler(AdminBaseHandler):
             return self.make_error('You must input new tag title')
 
         if not tag_id or not parent_tag_id:
-            return self.make_error('Something wrong. Try again later')
+            return self.make_error('Something is wrong. Try again later.')
 
         tag = self.session.query(Tag).filter(Tag.id == tag_id).first()
         if not tag:
-            return self.make_error('Something wrong. Try again later')
+            return self.make_error('Something is wrong. Try again later.')
 
         if tag.name != tag_name:
             tag.name = tag_name
@@ -98,7 +98,7 @@ class AdminTagsHandler(AdminBaseHandler):
         tag = self.session.query(Tag).filter(Tag.id == tag_id).first()
 
         if not tag:
-            return self.make_error('Something wrong. Try again later')
+            return self.make_error('Something is wrong. Try again later.')
         # check is this tag using
         used = self.session.query(Item).filter(or_(Item.platform_id == tag_id,
                                                    Item.category_id == tag_id,
@@ -106,8 +106,8 @@ class AdminTagsHandler(AdminBaseHandler):
                                                    Item.condition_id == tag_id,
                                                    Item.color_id == tag_id)).first()
         if used:
-            return self.make_error('Can not delete the tag %s because it is in use on an active listing. Please update '
-                                   'the tag on the listing and try again.' % tag.name.upper())
+            return self.make_error('Cannot delete the tag %s because it is in use on an active listing. Please update '
+                                   'the listing with a new tag and try again.' % tag.name.upper())
         self.session.delete(tag)
         self.session.commit()
         return self.success()

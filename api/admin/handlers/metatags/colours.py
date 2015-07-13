@@ -142,8 +142,8 @@ class AdminColourHandler(AdminBaseHandler):
         # check is this colour using
         used = self.session.query(Listing).filter(Listing.color == colour).first()
         if used:
-            return self.make_error('Can not delete the tag %s (%s > %s > %s) because it is in use on an active listing. '
-                                   'Please update the tag on the listing and try again.'
+            return self.make_error('Cannot delete the tag %s (%s > %s > %s) because it is in use on an active listing. '
+                                   'Please update the listing with another tag and try again.'
                                    % (colour.title.upper(), colour.subcategory.category.platform.title.upper(),
                                       colour.subcategory.category.title.upper(), colour.subcategory.title.upper()))
 

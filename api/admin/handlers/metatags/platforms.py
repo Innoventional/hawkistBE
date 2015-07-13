@@ -88,8 +88,8 @@ class AdminPlatformHandler(AdminBaseHandler):
         # check is this platform using
         used = self.session.query(Listing).filter(Listing.platform == platform).first()
         if used:
-            return self.make_error('Can not delete the tag %s because it is in use on an active listing. Please update '
-                                   'the tag on the listing and try again.' % platform.title.upper())
+            return self.make_error('Cannot delete the tag %s because it is in use on an active listing. Please update '
+                                   'the listing with another tag and try again.' % platform.title.upper())
 
         self.session.delete(platform)
         self.session.commit()

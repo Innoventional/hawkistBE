@@ -182,13 +182,13 @@ class ItemsHandler(ApiHandler):
                 color_id = self.request_object['color']
 
             if 'retail_price' in self.request_object:
-                retail_price = float(self.request_object['retail_price'])
+                retail_price = self.request_object['retail_price']
 
             if 'selling_price' in self.request_object:
-                selling_price = float(self.request_object['selling_price'])
+                selling_price = self.request_object['selling_price']
 
             if 'shipping_price' in self.request_object:
-                shipping_price = float(self.request_object['shipping_price'])
+                shipping_price = self.request_object['shipping_price']
 
             if 'collection_only' in self.request_object:
                 collection_only = self.request_object['collection_only']
@@ -338,6 +338,9 @@ class ItemsHandler(ApiHandler):
 
         # secondary check other fields
         # price handler
+        retail_price = float(retail_price)
+        selling_price = float(selling_price)
+        shipping_price = float(shipping_price)
         if retail_price < 1:
             return self.make_error(u'Retail price must be greater than £1')
 

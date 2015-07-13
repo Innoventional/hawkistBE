@@ -107,7 +107,7 @@ class AdminTagsHandler(AdminBaseHandler):
                                                    Item.color_id == tag_id)).first()
         if used:
             return self.make_error('Cannot delete the tag %s because it is in use on an active listing. Please update '
-                                   'the listing with a new tag and try again.' % tag.name.upper())
+                                   'the listing with another tag and try again.' % tag.name.upper())
         self.session.delete(tag)
         self.session.commit()
         return self.success()

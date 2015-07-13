@@ -48,7 +48,8 @@ def send_email(text=None, subject=None, recipient=None, filename=None, recipient
 
 
 def email_confirmation_sending(self, user, email):
-    email_salt = encrypt_password(password=email, salt=env['password_salt'])
+    # create salt as email + user id
+    email_salt = encrypt_password(password=email+str(user.id), salt=env['password_salt'])
     user.email_salt = email_salt
     self.session.commit()
 

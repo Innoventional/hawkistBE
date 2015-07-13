@@ -260,8 +260,8 @@ class ItemsHandler(ApiHandler):
             empty_fields = ', '.join(empty_field_error)
             response = {
                 'status': 6,
-                'message': 'You must select a %s in order to create a listing.' % empty_fields,
-                'empty_fields': empty_fields
+                'message': CREATE_LISTING_EMPTY_FIELDS % empty_fields,
+                'title': CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields
             }
             logger.debug(response)
             return response

@@ -5,6 +5,7 @@ from api.items.models import Listing
 from api.tags.models import Color, Subcategory
 from base import HttpRedirect
 from helpers import route
+from ui_messages.errors.admin_errors.tags_errors import ADMIN_TAG_EMPTY_TITLE, ADMIN_TAG_EMPTY_PARENT
 
 __author__ = 'ne_luboff'
 
@@ -33,10 +34,10 @@ class AdminColourHandler(AdminBaseHandler):
         disable_color = self.get_argument('disable_colour')
 
         if not new_colour_title:
-            return self.make_error('You must input new colour title')
+            return self.make_error(ADMIN_TAG_EMPTY_TITLE % 'colour')
 
         if not subcategory_id:
-            return self.make_error('You must select subcategory')
+            return self.make_error(ADMIN_TAG_EMPTY_PARENT % 'subcategory')
 
         subcategory = self.session.query(Subcategory).filter(Subcategory.id == subcategory_id).first()
         if not subcategory:

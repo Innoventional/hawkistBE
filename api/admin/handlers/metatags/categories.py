@@ -5,6 +5,8 @@ from api.items.models import Listing
 from api.tags.models import Category, Platform
 from base import HttpRedirect
 from helpers import route
+from ui_messages.errors.admin_errors.tags_errors import ADMIN_TAG_EMPTY_TITLE, ADMIN_TAG_EMPTY_PARENT, \
+    ADMIN_TAG_DOES_NOT_EXIST, ADMIN_CATEGORY_ALREADY_EXISTS, ADMIN_TRY_DELETE_CATEGORY_WHICH_IS_USED
 
 __author__ = 'ne_luboff'
 
@@ -45,15 +47,15 @@ class AdminCategoryHandler(AdminBaseHandler):
         # check is all data fill because all this fields (new category title and parent platform id) are required
         # if one of field is empty - return an error
         if not new_category_title:
-            return self.make_error('You must input new category title')
+            return self.make_error(ADMIN_TAG_EMPTY_TITLE % 'category')
 
         if not platform_id:
-            return self.make_error('You must select platform')
+            return self.make_error(ADMIN_TAG_EMPTY_PARENT % 'platform')
 
         # check is chosen platform exists
         platform = self.session.query(Platform).filter(Platform.id == platform_id).first()
         if not platform:
-            return self.make_error('No platform with id %s' % platform_id)
+            return self.make_error(ADMIN_TAG_DOES_NOT_EXIST % ('platform', platform_id))
 
         # check is category which we want to create already exists in this platform
         # because category title not case sensitive we must compare in lower register
@@ -61,8 +63,7 @@ class AdminCategoryHandler(AdminBaseHandler):
                                                                   Category.platform == platform)).first()
 
         if already_exists:
-            return self.make_error('Category with name %s already exists in platform %s' % (new_category_title.upper(),
-                                                                                            platform.title.upper()))
+            return self.make_error(ADMIN_CATEGORY_ALREADY_EXISTS % (new_category_title.upper(), platform.title.upper()))
 
         # finally in same category not exist create a new one
         new_category = Category()
@@ -89,26 +90,25 @@ class AdminCategoryHandler(AdminBaseHandler):
             return self.make_error("Empty category id. Backend failure")
 
         if not category_title:
-            return self.make_error("You can't delete category title")
+            return self.make_error(ADMIN_TAG_EMPTY_TITLE % 'category')
 
         if not platform_id:
             return self.make_error("Empty platform id. Backend failure")
 
         category = self.session.query(Category).filter(Category.id == category_id).first()
         if not category:
-            return self.make_error('No category with id %s' % category_id)
+            return self.make_error(ADMIN_TAG_DOES_NOT_EXIST % ('category', category_id))
 
         platform = self.session.query(Platform).filter(Platform.id == platform_id).first()
         if not platform:
-            return self.make_error('No platform with id %s' % platform_id)
+            return self.make_error( ADMIN_TAG_DOES_NOT_EXIST % ('platform', platform_id))
 
         already_exists = self.session.query(Category).filter(and_(func.lower(Category.title) == category_title.lower(),
                                                                   Category.platform == platform,
                                                                   Category.id != category.id)).first()
 
         if already_exists:
-            return self.make_error('Category with name %s already exists in platform %s' % (category.title.upper(),
-                                                                                            platform.title.upper()))
+            return self.make_error(ADMIN_CATEGORY_ALREADY_EXISTS % (category.title.upper(), platform.title.upper()))
 
         # need commit is the flag that show us is something changed in current category info
         # we need it to know must we connect to database  or not
@@ -140,14 +140,13 @@ class AdminCategoryHandler(AdminBaseHandler):
         category = self.session.query(Category).filter(Category.id == category_id).first()
 
         if not category:
-            return self.make_error('Category which you try to delete does not exists')
+            return self.make_error(ADMIN_TAG_DOES_NOT_EXIST % ('category', category_id))
 
         # check is this platform using
         used = self.session.query(Listing).filter(Listing.category == category).first()
         if used:
-            return self.make_error('Can not delete the tag %s (%s) because it is in use on an active listing. '
-                                   'Please update the tag on the listing and try again.'
-                                   % (category.title.upper(), category.platform.title.upper()))
+            return self.make_error(ADMIN_TRY_DELETE_CATEGORY_WHICH_IS_USED % (category.title.upper(),
+                                                                              category.platform.title.upper()))
 
         self.session.delete(category)
         self.session.commit()

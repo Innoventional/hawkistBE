@@ -122,8 +122,8 @@ class AdminConditionHandler(AdminBaseHandler):
         # check is this colour using
         used = self.session.query(Listing).filter(Listing.condition == condition).first()
         if used:
-            return self.make_error('Can not delete the tag %s (%s > %s > %s) because it is in use on an active listing. '
-                                   'Please update the tag on the listing and try again.'
+            return self.make_error('Cannot delete the tag %s (%s > %s > %s) because it is in use on an active listing. '
+                                   'Please update the listing with another tag and try again.'
                                    % (condition.title.upper(), condition.subcategory.category.platform.title.upper(),
                                       condition.subcategory.category.title.upper(), condition.subcategory.title.upper()))
         self.session.delete(condition)

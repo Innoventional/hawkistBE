@@ -261,7 +261,7 @@ class ItemsHandler(ApiHandler):
             response = {
                 'status': 6,
                 'message': CREATE_LISTING_EMPTY_FIELDS % empty_fields,
-                'title': CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields
+                'title': CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields.capitalize()
             }
             logger.debug(response)
             return response

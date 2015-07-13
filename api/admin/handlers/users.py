@@ -106,7 +106,6 @@ class AdminUsersHandler(AdminBaseHandler):
         user_id = self.get_arg('user_id')
         action = self.get_arg('action')
 
-
         # get user to be changed
         user = self.session.query(User).filter(User.id == user_id).first()
         if not user:
@@ -158,7 +157,7 @@ class AdminUsersHandler(AdminBaseHandler):
                 # change email confirmation status
                 user.email_status = False
                 # send email confirmation
-                email_confirmation_sending(self, self.user, email)
+                email_confirmation_sending(self, user, email)
                 need_commit = True
 
             # phone
@@ -202,7 +201,7 @@ class AdminUsersHandler(AdminBaseHandler):
         if need_commit:
             user.updated_at = datetime.datetime.utcnow()
             self.session.commit()
-            
+
         return self.success()
 
     def remove(self):

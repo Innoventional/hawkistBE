@@ -48,10 +48,12 @@ class UserLoginHandler(ApiHandler):
             # first verify number
             phone_error = phone_verification(phone)
             if phone_error:
-                return {
+                response = {
                     'status': 2,
                     'message': phone_error
                 }
+                logger.debug(response)
+                return response
 
             # try get existing user
             user = self.session.query(User).filter(User.phone == phone).first()
@@ -178,34 +180,42 @@ class UserLoginHandler(ApiHandler):
                 pin = str(self.request_object['pin'])
 
         if not phone or not pin:
-            return {
+            response = {
                 'status': 5,
                 'message': 'You must input a mobile number and a pin to sign in.'
             }
+            logger.debug(response)
+            return response
 
         # first of all delete + symbol
         phone = str(phone)
         phone = phone.replace('+', '')
         phone_error = phone_verification(phone)
         if phone_error:
-            return {
+            response = {
                 'status': 2,
                 'message': phone_error
             }
+            logger.debug(response)
+            return response
 
         user = self.session.query(User).filter(User.phone == phone).first()
 
         if not user:
-            return {
+            response = {
                 'status': 3,
                 'message': 'There is no user with mobile number %s. Please check the mobile number or sign up.' % phone
             }
+            logger.debug(response)
+            return response
 
         if user.pin != pin:
-            return {
+            response = {
                 'status': 4,
                 'message': 'The pin %s is incorrect. Please try again or request a new pin.' % pin
             }
+            logger.debug(response)
+            return response
 
         if user.username and user.email:
             user.first_login = False

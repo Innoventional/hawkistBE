@@ -106,6 +106,7 @@ class UserHandler(ApiHandler):
 
             if self.user.email != email:
                 self.user.email = email
+                self.user.email_status = False
                 # send email confirmation
                 email_confirmation_sending(self, self.user, email)
                 need_commit = True

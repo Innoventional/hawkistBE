@@ -253,11 +253,13 @@ class ItemsHandler(ApiHandler):
 
         if empty_field_error:
             empty_fields = ', '.join(empty_field_error)
-            return {
+            response = {
                 'status': 6,
                 'message': 'You must select a %s in order to create a listing.' % empty_fields,
                 'empty_fields': empty_fields
             }
+            logger.debug(response)
+            return response
 
         # first check all tags
         # check platforms
@@ -417,14 +419,17 @@ class PostCodeHandler(ApiHandler):
             post_code = self.request_object['post_code']
 
         if not post_code:
-            return {
+            response = {
                 'status': 6,
                 'message': 'You must select a post code in order to create a listing.'
             }
+            logger.debug(response)
+            return response
 
         google_response = get_city_by_code(post_code)
         error, data = google_response['error'], google_response['data']
         if error:
+            logger.debug(error)
             return error
             # return self.make_error(error)
         return self.success({'city': data})

@@ -78,7 +78,7 @@ class UserLoginHandler(ApiHandler):
 
             # generate pin code
             confirm_code = ''.join(choice(string.digits) for _ in xrange(4))
-            message_body = 'Welcome to Hawkist! Use this code to login:\n%s' % confirm_code
+            message_body = 'Welcome to Hawkist! Use this pin code to login:\n%s' % confirm_code
 
             # and send it to user
             error = send_sms(phone, message_body)
@@ -99,7 +99,7 @@ class UserLoginHandler(ApiHandler):
                 return self.make_error(facebook_error)
             facebook_id = facebook_data.get('id', None)
             if not facebook_id:
-                return self.make_error('Something wrong! Try again later')
+                return self.make_error('Something is wrong. Try again later.')
 
             # try get existing fb user
             user = self.session.query(User).filter(User.facebook_id == facebook_id).first()
@@ -182,7 +182,7 @@ class UserLoginHandler(ApiHandler):
         if not phone or not pin:
             response = {
                 'status': 5,
-                'message': 'You must input a mobile number and a pin to sign in.'
+                'message': 'You must input a mobile number and a pin code to sign in.'
             }
             logger.debug(response)
             return response
@@ -212,7 +212,7 @@ class UserLoginHandler(ApiHandler):
         if user.pin != pin:
             response = {
                 'status': 4,
-                'message': 'The pin %s is incorrect. Please try again or request a new pin.' % pin
+                'message': 'The pin code %s is incorrect. Please try again or request a new pin.' % pin
             }
             logger.debug(response)
             return response

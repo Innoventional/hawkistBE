@@ -246,15 +246,34 @@ Response:
 
 **Add tags**
 
-    Url: 'user/tags'
+    Url: 'user/metatags'
     Method: 'PUT'
 
 
 Data:
 
     {
-        "tags" : [1, 2]
+        "tags": [
+            {
+                "type": VALID_TAG_TYPE,         - int      
+                "id": int
+            }, 
+            .
+            .
+            .
+            {
+                "type": VALID_TAG_TYPE, 
+                "id": int
+            }
+        ]
     }
+    
+    
+VALID_TAG_TYPE
+
+    Platform = 0
+    Category = 1
+    Subcategory = 2
 
 
 Response Success:
@@ -275,14 +294,19 @@ Response Failure:
     
 **Delete tags**
 
-    Url: 'user/tags'
+    Url: 'user/matatags'
     Method: 'DELETE'
 
 
 Data:
 
     {
-        "tags" : [2]
+        "tags": [
+            {
+                "type": VALID_TAG_TYPE,         - int      
+                "id": int
+            }
+        ]
     }
 
 

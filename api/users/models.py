@@ -82,28 +82,21 @@ class User(Base):
         response = []
         user_metatags = self.user_metatags
         for m in user_metatags:
+            current_tag_response = {
+                'id': m.id,
+                'type': m.metatag_type
+            }
             # we must define type
-            if m.platform:
-                response.append({
-                    'id': m.id,
-                    'type': 'platform',
-                    'metatag_id': m.platform.id,
-                    'metatag_title': m.platform.title
-                })
-            if m.category:
-                response.append({
-                    'id': m.id,
-                    'type': 'category',
-                    'metatag_id': m.category.id,
-                    'metatag_title': m.category.title
-                })
-            if m.subcategory:
-                response.append({
-                    'id': m.id,
-                    'type': 'subcategory',
-                    'metatag_id': m.subcategory.id,
-                    'metatag_title': m.subcategory.title
-                })
+            if m.metatag_type == 0:
+                current_tag_response['metatag_id'] = m.platform.id
+                current_tag_response['metatag_title'] = m.platform.title
+            elif m.metatag_type == 1:
+                current_tag_response['metatag_id'] = m.category.id
+                current_tag_response['metatag_title'] = m.category.title
+            elif m.metatag_type == 2:
+                current_tag_response['metatag_id'] = m.subcategory.id
+                current_tag_response['metatag_title'] = m.subcategory.title
+            response.append(current_tag_response)
         return response
 
     @property
@@ -119,7 +112,7 @@ class User(Base):
             'facebook_id': self.facebook_id,
             'email_status': self.email_status,
             'first_login': self.first_login,
-            'tags': self.get_user_tags(),
+            # 'tags': self.get_user_tags(),
             'metatags': self.get_user_metatags(),
             'user_type': self.user_type,
             'system_status': self.system_status,
@@ -141,7 +134,7 @@ class UserTags(Base):
 class UserMetaTagType(Enum):
     Platform = 0
     Category = 1
-    Subcategory = 1
+    Subcategory = 2
 
 
 class UserMetaTag(Base):

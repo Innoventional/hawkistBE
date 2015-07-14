@@ -7,7 +7,9 @@ from base import ApiHandler, die, USER_ID, OpenApiHandler
 from helpers import route
 from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID, UPDATE_USER_INFO_NO_USERNAME, \
     UPDATE_USER_INFO_NO_EMAIL, UPDATE_USER_INFO_USERNAME_ALREADY_USED, INVALID_CONFIRM_EMAIL_LINK, \
-    UPDATE_USER_LINK_FB_NO_TOKEN, UPDATE_USER_FB_ALREADY_USED
+    UPDATE_USER_LINK_FB_NO_TOKEN, UPDATE_USER_FB_ALREADY_USED, UPDATE_USER_TAGS_TAG_DOES_NOT_EXISTS, \
+    UPDATE_USER_TAGS_TAG_ALREADY_ADDED, UPDATE_USER_TAGS_NO_TAG_ID, UPDATE_USER_TAGS_NO_TAG_TYPE, \
+    UPDATE_USER_TAGS_INVALID_TAG_ID, UPDATE_USER_TAGS_INVALID_TAG_TYPE, UPDATE_USER_TAGS_NO_EXISTING_USER_TAG
 from utility.amazon import upload_file
 from utility.facebook_api import get_facebook_user
 from utility.format_verification import username_verification, email_verification
@@ -305,22 +307,23 @@ class UserMetaTagsHandler(ApiHandler):
                 every metatag which must be added to user for customization feeds consist of type (platform, category,
                 subcategory) and metatag id
                 """
-                metatag_id = metatag['id']
-                metatag_type = metatag['type']
+                metatag_id = metatag.get('id', None)
+                metatag_type = metatag.get('type', None)
+
                 if not metatag_id:
-                    return self.make_error('No metatag id')
-                if not metatag_type:
-                    return self.make_error('No metatag type')
+                    return self.make_error(UPDATE_USER_TAGS_NO_TAG_ID)
+                if len(str(metatag_type)) == 0:
+                    return self.make_error(UPDATE_USER_TAGS_NO_TAG_TYPE)
 
                 # does client side sent digits?
                 try:
                     metatag_id = int(metatag_id)
                 except ValueError:
-                    return self.make_error('%s is not a number' % metatag_id)
+                    return self.make_error(UPDATE_USER_TAGS_INVALID_TAG_ID % metatag_id)
 
                 # 'cause we have 3 types check is received metatag type valid
                 if metatag_type not in [0, 1, 2]:
-                    return self.make_error('Invalid metatag type')
+                    return self.make_error(UPDATE_USER_TAGS_INVALID_TAG_TYPE)
 
                 # for go through every possible type
                 if metatag_type == 0:
@@ -329,66 +332,74 @@ class UserMetaTagsHandler(ApiHandler):
                     # check is this platform exists
                     platform = self.session.query(Platform).filter(Platform.id == metatag_id).first()
                     if not platform:
-                        return self.make_error('Platform which you try add does not exists. Update tag list')
+                        return self.make_error(UPDATE_USER_TAGS_TAG_DOES_NOT_EXISTS % 'Platform')
 
                     # is this tag already exists in this user
                     already_exists = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
                                                                                  UserMetaTag.metatag_type == metatag_type,
-                                                                                 UserMetaTag.platform.id == platform.id)).first()
+                                                                                 UserMetaTag.platform_id == platform.id)).first()
                     if already_exists:
-                        return self.make_error('You already added platform %s to your feeds' % (platform.title.upper()))
+                        return self.make_error(UPDATE_USER_TAGS_TAG_ALREADY_ADDED % ('platform',
+                                                                                     platform.title.upper()))
 
                     # else create new user metatag
                     user_platform_tag = UserMetaTag()
                     user_platform_tag.user = self.user
-                    self.session.add(user_metatag)
+                    user_platform_tag.metatag_type = metatag_type
+                    user_platform_tag.platform = platform
+                    self.session.add(user_platform_tag)
                     self.session.commit()
                 elif metatag_type == 1:
                     metatag_type = UserMetaTagType.Category
+
+                    # check is this category exists
+                    category = self.session.query(Category).filter(Category.id == metatag_id).first()
+                    if not category:
+                        return self.make_error(UPDATE_USER_TAGS_TAG_DOES_NOT_EXISTS % 'Category')
+
+                    # is this category tag already added to this user feeds
+                    already_exists = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
+                                                                                 UserMetaTag.metatag_type == metatag_type,
+                                                                                 UserMetaTag.category_id == category.id)).first()
+                    if already_exists:
+                        return self.make_error(UPDATE_USER_TAGS_TAG_ALREADY_ADDED % ('category',
+                                                                                     '%s (%s)'
+                                                                                     % (category.title.upper(),
+                                                                                        category.platform.title.upper())))
+
+                    # else create new user metatag
+                    user_category_tag = UserMetaTag()
+                    user_category_tag.user = self.user
+                    user_category_tag.metatag_type = metatag_type
+                    user_category_tag.category = category
+                    self.session.add(user_category_tag)
+                    self.session.commit()
                 elif metatag_type == 2:
                     metatag_type = UserMetaTagType.Subcategory
 
-                return
+                    # check is this subcategory exists
+                    subcategory = self.session.query(Subcategory).filter(Subcategory.id == metatag_id).first()
+                    if not subcategory:
+                        return self.make_error(UPDATE_USER_TAGS_TAG_DOES_NOT_EXISTS % 'Subcategory')
 
-                # try get this metatag from platform / category / subcategory
-                platform_metatag = self.session.query(Platform).filter(Platform.id == metatag_id)
-                category_metatag = self.session.query(Category).filter(Category.id == metatag_id)
-                subcategory_metatag = self.session.query(Subcategory).filter(Subcategory.id == metatag_id)
-                if not platform_metatag and not category_metatag and not subcategory_metatag:
-                    return self.make_error('No metatag with id %s' % metatag_id)
-
-                # check for platform
-                if platform_metatag:
+                    # is this subcategory tag already added to this user feeds
                     already_exists = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
-                                                                                 UserMetaTag.platform_id == metatag_id)).first()
+                                                                                 UserMetaTag.metatag_type == metatag_type,
+                                                                                 UserMetaTag.subcategory_id == subcategory.id)).first()
                     if already_exists:
-                        return self.make_error('You already added tag %s to your feeds' % already_exists.platform.title.upper())
+                        return self.make_error(UPDATE_USER_TAGS_TAG_ALREADY_ADDED % ('subcategory',
+                                                                                     '%s (%s > %s)'
+                                                                                     % (subcategory.title.upper(),
+                                                                                        subcategory.category.platform.title.upper(),
+                                                                                        subcategory.category.title.upper())))
 
-                # check for category
-                if category_metatag:
-                    already_exists = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
-                                                                                 UserMetaTag.category_id == metatag_id)).first()
-                    if already_exists:
-                        return self.make_error('You already added tag %s to your feeds' % already_exists.category.title.upper())
-
-                # check for subcategory
-                if subcategory_metatag:
-                    already_exists = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
-                                                                                 UserMetaTag.subcategory_id == metatag_id)).first()
-                    if already_exists:
-                        return self.make_error('You already added tag %s to your feeds' % already_exists.subcategory.title.upper())
-
-                user_metatag = UserMetaTag()
-                user_metatag.user = self.user
-                if platform_metatag:
-                    user_metatag.platform_id = metatag_id
-                elif category_metatag:
-                    user_metatag.category_id = metatag_id
-                elif subcategory_metatag:
-                    user_metatag.subcategory_id = metatag_id
-                self.session.add(user_metatag)
-                self.session.commit()
-
+                    # else create new user metatag
+                    user_subcategory_tag = UserMetaTag()
+                    user_subcategory_tag.user = self.user
+                    user_subcategory_tag.metatag_type = metatag_type
+                    user_subcategory_tag.subcategory = subcategory
+                    self.session.add(user_subcategory_tag)
+                    self.session.commit()
 
         return self.success({'user': self.user.user_response})
 
@@ -410,29 +421,77 @@ class UserMetaTagsHandler(ApiHandler):
             logger.debug('No tags to be deleted from user %s' % self.user)
 
         if metatag_ids:
-            # matatag to be added for user consists of metatag type and id
             for metatag in metatag_ids:
-                metatag_id = metatag['id']
-                metatag_type = metatag['type']
+                metatag_id = metatag.get('id', None)
+                metatag_type = metatag.get('type', None)
+
                 if not metatag_id:
-                    return self.make_error('No metatag id')
-                if not metatag_type:
-                    return self.make_error('No metatag type')
-                # tag value to int
+                    return self.make_error(UPDATE_USER_TAGS_NO_TAG_ID)
+                if len(str(metatag_type)) == 0:
+                    return self.make_error(UPDATE_USER_TAGS_NO_TAG_TYPE)
+
+                # does client side sent digits?
                 try:
                     metatag_id = int(metatag_id)
-
-                    # Get user metatag pair by metatag id
-                    user_metatag = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
-                                                                               or_(UserMetaTag.platform_id == metatag_id,
-                                                                                   UserMetaTag.category_id == metatag_id,
-                                                                                   UserMetaTag.subcategory_id == metatag_id))).first()
-                    if not user_metatag:
-                        logger('User %s havent metatag %s' % (self.user.id, metatag_id))
-                    else:
-                        self.session.delete(user_metatag)
-                        self.session.commit()
                 except ValueError:
-                    logger.debug('%s is not a number' % metatag_id)
+                    return self.make_error(UPDATE_USER_TAGS_INVALID_TAG_ID % metatag_id)
+
+                # 'cause we have 3 types check is received metatag type valid
+                if metatag_type not in [0, 1, 2]:
+                    return self.make_error(UPDATE_USER_TAGS_INVALID_TAG_TYPE)
+
+                if metatag_type == 0:
+                    metatag_type = UserMetaTagType.Platform
+
+                    platform = self.session.query(Platform).filter(Platform.id == metatag_id).first()
+                    if not platform:
+                        return self.make_error(UPDATE_USER_TAGS_TAG_DOES_NOT_EXISTS % 'Platform')
+
+                    user_platform_metatag = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
+                                                                                        UserMetaTag.metatag_type == metatag_type,
+                                                                                        UserMetaTag.platform_id == platform.id)).first()
+                    if not user_platform_metatag:
+                        return self.make_error(UPDATE_USER_TAGS_NO_EXISTING_USER_TAG % ('platform',
+                                                                                        platform.title.upper()))
+
+                    self.session.delete(user_platform_metatag)
+                    self.session.commit()
+                elif metatag_type == 1:
+                    metatag_type = UserMetaTagType.Category
+
+                    category = self.session.query(Category).filter(Category.id == metatag_id).first()
+                    if not category:
+                        return self.make_error(UPDATE_USER_TAGS_TAG_DOES_NOT_EXISTS % 'Category')
+
+                    user_category_metatag = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
+                                                                                        UserMetaTag.metatag_type == metatag_type,
+                                                                                        UserMetaTag.category_id == category.id)).first()
+                    if not user_category_metatag:
+                        return self.make_error(UPDATE_USER_TAGS_NO_EXISTING_USER_TAG % ('category',
+                                                                                        '%s (%s)'
+                                                                                        % (category.title.upper(),
+                                                                                           category.platform.title.upper())))
+
+                    self.session.delete(user_category_metatag)
+                    self.session.commit()
+                elif metatag_type == 2:
+                    metatag_type = UserMetaTagType.Subcategory
+
+                    subcategory = self.session.query(Subcategory).filter(Subcategory.id == metatag_id).first()
+                    if not subcategory:
+                        return self.make_error(UPDATE_USER_TAGS_TAG_DOES_NOT_EXISTS % 'Subcategory')
+
+                    user_subcategory_metatag = self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
+                                                                                           UserMetaTag.metatag_type == metatag_type,
+                                                                                           UserMetaTag.subcategory_id == subcategory.id)).first()
+                    if not user_subcategory_metatag:
+                        return self.make_error(UPDATE_USER_TAGS_NO_EXISTING_USER_TAG % ('subcategory',
+                                                                                        '%s (%s > %s)'
+                                                                                        % (subcategory.title.upper(),
+                                                                                           subcategory.category.platform.title.upper(),
+                                                                                           subcategory.category.title.upper())))
+
+                    self.session.delete(user_subcategory_metatag)
+                    self.session.commit()
 
         return self.success({'user': self.user.user_response})

@@ -818,6 +818,7 @@ class ListingHandler(ApiHandler):
         listing.updated_at = datetime.datetime.utcnow()
         listing.title = title
         listing.description = description
+        listing.sold = False
 
         if barcode:
             listing.barcode = barcode

@@ -117,6 +117,7 @@ class Listing(Base):
     title = Column(String, nullable=False, default='')
     description = Column(String, nullable=False, default='')
     barcode = Column(String, nullable=False, default='')
+    sold = Column(Boolean, nullable=False, default=False)
 
     # listing details (metatags)
     platform_id = Column(Integer, ForeignKey('platforms.id'), nullable=False, index=True)
@@ -179,6 +180,7 @@ class Listing(Base):
             'post_code': self.post_code,
             'city': self.city,
             'photos': [photo.image_url for photo in self.listing_photos],
+            'sold': self.sold
         }
 
 

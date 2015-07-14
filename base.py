@@ -152,11 +152,11 @@ class ApiHandler(BaseRequestHandler):
     allowed_methods = ()
 
     @staticmethod
-    def make_error(message=None, status=1):
+    def make_error(message=None, status=1, title='Error'):
 
         response = {
             'status': status,
-            'title': 'Error'
+            'title': title
         }
 
         if message:

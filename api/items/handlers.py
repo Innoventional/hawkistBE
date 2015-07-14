@@ -5,13 +5,15 @@ import datetime
 from sqlalchemy import or_, desc, and_, func
 from api.items.models import Item, ItemPhoto, Listing, ListingPhoto
 from api.tags.models import Tag, Platform, Category, Subcategory, Color, Condition
+from api.users.models import User
 from base import ApiHandler, die, paginate
 from helpers import route
 from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID, CREATE_LISTING_EMPTY_FIELDS, \
     INVALID_PLATFORM_ID, INVALID_CATEGORY_ID, INVALID_SUBCATEGORY_ID, INVALID_COLOUR_ID, INVALID_CONDITION_ID, \
     WRONG_PLATFORM_CATEGORY_RELATION, WRONG_CATEGORY_SUBCATEGORY_RELATION, WRONG_SUBCATEGORY_COLOUR_RELATION, \
     WRONG_SUBCATEGORY_CONDITION_RELATION, CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1, \
-    CREATE_LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE, CREATE_LISTING_TOO_MANY_PHOTOS
+    CREATE_LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE, CREATE_LISTING_TOO_MANY_PHOTOS, GET_LISTING_BY_USER_INVALID_ID, \
+    CREATE_LISTING_USER_DONT_CONFIRM_EMAIL, CREATE_LISTING_USER_HAVENT_FB, DELETE_LISTING_NO_ID
 from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE
 from utility.google_api import get_city_by_code
 from utility.tags import interested_user_tag_ids, interested_user_item_ids
@@ -427,12 +429,8 @@ class PostCodeHandler(ApiHandler):
             post_code = self.request_object['post_code']
 
         if not post_code:
-            response = {
-                'status': 6,
-                'message': 'You must select a post code in order to create a listing.'
-            }
-            logger.debug(response)
-            return response
+            return self.make_error(message='You must select a post code in order to create a listing.', status=6,
+                                   title=CREATE_LISTING_EMPTY_FIELDS_TITLE % 'post code')
 
         google_response = get_city_by_code(post_code)
         error, data = google_response['error'], google_response['data']
@@ -446,14 +444,20 @@ class PostCodeHandler(ApiHandler):
 # TODO for listing edition
 @route('listings')
 class ListingHandler(ApiHandler):
-    allowed_methods = ('GET', 'POST', )
+    allowed_methods = ('GET', 'POST', 'DELETE')
 
     def read(self):
 
         if not self.user:
             die(401)
 
-        listing_id = self.get_arg('item_id', int)
+        # for get item by id
+        listing_id = self.get_arg('listing_id', int)
+
+        # for get items by user
+        user_id = self.get_arg('user_id', int)
+
+        # query for search
         q = self.get_arg('q', str)
         response = dict()
 
@@ -462,7 +466,7 @@ class ListingHandler(ApiHandler):
             # first get this item
             listing = self.session.query(Listing).filter(Listing.id == listing_id).first()
             if not listing:
-                return self.make_error(GET_LISTING_INVALID_ID % listing)
+                return self.make_error(GET_LISTING_INVALID_ID % listing_id)
 
             # find 6 items with similar category | platform | subcategory
             similar_listings = self.session.query(Listing).filter(and_(or_(Listing.platform_id == listing.platform_id,
@@ -477,25 +481,25 @@ class ListingHandler(ApiHandler):
             response['item'] = current_listing_response
             response['similar_items'] = [l.response for l in similar_listings]
             response['user_items'] = [l.response for l in user_listings]
+        # for get items by user
+        elif user_id:
+            # first try to get user by id
+            user = self.session.query(User).filter(User.id == user_id).first()
+            if not user:
+                return self.make_error(GET_LISTING_BY_USER_INVALID_ID % user_id)
+
+            user_items = self.session.query(Listing).filter(Listing.user_id == user_id)
+            # pagination
+            page = self.get_arg('p', int, 1)
+            page_size = self.get_arg('page_size', int, 100)
+            paginator, listings = paginate(user_items, page, page_size)
+            if paginator['pages'] < page:
+                listings = []
+            response['paginator'] = paginator
+            response['items'] = [l.response for l in listings]
         # else return all items
         else:
-            # TODO uncomment to return items by user interests
-            # get all user's tag
-            user_tags = self.user.user_tags
-            if not user_tags:
-                logger.debug("User %s hasn't tags" % self.user.id)
-
-            for u in user_tags:
-                print u.id
-
-            return
-            user_tags_set = interested_user_tag_ids(self)
-            # item_ids = interested_user_item_ids(self, user_tags_set)
-            # items = self.session.query(Item).filter(Item.id.in_(list(item_ids))).order_by(desc(Item.id))
-
-            # TODO 2015-07-08 return all items
-            listings = self.session.query(Listing).order_by(desc(Listing.id))
-
+            # first check does we need search
             # search
             # if we have searching query we must filtered all items
             if q:
@@ -562,6 +566,37 @@ class ListingHandler(ApiHandler):
                 #                              Item.subcategory.name.ilike(u'%{0}%'.format(q)),
                 #                              Item.title.ilike(u'%{0}%'.format(q)),
                 #                              Item.description.ilike(u'%{0}%'.format(q))))
+            # if not search - return listing depending on user's tags
+            else:
+                # TODO uncomment to return items by user interests
+                # # get all user's tag
+                # user_tags = self.user.user_metatags
+                #
+                # # separate user tags by type: platform, category, subcategory
+                # users_platforms_ids = []
+                # users_categories_ids = []
+                # users_subcategories_ids = []
+                #
+                # for user_tag in user_tags:
+                #     print user_tag.id
+                #     # platforms
+                #     if user_tag.metatag_type == 0:
+                #         print 'pl'
+                #         users_platforms_ids.append(user_tag.id)
+                #     elif user_tag.metatag_type == 1:
+                #         print 'cat'
+                #         users_categories_ids.append(user_tag.id)
+                #     elif user_tag.metatag_type == 2:
+                #         print 'subcat'
+                #         users_subcategories_ids.append(user_tag.id)
+                #
+                # listings = self.session.query(Listing).filter(or_(Listing.platform_id.in_(users_platforms_ids),
+                #                                                   Listing.category_id.in_(users_categories_ids),
+                #                                                   Listing.subcategory_id.in_(users_subcategories_ids))).order_by(desc(Listing.id))
+
+                # TODO 2015-07-08 return all items
+                listings = self.session.query(Listing).order_by(desc(Listing.id))
+
             # pagination
             page = self.get_arg('p', int, 1)
             page_size = self.get_arg('page_size', int, 100)
@@ -580,9 +615,9 @@ class ListingHandler(ApiHandler):
 
         # check selling ability
         # if not self.user.facebook_id:
-        #     return self.make_error("Sorry, but you can't sale anything 'cause you don't link your FB account")
-        # if not self.user.email_status:
-        #     return self.make_error("Sorry, but you can't sale anything 'cause you don't confirm your email address")
+        #     return self.make_error(CREATE_LISTING_USER_HAVENT_FB)
+        if not self.user.email_status:
+            return self.make_error(CREATE_LISTING_USER_DONT_CONFIRM_EMAIL)
 
         logger.debug('REQUEST_OBJECT_NEW_ITEM')
         logger.debug(self.request_object)
@@ -628,13 +663,13 @@ class ListingHandler(ApiHandler):
                 color_id = self.request_object['color']
 
             if 'retail_price' in self.request_object:
-                retail_price = float(self.request_object['retail_price'])
+                retail_price = self.request_object['retail_price']
 
             if 'selling_price' in self.request_object:
-                selling_price = float(self.request_object['selling_price'])
+                selling_price = self.request_object['selling_price']
 
             if 'shipping_price' in self.request_object:
-                shipping_price = float(self.request_object['shipping_price'])
+                shipping_price = self.request_object['shipping_price']
 
             if 'collection_only' in self.request_object:
                 collection_only = self.request_object['collection_only']
@@ -678,11 +713,8 @@ class ListingHandler(ApiHandler):
         if not selling_price:
             empty_field_error.append('selling price')
 
-        if not shipping_price:
-            empty_field_error.append('shipping price')
-
-        # if not collection_only:
-        #     empty_field_error.append('collection only flag')
+        if not shipping_price and not collection_only:
+            empty_field_error.append('shipping price or collection only')
 
         if not photos:
             empty_field_error.append('photos')
@@ -696,15 +728,14 @@ class ListingHandler(ApiHandler):
             empty_field_error.append('post code')
 
         if not city:
-            empty_field_error.append('city')
+            logger.debug('NO CITY')
+            if 'post code' not in empty_field_error:
+                empty_field_error.append('post code')
 
         if empty_field_error:
             empty_fields = ', '.join(empty_field_error)
-            return {
-                'status': 6,
-                'message': CREATE_LISTING_EMPTY_FIELDS % empty_fields,
-                'title': CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields
-            }
+            return self.make_error(message=CREATE_LISTING_EMPTY_FIELDS % empty_fields, status=6,
+                                   title=CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields)
 
         # first check all tags
         # check platforms
@@ -768,13 +799,16 @@ class ListingHandler(ApiHandler):
 
         # secondary check other fields
         # price handler
+        retail_price = float(retail_price)
+        selling_price = float(selling_price)
+        shipping_price = float(shipping_price)
         if retail_price < 1:
             return self.make_error(CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1)
 
-        if selling_price > retail_price:
+        if selling_price > retail_price or selling_price == retail_price:
                 return self.make_error(CREATE_LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE)
 
-        if len(photos) > 3:
+        if len(photos) > 4:
             return self.make_error(CREATE_LISTING_TOO_MANY_PHOTOS)
 
         # finally create listing
@@ -799,6 +833,8 @@ class ListingHandler(ApiHandler):
         if selling_price != retail_price:
             # calculate discount value
             discount = int(round((retail_price - selling_price) / retail_price * 100))
+            if discount == 0:
+                discount = 1
             listing.discount = discount
 
         listing.shipping_price = shipping_price
@@ -824,3 +860,32 @@ class ListingHandler(ApiHandler):
 
         self.session.commit()
         return self.success({'item': listing.response})
+
+    def remove(self):
+        if not self.user:
+            die(401)
+
+        logger.debug('REQUEST_OBJECT_DELETE_ITEM')
+        logger.debug(self.request_object)
+
+        listing_id = None
+
+        if self.request_object:
+            if 'listing_id' in self.request_object:
+                listing_id = self.request_object['listing_id']
+
+        if not listing_id:
+            return self.make_error(DELETE_LISTING_NO_ID)
+
+        # get listing by id
+        listing = self.session.query(Listing).filter(Listing.id == listing_id).first()
+        # if no listing with this id
+        if not listing:
+            return self.make_error(GET_LISTING_INVALID_ID)
+
+        self.session.delete(listing)
+        self.session.commit()
+        return self.success()
+
+
+

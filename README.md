@@ -93,7 +93,8 @@ Response Failure:
 
     {
         'status': 1 / 2,
-        'message': '' — Error message
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
     }
     
 ---
@@ -121,7 +122,8 @@ Response Failure:
 
     {
         'status': 1 / 3 / 4 / 5,
-        'message': '' — Error message
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
     }
     
 ---
@@ -186,7 +188,8 @@ Response Failure:
 
     {
         'status': 1,
-        'message': '' — Error message
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
     }
     
 ---
@@ -214,7 +217,8 @@ Response Failure:
 
     {
         'status': 1,
-        'message': '' — Error message
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
     }
     
 ###Tags
@@ -287,7 +291,8 @@ Response Failure:
 
     {
         'status': 1,
-        'message': '' — Error message
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
     }
     
 ---
@@ -321,7 +326,8 @@ Response Failure:
 
     {
         'status': 1,
-        'message': '' — Error message
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
     }
     
 ---
@@ -388,7 +394,7 @@ Response:
    
 **Get all items (user feeds)**
 
-    Url: 'items'
+    Url: 'listings'
     Method: 'GET'
     
 Response:
@@ -417,10 +423,10 @@ Response:
    
 **Get item by id**
 
-    Url: 'items?item_id=ITEM_ID'
+    Url: 'listings?listing_id=ITEM_ID'
     Method: 'GET'
     
-Response:
+Response success:
     
     {   
         "status": 0,
@@ -453,10 +459,48 @@ Response:
         ],
         
     }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }
+       
+**Get item by user id**
+
+    Url: 'listings?user_id=USER_ID'
+    Method: 'GET'
+    
+Response success:
+    
+    {   
+        "status": 0,
+        "items": [
+            {
+                ...
+            },
+                .
+                .
+                .
+            {
+                ...
+            }
+        ]
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }
       
 **Search in items**
 
-    Url: 'items?q=SEARCHING_QUERY'
+    Url: 'listings?q=SEARCHING_QUERY'
     Method: 'GET'
     
 Response:
@@ -483,7 +527,7 @@ Response:
 
 **Create item**
 
-    Url: 'items'
+    Url: 'listings'
     Method: 'POST'
 
 
@@ -517,16 +561,36 @@ Response Success:
 Response Failure:
 
     {
-        'status': 6,
-        'message': '', — Error message
-        'empty_fields': ''
+        'status': 1 / 6,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
     }
     
-or
+**Delete item**
+
+    Url: 'listings'
+    Method: 'DELETE'
+
+
+Data:
 
     {
-        'status': 1,
-        'message': '' — Error message
+        "listing_id": int
+    }
+
+Response Success:
+    
+    {
+        'status': 0,
+        'item': ITEM_INFO_DICT
+    }
+    
+Response Failure:
+
+    {
+        'status': ERROR_STATUS_CODE,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
     }
     
 ---
@@ -553,8 +617,9 @@ Response Success:
 Response Failure:
 
     {
-        'status': 1,
-        'message': '' — Error message
+        'status': 7 / 8,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
     }
     
 ---

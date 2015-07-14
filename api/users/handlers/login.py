@@ -53,13 +53,7 @@ class UserLoginHandler(ApiHandler):
             # first verify number
             phone_error = phone_verification(phone)
             if phone_error:
-                response = {
-                    'status': 2,
-                    'message': phone_error,
-                    'title': PHONE_VERIFICATION_INVALID_FORMAT_TITLE
-                }
-                logger.debug(response)
-                return response
+                return self.make_error(message=phone_error, status=2, title=PHONE_VERIFICATION_INVALID_FORMAT_TITLE)
 
             # try get existing user
             user = self.session.query(User).filter(User.phone == phone).first()
@@ -89,13 +83,7 @@ class UserLoginHandler(ApiHandler):
             # and send it to user
             error = send_sms(phone, message_body)
             if error:
-                response = {
-                    'status': 2,
-                    'message': error,
-                    'title': PHONE_VERIFICATION_INVALID_FORMAT_TITLE
-                }
-                logger.debug(response)
-                return response
+                return self.make_error(message=error, status=2, title=PHONE_VERIFICATION_INVALID_FORMAT_TITLE)
 
             user.pin = confirm_code
             user.last_pin_sending = datetime.datetime.utcnow()
@@ -191,46 +179,23 @@ class UserLoginHandler(ApiHandler):
                 pin = str(self.request_object['pin'])
 
         if not phone or not pin:
-            response = {
-                'status': 5,
-                'message': LOG_IN_EMPTY_AUTHORIZATION_DATA,
-                'title': LOG_IN_EMPTY_AUTHORIZATION_DATA_TITLE
-            }
-            logger.debug(response)
-            return response
+            return self.make_error(message=LOG_IN_EMPTY_AUTHORIZATION_DATA, status=5,
+                                   title=LOG_IN_EMPTY_AUTHORIZATION_DATA_TITLE)
 
         # first of all delete + symbol
         phone = str(phone)
         phone = phone.replace('+', '')
         phone_error = phone_verification(phone)
         if phone_error:
-            response = {
-                'status': 2,
-                'message': phone_error,
-                'title': PHONE_VERIFICATION_INVALID_FORMAT_TITLE
-            }
-            logger.debug(response)
-            return response
+            return self.make_error(message=phone_error, status=2, title=PHONE_VERIFICATION_INVALID_FORMAT_TITLE)
 
         user = self.session.query(User).filter(User.phone == phone).first()
 
         if not user:
-            response = {
-                'status': 3,
-                'message': LOG_IN_USER_NOT_FOUND % phone,
-                'title': LOG_IN_USER_NOT_FOUND_TITLE
-            }
-            logger.debug(response)
-            return response
+            return self.make_error(message=LOG_IN_USER_NOT_FOUND % phone, status=3, title=LOG_IN_USER_NOT_FOUND_TITLE)
 
         if user.pin != pin:
-            response = {
-                'status': 4,
-                'message': LOG_IN_INCORRECT_PIN % pin,
-                'title': LOG_IN_INCORRECT_PIN_TITLE
-            }
-            logger.debug(response)
-            return response
+            return self.make_error(message=LOG_IN_INCORRECT_PIN % pin, status=4, title=LOG_IN_INCORRECT_PIN_TITLE)
 
         if user.username and user.email:
             user.first_login = False

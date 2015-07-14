@@ -2,9 +2,12 @@
 
 __author__ = 'ne_luboff'
 
-GET_LISTING_INVALID_ID = 'No item with id %s'
+GET_LISTING_INVALID_ID = 'No listing with id %s'
+GET_LISTING_BY_USER_INVALID_ID = 'No user with id %s'
 
 # Create new listing
+CREATE_LISTING_USER_HAVENT_FB = "Sorry, but you can't sale anything because you don't link your FB account"
+CREATE_LISTING_USER_DONT_CONFIRM_EMAIL = "Sorry, but you can't sale anything because you don't confirm your email."
 CREATE_LISTING_EMPTY_FIELDS = 'You must select a %s in order to create a listing.'
 
 # check is this instance exist
@@ -24,3 +27,6 @@ WRONG_SUBCATEGORY_CONDITION_RELATION = "Subcategory %s (%s > %s) has no Conditio
 CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1 = u'Retail price must be greater than £1'
 CREATE_LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE = "Retail price must be greater than selling price"
 CREATE_LISTING_TOO_MANY_PHOTOS = 'You can add only 4 photos'
+
+# Delete the listing
+DELETE_LISTING_NO_ID = 'No listing to delete id'

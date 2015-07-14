@@ -7,10 +7,10 @@ PHONE_VERIFICATION_INVALID_FORMAT_TITLE = 'Invalid Number Format'
 LOG_IN_USER_NOT_FOUND_TITLE = 'User Not Found'
 
 # status code 4
-LOG_IN_INCORRECT_PIN_TITLE = 'Wrong Pin'
+LOG_IN_INCORRECT_PIN_TITLE = 'Wrong Pin Code'
 
 # status code 5
-LOG_IN_EMPTY_AUTHORIZATION_DATA_TITLE = 'Can not Sign In'
+LOG_IN_EMPTY_AUTHORIZATION_DATA_TITLE = 'Cannot Sign In'
 
 # status code 6
 CREATE_LISTING_EMPTY_FIELDS_TITLE = '%s missing'

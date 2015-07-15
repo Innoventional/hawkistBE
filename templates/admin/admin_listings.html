@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Listings List{% end %}
+
+{% block js %}
+    <script type="text/javascript">
+        $("#thumbnailList1 a img").MyThumbnail({
+            thumbWidth:64,
+            thumbHeight:64,
+            backgroundColor:"#ccc",
+            imageDivClass:"myPic"
+        });
+    </script>
+{% end %}
+
+{% block content %}
+    <div class="row-offcanvas">
+        <table class="table table-hover">
+            <thead>
+                <th>ID</th>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Retail / Selling Price</th>
+                <!--<th>Retail Price</th>-->
+                <!--<th>Selling Price</th>-->
+                <th>Platform > Category > Subcategory</th>
+                <!--<th>Platform</th>-->
+                <!--<th>Category</th>-->
+                <!--<th>Subcategory</th>-->
+                <th>Condition</th>
+                <th>Colour</th>
+                <th>Action</th>
+            </thead>
+            <tbody>
+                {% for l in listings %}
+                    <tr data-id="{{ l.id }}">
+                        <td>{{ l.id }}</td>
+                        <td align="center" id="thumbnailList1">
+                            {% if l.listing_photos.count > 0 %}
+                                <a href="{{ l.listing_photos[0].image_url }}" target="_blank">
+                                    <img src="{{ l.listing_photos[0].image_url }}">
+                                </a>
+                            {% end %}
+                        </td>
+                        <td class="break-text">{{ l.title }}</td>
+                        <td class="break-text listing-description">{{ l.description }}</td>
+                        <td>{{ l.retail_price }} / {{ l.selling_price }}</td>
+                        <!--<td>{{ l.retail_price }}</td>-->
+                        <!--<td>{{ l.selling_price }}</td>-->
+                        <td>{{ l.platform.title }} > {{ l.category.title }} > {{ l.subcategory.title }}</td>
+                        <!--<td>{{ l.platform.title }}</td>-->
+                        <!--<td>{{ l.category.title }}</td>-->
+                        <!--<td>{{ l.subcategory.title }}</td>-->
+                        <td>{{ l.condition.title }}</td>
+                        <td>{{ l.color.title }}</td>
+                        <td>
+                            <a class="btn btn_delete_listing red-color" href="#" title="Delete a listing">
+                                <i class="glyphicon glyphicon-trash"></i>
+                            </a>
+                        </td>
+                     </tr>
+                {% end %}
+            </tbody>
+        </table>
+    </div>
+{% end %}

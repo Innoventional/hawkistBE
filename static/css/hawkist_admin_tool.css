@@ -114,3 +114,12 @@
 .op-07 {
     opacity: .7;
 }
+
+.break-text {
+    word-wrap: break-word;
+}
+
+.listing-description {
+    max-width: 200px;
+    text-align: justify;
+}

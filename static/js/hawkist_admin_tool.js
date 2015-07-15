@@ -772,3 +772,33 @@ delete_condition = function(colour_id, completion)
     });
     return false;
 };
+
+// listings
+$('.btn_delete_listing').click(function(){
+    if (confirm('Do you really want to delete this listing?'))
+    {
+        listing_id = $(this).parent().parent().data('id');
+
+        delete_listing(listing_id, function(status, message){
+            if (status != 0)
+            {
+                alert(message);
+            }
+        });
+    }
+});
+
+delete_listing = function(listing_id, completion)
+{
+    $.ajax({
+        url: '/api/admin/listings?' + $.param({'listing_id': listing_id}, true),
+        type: 'DELETE',
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            completion(status, message);
+            location.reload();
+        }
+    });
+    return false;
+};

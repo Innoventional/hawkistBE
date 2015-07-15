@@ -509,14 +509,18 @@ class ListingHandler(ApiHandler):
                 # next get all tags names to search.
                 # note! we can search only by platform name, category name and subcategory name
                 tag_names_to_search = set()
+                # get all listings owner's usernames
+                usernames_to_search = set()
                 for i in all_listings:
                     tag_names_to_search.add(i.platform.title.lower())
                     tag_names_to_search.add(i.category.title.lower())
                     tag_names_to_search.add(i.subcategory.title.lower())
+                    usernames_to_search.add(i.user.username.lower())
 
                 # this is set with suitable tag names
                 right_tag_names = set()
                 right_title_or_description_item_ids = set()
+                right_usernames = set()
 
                 # we search by every word in phrase
                 # so separate query string by whitespace symbol
@@ -537,6 +541,11 @@ class ListingHandler(ApiHandler):
                         for i in right_title_or_description:
                             right_title_or_description_item_ids.add(i)
 
+                    # search in every username
+                    for username in usernames_to_search:
+                        if q_word in username:
+                            right_usernames.add(username)
+
                 # next step - get right tags ids
                 # right platforms
                 right_platforms_ids = [p.id for p in self.session.query(Platform).filter(func.lower(Platform.title).in_(right_tag_names))]
@@ -549,23 +558,21 @@ class ListingHandler(ApiHandler):
 
                 right_tag_ids = right_platforms_ids + right_categories_ids + right_subcategories_ids
 
+                # get all listings with right usernames
+                right_usernames_item_ids = [i.id if i.user.username in right_usernames else None for i in all_listings]
+                # remove all None values from right_usernames_item_ids
+                right_usernames_item_ids = [x for x in right_usernames_item_ids if x is not None]
+
                 # select items by suitable tag name
-                right_tag_item_ids = [i.id for i in all_listings.filter(or_(Item.platform_id.in_(right_tag_ids),
-                                                                            Item.category_id.in_(right_tag_ids),
-                                                                            Item.subcategory_id.in_(right_tag_ids)))]
+                right_tag_item_ids = [i.id for i in all_listings.filter(or_(Listing.platform_id.in_(right_tag_ids),
+                                                                            Listing.category_id.in_(right_tag_ids),
+                                                                            Listing.subcategory_id.in_(right_tag_ids)))]
 
                 # finally get all items which match search terms
-                listings = all_listings.filter(Listing.id.in_(list(set(right_tag_item_ids +
-                                                                       list(right_title_or_description_item_ids))))).order_by(desc(Listing.id))
+                listings = all_listings.filter((Listing.id.in_(list(set(right_tag_item_ids +
+                                                                        list(right_title_or_description_item_ids) +
+                                                                        right_usernames_item_ids))))).order_by(desc(Listing.id))
 
-
-                # TODO optimize using this
-                # filtered them by platform | category | subcategory | title | condition
-                # items = all_items.filter(or_(Item.platform.name.ilike(u'%{0}%'.format(q)),
-                #                              Item.category.name.ilike(u'%{0}%'.format(q)),
-                #                              Item.subcategory.name.ilike(u'%{0}%'.format(q)),
-                #                              Item.title.ilike(u'%{0}%'.format(q)),
-                #                              Item.description.ilike(u'%{0}%'.format(q))))
             # if not search - return listing depending on user's tags
             else:
                 # TODO uncomment to return items by user interests

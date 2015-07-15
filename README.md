@@ -225,7 +225,7 @@ Response Failure:
     
 **Get the list of all tags**
 
-    Url: 'tags'
+    Url: 'metatags'
     Method: 'GET'
 
 Response:

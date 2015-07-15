@@ -125,7 +125,7 @@ class Color(Base):
         return {
             'id': self.id,
             'name': self.title,
-            'rgb_code': self.code,
+            'code': self.code,
             'parent_id': self.subcategory_id
         }
 

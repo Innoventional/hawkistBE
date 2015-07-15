@@ -45,7 +45,7 @@
                         <td>{{ c.id }}</td>
                         <td>{{ c.title }}</td>
                         <td>
-                            {% if c.code == "disabled_color" %}
+                            {% if c.code == "" %}
                                 Disabled
                             {% else %}
                                 <input class="color" value="{{ c.code }}"  disabled>

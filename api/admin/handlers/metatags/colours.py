@@ -45,7 +45,7 @@ class AdminColourHandler(AdminBaseHandler):
             return self.make_error(ADMIN_TAG_DOES_NOT_EXIST % ('subcategory', subcategory_id))
 
         if disable_color == 'true':
-            new_colour_code = 'disabled_color'
+            new_colour_code = ''
 
         already_exists = self.session.query(Color).filter(and_(func.lower(Color.title) == new_colour_title.lower(),
                                                                Color.subcategory == subcategory,
@@ -97,7 +97,7 @@ class AdminColourHandler(AdminBaseHandler):
             return self.make_error(ADMIN_TAG_DOES_NOT_EXIST % ('subcategory', subcategory_id))
 
         if disable_colour == 'true':
-            colour_code = 'disabled_color'
+            colour_code = ''
 
         already_exists = self.session.query(Color).filter(and_(func.lower(Color.title) == colour_title.lower(),
                                                                Color.code == colour_code,

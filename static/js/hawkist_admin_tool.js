@@ -607,7 +607,7 @@ $('.btn_edit_colour').click(function(){
     $('#editing_colour_id').val(colour_id);
     $('#editing_colour_title').val(colour_title);
     document.getElementById('edit_colour_select').value=subcategory_id;
-    if (colour_code == 'disabled_color') {
+    if (colour_code == '') {
         document.getElementById('edit_color_pickier_checkbox').click();
     } else {
         $('#edit_color_pickier').val(colour_code);

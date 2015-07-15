@@ -164,7 +164,7 @@ class Listing(Base):
             'user_id': self.user_id,
             'user_username': self.user.username,
             'user_avatar': self.user.avatar,
-            'created_at': self.created_at.strftime("%Y-%m-%d %H:%M"),
+            'created_at': self.created_at.strftime("%Y-%m-%dT%H:%M:%S"),
             'title': self.title,
             'description': self.description,
             'platform': self.platform_id,

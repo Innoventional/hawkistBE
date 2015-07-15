@@ -15,6 +15,7 @@ from utility.facebook_api import get_facebook_user, get_facebook_photo
 from utility.format_verification import phone_verification, sms_limit_check
 from utility.send_email import email_confirmation_sending
 from utility.twilio_api import send_sms
+from utility.user_utility import update_user_last_activity
 
 __author__ = 'ne_luboff'
 
@@ -212,6 +213,8 @@ class LogoutHandler(OpenApiHandler):
     def update(self):
         if self.user is None:
             die(401)
+
+        update_user_last_activity(self)
 
         self.user = None
         self.session.commit()

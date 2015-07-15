@@ -17,6 +17,7 @@ from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID,
 from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE
 from utility.google_api import get_city_by_code
 from utility.tags import interested_user_tag_ids, interested_user_item_ids
+from utility.user_utility import update_user_last_activity
 
 __author__ = 'ne_luboff'
 
@@ -31,6 +32,8 @@ class ItemsHandler(ApiHandler):
 
         if not self.user:
             die(401)
+
+        update_user_last_activity(self)
 
         item_id = self.get_arg('item_id', int)
         q = self.get_arg('q', str)
@@ -138,6 +141,8 @@ class ItemsHandler(ApiHandler):
 
         if self.user is None:
             die(401)
+
+        update_user_last_activity(self)
 
         # check selling ability
         # if not self.user.facebook_id:
@@ -420,6 +425,8 @@ class PostCodeHandler(ApiHandler):
         if self.user is None:
             die(401)
 
+        update_user_last_activity(self)
+
         logger.debug('REQUEST_OBJECT_GET_CITY_BY_POST_CODE')
         logger.debug(self.request_object)
 
@@ -450,6 +457,8 @@ class ListingHandler(ApiHandler):
 
         if not self.user:
             die(401)
+
+        update_user_last_activity(self)
 
         # for get item by id
         listing_id = self.get_arg('listing_id', int)
@@ -619,6 +628,8 @@ class ListingHandler(ApiHandler):
 
         if self.user is None:
             die(401)
+
+        update_user_last_activity(self)
 
         # check selling ability
         # if not self.user.facebook_id:
@@ -866,12 +877,17 @@ class ListingHandler(ApiHandler):
             self.session.add(listing_photo)
             self.session.commit()
 
+        # update user location
+        self.user.city = city
+
         self.session.commit()
         return self.success({'item': listing.response})
 
     def remove(self):
         if not self.user:
             die(401)
+
+        update_user_last_activity(self)
 
         logger.debug('REQUEST_OBJECT_DELETE_ITEM')
         logger.debug(self.request_object)

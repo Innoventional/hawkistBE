@@ -15,6 +15,7 @@ from utility.facebook_api import get_facebook_user
 from utility.format_verification import username_verification, email_verification
 from utility.image.processor import make_thumbnail
 from utility.send_email import email_confirmation_sending
+from utility.user_utility import update_user_last_activity
 
 __author__ = 'ne_luboff'
 
@@ -29,6 +30,8 @@ class UserHandler(ApiHandler):
 
         if self.user is None:
             die(401)
+
+        update_user_last_activity(self)
 
         # update cookies
         self.set_secure_cookie(USER_ID, str(self.user.id), expires_days=30)
@@ -50,6 +53,8 @@ class UserHandler(ApiHandler):
 
         if self.user is None:
             die(401)
+
+        update_user_last_activity(self)
 
         username = ''
         email = ''
@@ -167,6 +172,8 @@ class UserSocialHandler(ApiHandler):
 
         if self.user is None:
             die(401)
+
+        update_user_last_activity(self)
 
         logger.debug('REQUEST_OBJECT_USER_SOCIAL')
         logger.debug(self.request_object)
@@ -289,6 +296,8 @@ class UserMetaTagsHandler(ApiHandler):
         if self.user is None:
             die(401)
 
+        update_user_last_activity(self)
+
         logger.debug('REQUEST_OBJECT_USER_ADD_METATAGS')
         logger.debug(self.request_object)
 
@@ -407,6 +416,8 @@ class UserMetaTagsHandler(ApiHandler):
 
         if self.user is None:
             die(401)
+
+        update_user_last_activity(self)
 
         logger.debug('REQUEST_OBJECT_USER_DELETE_METATAGS')
         logger.debug(self.request_object)

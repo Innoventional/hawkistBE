@@ -67,6 +67,9 @@ class User(Base):
     user_type = Column(SmallInteger, nullable=False, default=UserType.Standard)
     password = Column(String, nullable=True, default='')
 
+    city = Column(String, nullable=True, default='')
+    last_activity = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
+
     def __repr__(self):
         return '<User %s (%s)>' % (self.id, self.username)
 
@@ -112,10 +115,11 @@ class User(Base):
             'facebook_id': self.facebook_id,
             'email_status': self.email_status,
             'first_login': self.first_login,
-            # 'tags': self.get_user_tags(),
             'metatags': self.get_user_metatags(),
             'user_type': self.user_type,
             'system_status': self.system_status,
+            'city': self.city,
+            'last_activity': self.last_activity.strftime("%Y-%m-%dT%H:%M:%S")
         }
 
 

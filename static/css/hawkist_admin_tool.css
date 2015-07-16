@@ -123,3 +123,15 @@
     max-width: 200px;
     text-align: justify;
 }
+
+#PleaseWait {
+    position: absolute;
+    left: 35%;
+    top: 35%;
+}
+
+#PleaseWaitChangePermissions {
+    position: absolute;
+    left: 35%;
+    top: 20%;
+}

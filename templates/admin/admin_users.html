@@ -103,6 +103,9 @@
 
                 </div>
                 <div class="modal-footer">
+                    <div id='PleaseWaitChangePermissions' style="display: none">
+                        <img src="{{ static_url('images/spinner.gif') }}"/>
+                    </div>
                     <button type="button" class="btn btn-default btn_reload" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary btn_save_usertype">Save</button>
                 </div>
@@ -136,8 +139,11 @@
                     <div>&nbsp</div>
                 </div>
                 <div class="modal-footer">
+                    <div id='PleaseWait' style="display: none">
+                        <img src="{{ static_url('images/spinner.gif') }}"/>
+                    </div>
                     <button type="button" class="btn btn-default btn_reload" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary btn_save_editing_user">Save</button>
+                    <button type="button" class="btn btn-primary btn_save_editing_user" id="btn_save_editing_user">Save</button>
                 </div>
             </div>
         </div>

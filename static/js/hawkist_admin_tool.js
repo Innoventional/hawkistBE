@@ -146,6 +146,7 @@ $('.btn_save_usertype').click(function(){
 });
 
 change_user_type = function(user_id, user_type_id){
+    $("#PleaseWaitChangePermissions").show();
     $.ajax({
         url: '/api/admin/users',
         type: 'POST',
@@ -164,7 +165,7 @@ change_user_type = function(user_id, user_type_id){
             }else
             {
                 alert(message);
-                location.reload();
+                $("#PleaseWaitChangePermissions").hide();
             }
         }
     });
@@ -236,7 +237,9 @@ $('.btn_save_editing_user').click(function(){
     change_user_info(user_id, username, email, phone);
 });
 
+
 change_user_info = function(user_id, username, email, phone){
+    $("#PleaseWait").show();
     $.ajax({
         url: '/api/admin/users',
         type: 'PUT',
@@ -255,8 +258,8 @@ change_user_info = function(user_id, username, email, phone){
                 location.reload();
             }else
             {
+                $("#PleaseWait").hide();
                 alert(message);
-                location.reload();
             }
         }
     });

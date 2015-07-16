@@ -76,7 +76,7 @@ class AdminUsersHandler(AdminBaseHandler):
             # text for email message
             text = ''
             # if user transferred to standard user group
-            if new_user_type == 0:
+            if new_user_type == 3:
                 text = ADMIN_BACK_USER_TO_STANDARD_USERTYPE_LETTER_TEXT % UserType.tostring(user.user_type)
             # an another cases
             else:

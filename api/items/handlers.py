@@ -892,11 +892,7 @@ class ListingHandler(ApiHandler):
         logger.debug('REQUEST_OBJECT_DELETE_ITEM')
         logger.debug(self.request_object)
 
-        listing_id = None
-
-        if self.request_object:
-            if 'listing_id' in self.request_object:
-                listing_id = self.request_object['listing_id']
+        listing_id = self.get_arg('listing_id', int, None)
 
         if not listing_id:
             return self.make_error(DELETE_LISTING_NO_ID)
@@ -905,7 +901,7 @@ class ListingHandler(ApiHandler):
         listing = self.session.query(Listing).filter(Listing.id == listing_id).first()
         # if no listing with this id
         if not listing:
-            return self.make_error(GET_LISTING_INVALID_ID)
+            return self.make_error(GET_LISTING_INVALID_ID % listing_id)
 
         self.session.delete(listing)
         self.session.commit()

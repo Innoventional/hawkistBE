@@ -102,6 +102,14 @@ class User(Base):
             response.append(current_tag_response)
         return response
 
+    def get_user_sales(self):
+        user_listings = self.listings
+        sold_user_listings = []
+        for l in user_listings:
+            if l.sold:
+                sold_user_listings.append(l)
+        return len(sold_user_listings)
+
     @property
     def user_response(self):
         return {
@@ -119,7 +127,11 @@ class User(Base):
             'user_type': self.user_type,
             'system_status': self.system_status,
             'city': self.city,
-            'last_activity': self.last_activity.strftime("%Y-%m-%dT%H:%M:%S")
+            'last_activity': self.last_activity.strftime("%Y-%m-%dT%H:%M:%S"),
+            'number_of_sales': self.get_user_sales(),
+            'rating': 4,
+            'review': 17,
+            'response_time': 5,
         }
 
 

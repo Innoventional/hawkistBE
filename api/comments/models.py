@@ -28,7 +28,7 @@ class Comment(Base):
     def response(self):
         return {
             'id': self.id,
-            'created_at': self.created_at.strftime("%Y-%m-%dT%H:%M:%S"),
+            'created_at': self.created_at.strftime("%Y-%m-%dT%H:%M"),
             'text': self.text,
             'image_url': self.image_url,
             'listing_id': self.listing_id,

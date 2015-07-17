@@ -104,6 +104,19 @@ ITEM_INFO_DICT
         'likes': NUMBERS OF LIKES
     }
     
+COMMENT_RESPONSE_DICT
+
+    {
+        "id": ID
+        "created_at": CREATED NAME,
+        "user_id": CREATER ID,
+        "user_username": CREATER USERNAME,
+        "user_avatar": CREATER AVATAR,
+        "listing_id": COMMENTED LISTING ID,
+        "text": TEXT,
+        "image_url": IMAGE URL,
+    }
+    
 ###User registration
 
 **Registration**
@@ -471,9 +484,33 @@ Response:
     
 ---
 
-**Get people I follow**
+**Get another user followers**
 
-    Url: 'user/followers?following=true'
+    Url: 'user/followers?user_id=USER_ID'
+    Method: 'GET'
+    
+Response:
+    
+    {
+        "status": 0,
+        "users": [
+            {
+                ...
+            },
+                .
+                .
+                .
+            {
+                ...
+            }
+        ]
+    }
+    
+---
+
+**Get people another follow**
+
+    Url: 'user/followers?following=true&user_id=USER_ID'
     Method: 'GET'
     
 Response:
@@ -751,15 +788,8 @@ Response Failure:
    
 **Like/dislike item**
 
-    Url: 'listings/like'
-    Method: 'POST'
-
-
-Data:
-
-    {
-        "listing_id": int
-    }
+    Url: 'listings/likes/LISTING_ID'
+    Method: 'PUT'
 
 Response Success:
     
@@ -804,6 +834,164 @@ Response Failure:
         'title': ''          — Error message title 
     }
     
+---
+
+### Comments
+   
+**Get all comments by current item**
+
+    Url: 'listings/comments/LISTING_ID'
+    Method: 'GET'
+    
+Response:
+    
+    {
+        "status": 0,
+        "comments": [
+            {
+                COMMENT_RESPONSE_DICT
+            },
+            .
+            .
+            .
+            {
+                COMMENT_RESPONSE_DICT
+            }
+        ]
+    }
+---
+
+**Create new comment**
+
+    Url: 'listings/comments/LISTING_ID'
+    Method: 'POST'
+
+
+Data:
+
+    {
+        "text": str,
+        "image_url": str
+    }
+
+Response Success:
+    
+    {
+        'status': 0,
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }
+---
+
+### Offers
+   
+**Get all comments by current item**
+
+    Url: 'listings/offers/LISTING_ID'
+    Method: 'GET'
+    
+Response:
+    
+    {
+        "status": 0,
+        "offers": [
+            {
+                OFFER_RESPONSE_DICT
+            },
+            .
+            .
+            .
+            {
+                OFFER_RESPONSE_DICT
+            }
+        ]
+    }
+---
+
+**Offer a new price**
+
+    Url: 'listings/offers/LISTING_ID'
+    Method: 'POST'
+
+
+Data:
+
+    {
+        "new_price": float
+    }
+
+Response Success:
+    
+    {
+        'status': 0,
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }
+---
+
+**Accept an offer**
+
+    Url: 'listings/offers/LISTING_ID'
+    Method: 'PUT'
+
+
+Data:
+
+    {
+        "new_status": 1
+    }
+
+Response Success:
+    
+    {
+        'status': 0,
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }
+    
+**Decline an offer**
+
+    Url: 'listings/offers/LISTING_ID'
+    Method: 'PUT'
+
+
+Data:
+
+    {
+        "new_status": 2
+    }
+
+Response Success:
+    
+    {
+        'status': 0,
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }
 ---
 
 

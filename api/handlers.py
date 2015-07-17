@@ -18,6 +18,8 @@ try:
     from admin.handlers.metatags.conditions import *
     from admin.handlers.listings import *
     from followers.handlers import *
+    from comments.handlers import *
+    from offers.handlers import *
 except ImportError:
     logger.debug(ImportError)
 __author__ = 'ne_luboff'

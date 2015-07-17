@@ -138,7 +138,7 @@ class User(Base):
             'user_type': self.user_type,
             'system_status': self.system_status,
             'city': self.city,
-            'last_activity': self.last_activity.strftime("%Y-%m-%dT%H:%M:%S"),
+            'last_activity': self.last_activity.strftime("%Y-%m-%dT%H:%M"),
             'number_of_sales': self.get_user_sales(),
             'rating': 4,
             'review': 17,

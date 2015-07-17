@@ -918,21 +918,16 @@ class ListingHandler(ApiHandler):
         return self.success()
 
 
-@route('listings/like')
+@route('listings/likes/(.*)')
 class ListingLikeHandler(ApiHandler):
-    allowed_methods = ('POST', )
+    allowed_methods = ('PUT', )
 
-    def create(self):
+    def update(self, listing_to_like_id):
 
         if not self.user:
             die(401)
 
         update_user_last_activity(self)
-
-        listing_to_like_id = None
-        if self.request_object:
-            if 'listing_id' in self.request_object:
-                listing_to_like_id = self.request_object['listing_id']
 
         if not listing_to_like_id:
             return self.make_error(LIKE_LISTING_NO_ID)

@@ -5,6 +5,8 @@ from helpers import route
 from ui_messages.errors.followers_errors.followers_errors import FOLLOWING_NO_USER_TO_FOLLOW_ID, \
     FOLLOWING_NO_USER_TO_FOLLOW, FOLLOWING_ALREADY_FOLLOW_THIS_USER, FOLLOWING_TRY_FOLLOW_YOURSELF, \
     FOLLOWING_NO_USER_TO_UNFOLLOW_ID, FOLLOWING_TRY_UNFOLLOW_YOURSELF, FOLLOWING_ALREADY_UNFOLLOW_THIS_USER
+from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID
+from utility.user_utility import update_user_last_activity
 
 __author__ = 'ne_luboff'
 
@@ -20,16 +22,31 @@ class FollowersHandler(ApiHandler):
         if self.user is None:
             die(401)
 
+        update_user_last_activity(self)
+
         # get is this get request for followers or following me people
         following = self.get_arg('following', bool, None)
+        user_id = self.get_arg('user_id', int, None)
+        user = None
+
+        # get followers/following of another user
+        if user_id:
+            user = self.session.query(User).get(user_id)
+            if not user:
+                return self.make_error(NO_USER_WITH_ID % user_id)
 
         # get following people
         if following:
-            print 'here'
-            f_users = self.user.following
+            if user:
+                f_users = user.following
+            else:
+                f_users = self.user.following
         # or people I follow
         else:
-            f_users = self.user.followers
+            if user:
+                f_users = user.followers
+            else:
+                f_users = self.user.followers
 
         return self.success({
             'users': [u.following_response for u in f_users]
@@ -38,6 +55,11 @@ class FollowersHandler(ApiHandler):
     def create(self):
         if self.user is None:
             die(401)
+
+        update_user_last_activity(self)
+
+        logger.debug('REQUEST_OBJECT_FOLLOW_USER')
+        logger.debug(self.request_object)
 
         user_to_follow_id = None
 
@@ -73,6 +95,8 @@ class FollowersHandler(ApiHandler):
     def remove(self):
         if self.user is None:
             die(401)
+
+        update_user_last_activity(self)
 
         user_to_unfollow_id = self.get_arg('user_id', int, None)
 

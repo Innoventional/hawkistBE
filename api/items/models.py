@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, DateTime, ForeignKey, String, Boolean, Numeric
+from sqlalchemy import Column, DateTime, ForeignKey, String, Boolean, Numeric, Table
 from sqlalchemy import Integer
 from sqlalchemy.orm import relationship, backref
 from api.users.models import User
@@ -100,7 +100,12 @@ class ItemPhoto(Base):
     image_url = Column(String, nullable=False)
 
 
-# TODO  new release
+# TODO new release
+
+listing_likes = Table("listing_likes", Base.metadata,
+                      Column("user_id", Integer, ForeignKey("users.id"), primary_key=True),
+                      Column("listing_id", Integer, ForeignKey("listings.id"), primary_key=True),
+                      Column("created_at", DateTime, nullable=False, default=datetime.datetime.utcnow))
 
 
 class Listing(Base):
@@ -154,6 +159,8 @@ class Listing(Base):
     location_lat = Column(Numeric, nullable=True)
     location_lon = Column(Numeric, nullable=True)
 
+    likes = relationship('User', secondary=listing_likes, backref='likes')
+
     def __repr__(self):
         return '<Item %s (%s)>' % (self.id, self.title)
 
@@ -180,7 +187,8 @@ class Listing(Base):
             'post_code': self.post_code,
             'city': self.city,
             'photos': [photo.image_url for photo in self.listing_photos],
-            'sold': self.sold
+            'sold': self.sold,
+            'likes': len(self.likes)
         }
 
 

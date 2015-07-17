@@ -14,7 +14,7 @@ from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID,
     WRONG_SUBCATEGORY_CONDITION_RELATION, CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1, \
     CREATE_LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE, CREATE_LISTING_TOO_MANY_PHOTOS, GET_LISTING_BY_USER_INVALID_ID, \
     CREATE_LISTING_USER_DONT_CONFIRM_EMAIL, CREATE_LISTING_USER_HAVENT_FB, DELETE_LISTING_NO_ID, \
-    DELETE_LISTING_ANOTHER_USER
+    DELETE_LISTING_ANOTHER_USER, LIKE_LISTING_NO_ID
 from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE
 from utility.google_api import get_city_by_code
 from utility.tags import interested_user_tag_ids, interested_user_item_ids
@@ -440,6 +440,7 @@ class PostCodeHandler(ApiHandler):
             return self.make_error(message='You must select a post code in order to create a listing.', status=6,
                                    title=CREATE_LISTING_EMPTY_FIELDS_TITLE % 'post code')
 
+        # request to own google api script
         google_response = get_city_by_code(post_code)
         error, data = google_response['error'], google_response['data']
         if error:
@@ -917,4 +918,37 @@ class ListingHandler(ApiHandler):
         return self.success()
 
 
+@route('listings/like')
+class ListingLikeHandler(ApiHandler):
+    allowed_methods = ('POST', )
 
+    def create(self):
+
+        if not self.user:
+            die(401)
+
+        update_user_last_activity(self)
+
+        listing_to_like_id = None
+        if self.request_object:
+            if 'listing_id' in self.request_object:
+                listing_to_like_id = self.request_object['listing_id']
+
+        if not listing_to_like_id:
+            return self.make_error(LIKE_LISTING_NO_ID)
+
+        listing_to_like = self.session.query(Listing).get(listing_to_like_id)
+
+        if not listing_to_like:
+            return self.make_error(GET_LISTING_INVALID_ID % listing_to_like_id)
+
+        # get listing likes list
+        listing_likes = listing_to_like.likes
+        # if user don't like this listing yet - make link
+        if self.user not in listing_likes:
+            listing_likes.append(self.user)
+        # else delete this user like
+        else:
+            listing_likes.remove(self.user)
+        self.session.commit()
+        return self.success()

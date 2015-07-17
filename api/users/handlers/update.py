@@ -47,7 +47,9 @@ class UserHandler(ApiHandler):
                 return self.make_error(NO_USER_WITH_ID % user_id)
             # else we must show following details
             user_response = user.user_response
+            # does this user follow you
             user_response['follow'] = True if user in self.user.followers else False
+            # do you follow this user
             user_response['following'] = True if user in self.user.following else False
             return self.success({'user': user_response})
         # your own profile

@@ -77,6 +77,33 @@ USER_INFO_DICT
         'response_time': AVERAGE USER RESPONSE TIME
     }
     
+ITEM_INFO_DICT
+    
+    {
+        'id': ID,
+        'user_id': SELLER ID,
+        'user_username': SELLER USERNAME,
+        'user_avatar': SELLER AVATAR,
+        'created_at': CREATED TIME,
+        'title': TITLE,
+        'description': DESCRIPTION,
+        'platform': PLATFORM ID,
+        'category': CATEGORY ID,
+        'subcategory': SUBCATEGORY ID,
+        'condition': CONDITION ID,
+        'color': COLOUR ID,
+        'retail_price': RETAIL PRICE,
+        'selling_price': SELLING PRICE,
+        'discount': DISCOUNT VALUE,
+        'shipping_price': SHIPPING PRICE,
+        'collection_only': COLLECTION ONLY FLAG,
+        'post_code': POST CODE,
+        'city': LOCATION CITY,
+        'photos': LIST OF LISTING PHOTOS,
+        'sold': IS LISTING ALREADY SOLD FLAG,
+        'likes': NUMBERS OF LIKES
+    }
+    
 ###User registration
 
 **Registration**
@@ -534,13 +561,13 @@ Response:
         },
         "items": [
             {
-                ...
+                ITEM_INFO_DICT
             },
                 .
                 .
                 .
             {
-                ...
+                ITEM_INFO_DICT
             }
         ]
     }
@@ -558,29 +585,29 @@ Response success:
         "status": 0,
         "item": [
             {
-                ...
+                ITEM_INFO_DICT
             }
         ],
         "similar_items": [
             {
-                ...
+                ITEM_INFO_DICT
             },
                 .
                 .
                 .
             {
-                ...
+                ITEM_INFO_DICT
             }
         ],
         "user_items": [
             {
-                ...
+                ITEM_INFO_DICT
             },
                 .
                 .
                 .
             {
-                ...
+                ITEM_INFO_DICT
             }
         ],
         
@@ -605,13 +632,13 @@ Response success:
         "status": 0,
         "items": [
             {
-                ...
+                ITEM_INFO_DICT
             },
                 .
                 .
                 .
             {
-                ...
+                ITEM_INFO_DICT
             }
         ]
     }
@@ -638,13 +665,13 @@ Response:
         },
         "items": [
             {
-                ...
+                ITEM_INFO_DICT
             },
                 .
                 .
                 .
             {
-                ...
+                ITEM_INFO_DICT
             }
         ]
     }
@@ -691,11 +718,41 @@ Response Failure:
         'message': '',          — Error message text
         'title': ''          — Error message title 
     }
-    
+
+---
+   
 **Delete item**
 
     Url: 'listings'
     Method: 'DELETE'
+
+
+Data:
+
+    {
+        "listing_id": int
+    }
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': ERROR_STATUS_CODE,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }
+    
+---
+   
+**Like/dislike item**
+
+    Url: 'listings/like'
+    Method: 'POST'
 
 
 Data:

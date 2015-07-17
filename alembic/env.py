@@ -20,6 +20,7 @@ from api.items.models import *
 from api.tags.models import *
 from api.comments.models import *
 from api.offers.models import *
+from api.followers.models import *
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel

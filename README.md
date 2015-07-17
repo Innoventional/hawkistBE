@@ -52,7 +52,31 @@ class SystemStatus(Enum):
 
     Active = 0
     Suspended = 1
-
+    
+USER_INFO_DICT
+    
+    {
+        'id': ID,
+        'avatar': AVATAR URL or None,
+        'thumbnail': THUMBNAIL URL or None,
+        'username': USERNAME,
+        'email': USERNAME,
+        'about_me': INFO ABOUT USER or None,
+        'phone': MOBILE NUMBER or None,
+        'facebook_id': FACEBOOK ID or None,
+        'email_status': EMAIL CONFIRMATION STATUS,
+        'first_login': DOES THIS USER LOGIN FIRST FLAG,
+        'metatags': LIST OF USER TAGS,
+        'user_type': ACCOUNT TYPE,
+        'system_status': SYSTEM STATUS,
+        'city': LOCATION CITY or None,
+        'last_activity': LAST USER ACTIVITY TIME,
+        'number_of_sales': NUMBER OF LISTING SALES,
+        'rating': RATING VALUE,
+        'review': REVIEW NUMBER,
+        'response_time': AVERAGE USER RESPONSE TIME
+    }
+    
 ###User registration
 
 **Registration**
@@ -364,7 +388,11 @@ Response:
 
     {
         "status": 0,
-        "user": {...}
+        "user": {
+            USER_INFO_DICT,
+            'follow': DOES THIS USER FOLLOW YOU FLAG,
+            'following': DO YOU FOLLOW THIS USER FLAG
+        }
     }
     
 ---
@@ -390,6 +418,104 @@ Response:
     
 ---
 
+### Following
+   
+**Get my followers**
+
+    Url: 'user/followers'
+    Method: 'GET'
+    
+Response:
+    
+    {
+        "status": 0,
+        "users": [
+            {
+                ...
+            },
+                .
+                .
+                .
+            {
+                ...
+            }
+        ]
+    }
+    
+---
+
+**Get people I follow**
+
+    Url: 'user/followers?following=true'
+    Method: 'GET'
+    
+Response:
+    
+    {
+        "status": 0,
+        "users": [
+            {
+                ...
+            },
+                .
+                .
+                .
+            {
+                ...
+            }
+        ]
+    }
+    
+---
+
+**Follow someone**
+
+    Url: 'user/followers'
+    Method: 'POST'
+    
+
+Data:
+
+    {
+        "user_id": USER_TO_FOLLOW_ID,
+    }
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    } 
+---
+
+**Unfollow someone**
+
+    Url: 'user/followers?user_id=USER_TO_UNFOLLOW_ID'
+    Method: 'DELETE'
+    
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    } 
+---
+ 
 ### Items
    
 **Get all items (user feeds)**
@@ -581,8 +707,7 @@ Data:
 Response Success:
     
     {
-        'status': 0,
-        'item': ITEM_INFO_DICT
+        'status': 0
     }
     
 Response Failure:

@@ -17,6 +17,7 @@ try:
     from admin.handlers.metatags.colours import *
     from admin.handlers.metatags.conditions import *
     from admin.handlers.listings import *
+    from followers.handlers import *
 except ImportError:
     logger.debug(ImportError)
 __author__ = 'ne_luboff'

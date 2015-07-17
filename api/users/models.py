@@ -1,6 +1,7 @@
 import datetime
 from sqlalchemy import Column, Integer, DateTime, String, Boolean, SmallInteger, ForeignKey, Enum
 from sqlalchemy.orm import relationship, backref
+from api.followers.models import user_followers
 from api.tags.models import Tag
 from orm import Base
 
@@ -70,6 +71,16 @@ class User(Base):
     city = Column(String, nullable=True, default='')
     last_activity = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
 
+    following = relationship('User',
+                             secondary=user_followers,
+                             primaryjoin=id == user_followers.c.user_id,
+                             secondaryjoin=id == user_followers.c.following_user_id)
+
+    followers = relationship('User',
+                             secondary=user_followers,
+                             primaryjoin=id == user_followers.c.following_user_id,
+                             secondaryjoin=id == user_followers.c.user_id)
+
     def __repr__(self):
         return '<User %s (%s)>' % (self.id, self.username)
 
@@ -132,6 +143,16 @@ class User(Base):
             'rating': 4,
             'review': 17,
             'response_time': 5,
+        }
+
+    @property
+    def following_response(self):
+        return {
+            'id': self.id,
+            'avatar': self.avatar,
+            'username': self.username,
+            'rating': 4,
+            'review': 17,
         }
 
 

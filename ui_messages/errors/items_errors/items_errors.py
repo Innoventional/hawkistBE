@@ -30,3 +30,4 @@ CREATE_LISTING_TOO_MANY_PHOTOS = 'You can add only 4 photos'
 
 # Delete the listing
 DELETE_LISTING_NO_ID = 'No listing to delete id'
+DELETE_LISTING_ANOTHER_USER = 'Sorry, but you cannot delete this item because you are not owner of it'

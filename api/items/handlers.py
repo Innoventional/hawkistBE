@@ -13,7 +13,8 @@ from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID,
     WRONG_PLATFORM_CATEGORY_RELATION, WRONG_CATEGORY_SUBCATEGORY_RELATION, WRONG_SUBCATEGORY_COLOUR_RELATION, \
     WRONG_SUBCATEGORY_CONDITION_RELATION, CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1, \
     CREATE_LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE, CREATE_LISTING_TOO_MANY_PHOTOS, GET_LISTING_BY_USER_INVALID_ID, \
-    CREATE_LISTING_USER_DONT_CONFIRM_EMAIL, CREATE_LISTING_USER_HAVENT_FB, DELETE_LISTING_NO_ID
+    CREATE_LISTING_USER_DONT_CONFIRM_EMAIL, CREATE_LISTING_USER_HAVENT_FB, DELETE_LISTING_NO_ID, \
+    DELETE_LISTING_ANOTHER_USER
 from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE
 from utility.google_api import get_city_by_code
 from utility.tags import interested_user_tag_ids, interested_user_item_ids
@@ -906,6 +907,10 @@ class ListingHandler(ApiHandler):
         # if no listing with this id
         if not listing:
             return self.make_error(GET_LISTING_INVALID_ID % listing_id)
+
+        # check is it item of current user
+        if listing.user.id != self.user.id:
+            return self.make_error(DELETE_LISTING_ANOTHER_USER)
 
         self.session.delete(listing)
         self.session.commit()

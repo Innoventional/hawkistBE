@@ -36,12 +36,21 @@ class UserHandler(ApiHandler):
         # update cookies
         self.set_secure_cookie(USER_ID, str(self.user.id), expires_days=30)
 
+        # try get user id from address row to know do you want see your own profile or profile of another user
         user_id = self.get_arg('id', int)
+        # another user profile
         if user_id:
+            # try get another user
             user = self.session.query(User).get(user_id)
+            # if there is no user with this id - return an error
             if not user:
                 return self.make_error(NO_USER_WITH_ID % user_id)
-            return self.success({'user': user.user_response})
+            # else we must show following details
+            user_response = user.user_response
+            user_response['follow'] = True if user in self.user.followers else False
+            user_response['following'] = True if user in self.user.following else False
+            return self.success({'user': user_response})
+        # your own profile
         else:
             logger.debug(self.get_secure_cookie('user-id'))
             if self.user is None:

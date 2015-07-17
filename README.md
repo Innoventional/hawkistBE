@@ -486,7 +486,7 @@ Response:
 
 **Get another user followers**
 
-    Url: 'user/followers?user_id=USER_ID'
+    Url: 'user/followers?user_id'
     Method: 'GET'
     
 Response:
@@ -508,7 +508,31 @@ Response:
     
 ---
 
-**Get people another follow**
+**Get people I follow**
+
+    Url: 'user/followers?following=true'
+    Method: 'GET'
+    
+Response:
+    
+    {
+        "status": 0,
+        "users": [
+            {
+                ...
+            },
+                .
+                .
+                .
+            {
+                ...
+            }
+        ]
+    }
+    
+---
+
+**Get people which another user follow**
 
     Url: 'user/followers?following=true&user_id=USER_ID'
     Method: 'GET'

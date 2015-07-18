@@ -486,7 +486,7 @@ Response:
 
 **Get another user followers**
 
-    Url: 'user/followers?user_id'
+    Url: 'user/followers?user_id=USER_ID'
     Method: 'GET'
     
 Response:

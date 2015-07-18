@@ -421,7 +421,7 @@ Response:
 
 Get user by id:
 
-    url = '/user?id=5'
+    url = '/user?id=USER_ID'
     type: 'GET'
 
 Response:

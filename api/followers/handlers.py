@@ -4,7 +4,8 @@ from base import ApiHandler, die
 from helpers import route
 from ui_messages.errors.followers_errors.followers_errors import FOLLOWING_NO_USER_TO_FOLLOW_ID, \
     FOLLOWING_NO_USER_TO_FOLLOW, FOLLOWING_ALREADY_FOLLOW_THIS_USER, FOLLOWING_TRY_FOLLOW_YOURSELF, \
-    FOLLOWING_NO_USER_TO_UNFOLLOW_ID, FOLLOWING_TRY_UNFOLLOW_YOURSELF, FOLLOWING_ALREADY_UNFOLLOW_THIS_USER
+    FOLLOWING_NO_USER_TO_UNFOLLOW_ID, FOLLOWING_TRY_UNFOLLOW_YOURSELF, FOLLOWING_ALREADY_UNFOLLOW_THIS_USER, \
+    INVALID_USER_ID
 from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID
 from utility.user_utility import update_user_last_activity
 
@@ -26,11 +27,18 @@ class FollowersHandler(ApiHandler):
 
         # get is this get request for followers or following me people
         following = self.get_arg('following', bool, None)
-        user_id = self.get_arg('user_id', int, None)
+        user_id = self.get_arg('user_id', None)
+        # user_id = self.get_arg('user_id', int, None)
         user = None
 
         # get followers/following of another user
         if user_id:
+            # first of all check is received user id int type
+            try:
+                user_id = int(user_id)
+            except:
+                return self.make_error(INVALID_USER_ID % user_id.upper())
+
             user = self.session.query(User).get(user_id)
             if not user:
                 return self.make_error(NO_USER_WITH_ID % user_id)

@@ -1,5 +1,7 @@
 __author__ = 'ne_luboff'
 
+INVALID_USER_ID = '%s in not user id'
+
 FOLLOWING_NO_USER_TO_FOLLOW_ID = 'No user to follow id in request'
 FOLLOWING_TRY_FOLLOW_YOURSELF = 'Wow, you try follow yourself!'
 FOLLOWING_NO_USER_TO_FOLLOW = 'No user with id %s'

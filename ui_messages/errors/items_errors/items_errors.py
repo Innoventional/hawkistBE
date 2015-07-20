@@ -34,3 +34,4 @@ DELETE_LISTING_ANOTHER_USER = 'Sorry, but you cannot delete this item because yo
 
 # Listing likes
 LIKE_LISTING_NO_ID = 'No listing to like id'
+LIKE_YOUR_OWN_LISTING = 'You cannot add your own listings to wishlist'

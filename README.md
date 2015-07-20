@@ -828,6 +828,24 @@ Response Failure:
         'message': '',          — Error message text
         'title': ''          — Error message title 
     }
+
+---      
+
+**Get wishlist (list of liked listings)**
+
+    Url: 'user/wishlist'
+    Method: 'GET'
+
+Response Success:
+    
+    {
+        'status': 0,
+        'items': [
+            {
+                ITEM_RESPONSE_DICT
+            }
+        ]
+    }
     
 ---
 

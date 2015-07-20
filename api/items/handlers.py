@@ -14,7 +14,7 @@ from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID,
     WRONG_SUBCATEGORY_CONDITION_RELATION, CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1, \
     CREATE_LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE, CREATE_LISTING_TOO_MANY_PHOTOS, GET_LISTING_BY_USER_INVALID_ID, \
     CREATE_LISTING_USER_DONT_CONFIRM_EMAIL, CREATE_LISTING_USER_HAVENT_FB, DELETE_LISTING_NO_ID, \
-    DELETE_LISTING_ANOTHER_USER, LIKE_LISTING_NO_ID
+    DELETE_LISTING_ANOTHER_USER, LIKE_LISTING_NO_ID, LIKE_YOUR_OWN_LISTING
 from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE
 from utility.google_api import get_city_by_code
 from utility.tags import interested_user_tag_ids, interested_user_item_ids
@@ -937,6 +937,10 @@ class ListingLikeHandler(ApiHandler):
         if not listing_to_like:
             return self.make_error(GET_LISTING_INVALID_ID % listing_to_like_id)
 
+        # check item's owner
+        if listing_to_like.user_id == self.user.id:
+            return self.make_error(LIKE_YOUR_OWN_LISTING)
+
         # get listing likes list
         listing_likes = listing_to_like.likes
         # if user don't like this listing yet - make link
@@ -947,3 +951,16 @@ class ListingLikeHandler(ApiHandler):
             listing_likes.remove(self.user)
         self.session.commit()
         return self.success()
+
+@route('user/wishlist')
+class UserWishListHandler(ApiHandler):
+    allowed_methods = ('GET', )
+
+    def read(self):
+
+        if not self.user:
+            die(401)
+
+        wish_items = self.user.likes
+        print wish_items
+        return self.success({'items': [i.response for i in wish_items]})

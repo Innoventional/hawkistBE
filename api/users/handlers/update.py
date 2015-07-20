@@ -15,7 +15,7 @@ from utility.facebook_api import get_facebook_user
 from utility.format_verification import username_verification, email_verification
 from utility.image.processor import make_thumbnail
 from utility.send_email import email_confirmation_sending
-from utility.user_utility import update_user_last_activity
+from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
 __author__ = 'ne_luboff'
 
@@ -32,6 +32,11 @@ class UserHandler(ApiHandler):
             die(401)
 
         update_user_last_activity(self)
+
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            return self.make_error(suspension_error)
 
         # update cookies
         self.set_secure_cookie(USER_ID, str(self.user.id), expires_days=30)
@@ -66,6 +71,11 @@ class UserHandler(ApiHandler):
             die(401)
 
         update_user_last_activity(self)
+
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            return self.make_error(suspension_error)
 
         username = ''
         email = ''
@@ -185,6 +195,11 @@ class UserSocialHandler(ApiHandler):
             die(401)
 
         update_user_last_activity(self)
+
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            return self.make_error(suspension_error)
 
         logger.debug('REQUEST_OBJECT_USER_SOCIAL')
         logger.debug(self.request_object)
@@ -309,6 +324,11 @@ class UserMetaTagsHandler(ApiHandler):
 
         update_user_last_activity(self)
 
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            return self.make_error(suspension_error)
+
         logger.debug('REQUEST_OBJECT_USER_ADD_METATAGS')
         logger.debug(self.request_object)
 
@@ -429,6 +449,11 @@ class UserMetaTagsHandler(ApiHandler):
             die(401)
 
         update_user_last_activity(self)
+
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            return self.make_error(suspension_error)
 
         logger.debug('REQUEST_OBJECT_USER_DELETE_METATAGS')
         logger.debug(self.request_object)

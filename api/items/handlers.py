@@ -18,7 +18,7 @@ from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID,
 from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE
 from utility.google_api import get_city_by_code
 from utility.tags import interested_user_tag_ids, interested_user_item_ids
-from utility.user_utility import update_user_last_activity
+from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
 __author__ = 'ne_luboff'
 
@@ -462,6 +462,11 @@ class ListingHandler(ApiHandler):
 
         update_user_last_activity(self)
 
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            return self.make_error(suspension_error)
+
         # for get item by id
         listing_id = self.get_arg('listing_id', int)
 
@@ -632,6 +637,11 @@ class ListingHandler(ApiHandler):
             die(401)
 
         update_user_last_activity(self)
+
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            return self.make_error(suspension_error)
 
         # check selling ability
         # if not self.user.facebook_id:
@@ -895,6 +905,11 @@ class ListingHandler(ApiHandler):
 
         update_user_last_activity(self)
 
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            return self.make_error(suspension_error)
+
         logger.debug('REQUEST_OBJECT_DELETE_ITEM')
         logger.debug(self.request_object)
 
@@ -929,6 +944,11 @@ class ListingLikeHandler(ApiHandler):
 
         update_user_last_activity(self)
 
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            return self.make_error(suspension_error)
+
         if not listing_to_like_id:
             return self.make_error(LIKE_LISTING_NO_ID)
 
@@ -960,6 +980,13 @@ class UserWishListHandler(ApiHandler):
 
         if not self.user:
             die(401)
+
+        update_user_last_activity(self)
+
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            return self.make_error(suspension_error)
 
         wish_items = self.user.likes
         print wish_items

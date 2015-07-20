@@ -1,6 +1,7 @@
 from api.tags.models import Tag, Platform
 from base import ApiHandler, die
 from helpers import route
+from utility.user_utility import check_user_suspension_status, update_user_last_activity
 
 __author__ = 'ne_luboff'
 
@@ -51,6 +52,13 @@ class MetaTagsHandler(ApiHandler):
     def read(self):
         if self.user is None:
             die(401)
+
+        update_user_last_activity(self)
+
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            return self.make_error(suspension_error)
 
         response = dict()
         # get platform tags

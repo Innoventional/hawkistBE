@@ -7,7 +7,7 @@ from ui_messages.errors.followers_errors.followers_errors import FOLLOWING_NO_US
     FOLLOWING_NO_USER_TO_UNFOLLOW_ID, FOLLOWING_TRY_UNFOLLOW_YOURSELF, FOLLOWING_ALREADY_UNFOLLOW_THIS_USER, \
     INVALID_USER_ID
 from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID
-from utility.user_utility import update_user_last_activity
+from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
 __author__ = 'ne_luboff'
 
@@ -24,6 +24,11 @@ class FollowersHandler(ApiHandler):
             die(401)
 
         update_user_last_activity(self)
+
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            return self.make_error(suspension_error)
 
         # get is this get request for followers or following me people
         following = self.get_arg('following', bool, None)
@@ -66,6 +71,11 @@ class FollowersHandler(ApiHandler):
 
         update_user_last_activity(self)
 
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            return self.make_error(suspension_error)
+
         logger.debug('REQUEST_OBJECT_FOLLOW_USER')
         logger.debug(self.request_object)
 
@@ -105,6 +115,11 @@ class FollowersHandler(ApiHandler):
             die(401)
 
         update_user_last_activity(self)
+
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            return self.make_error(suspension_error)
 
         user_to_unfollow_id = self.get_arg('user_id', int, None)
 

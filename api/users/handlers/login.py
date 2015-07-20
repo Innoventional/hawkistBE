@@ -15,7 +15,7 @@ from utility.facebook_api import get_facebook_user, get_facebook_photo
 from utility.format_verification import phone_verification, sms_limit_check
 from utility.send_email import email_confirmation_sending
 from utility.twilio_api import send_sms
-from utility.user_utility import update_user_last_activity
+from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
 __author__ = 'ne_luboff'
 
@@ -58,6 +58,10 @@ class UserLoginHandler(ApiHandler):
 
             # try get existing user
             user = self.session.query(User).filter(User.phone == phone).first()
+            # check user status
+            suspension_error = check_user_suspension_status(user)
+            if suspension_error:
+                return self.make_error(suspension_error)
             if not user:
                 logger.debug('Create new user (phone registration)')
                 user = User()
@@ -103,6 +107,10 @@ class UserLoginHandler(ApiHandler):
 
             # try get existing fb user
             user = self.session.query(User).filter(User.facebook_id == facebook_id).first()
+            # check user status
+            suspension_error = check_user_suspension_status(user)
+            if suspension_error:
+                return self.make_error(suspension_error)
             if not user:
                 logger.debug('Create new user (fb registration)')
                 user = User()
@@ -151,6 +159,11 @@ class UserLoginHandler(ApiHandler):
         if self.user is None:
             die(401)
 
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            return self.make_error(suspension_error)
+
         qs = self.session.query(User).filter(User.id != self.user.id).order_by(User.id)
 
         q = self.get_argument('q')
@@ -194,6 +207,11 @@ class UserLoginHandler(ApiHandler):
 
         if not user:
             return self.make_error(message=LOG_IN_USER_NOT_FOUND % phone, status=3, title=LOG_IN_USER_NOT_FOUND_TITLE)
+
+        # check user status
+        suspension_error = check_user_suspension_status(user)
+        if suspension_error:
+            return self.make_error(suspension_error)
 
         if user.pin != pin:
             return self.make_error(message=LOG_IN_INCORRECT_PIN % pin, status=4, title=LOG_IN_INCORRECT_PIN_TITLE)

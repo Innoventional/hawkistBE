@@ -11,7 +11,7 @@ from ui_messages.errors.offers_errors.offers_errors import GET_OFFERS_NO_LISTING
     CREATE_OFFER_EMPTY_DATA, UPDATE_OFFER_NO_NEW_STATUS, UPDATE_OFFER_INVALID_STATUS, UPDATE_OFFER_NO_OFFER_ID, \
     UPDATE_OFFER_INVALID_OFFER_ID
 from ui_messages.messages.offers_messages import OFFER_NEW, OFFER_ACCEPTED, OFFER_DECLINED
-from utility.user_utility import update_user_last_activity
+from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
 __author__ = 'ne_luboff'
 
@@ -27,6 +27,11 @@ class ItemOffersHandler(ApiHandler):
             die(401)
 
         update_user_last_activity(self)
+
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            return self.make_error(suspension_error)
 
         if not listing_id:
             return self.make_error(GET_OFFERS_NO_LISTING_ID)
@@ -46,6 +51,11 @@ class ItemOffersHandler(ApiHandler):
             die(401)
 
         update_user_last_activity(self)
+
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            return self.make_error(suspension_error)
 
         logger.debug('REQUEST_OBJECT_NEW_OFFER')
         logger.debug(self.request_object)
@@ -94,6 +104,11 @@ class ItemOffersHandler(ApiHandler):
             die(401)
 
         update_user_last_activity(self)
+
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            return self.make_error(suspension_error)
 
         logger.debug('REQUEST_OBJECT_CHANGE_OFFER_STATUS')
         logger.debug(self.request_object)

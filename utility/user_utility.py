@@ -1,4 +1,6 @@
 import datetime
+from api.users.models import SystemStatus
+from ui_messages.messages.user_messages import USER_SUSPENDED
 
 __author__ = 'ne_luboff'
 
@@ -7,3 +9,9 @@ __author__ = 'ne_luboff'
 def update_user_last_activity(self):
     self.user.last_activity = datetime.datetime.utcnow()
     self.session.commit()
+
+
+def check_user_suspension_status(user):
+    if user.system_status == SystemStatus.Suspended:
+        return USER_SUSPENDED
+    return False

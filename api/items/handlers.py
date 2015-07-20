@@ -495,6 +495,7 @@ class ListingHandler(ApiHandler):
             user_listings = self.session.query(Listing).filter(and_(Listing.user_id == listing.user_id,
                                                                     Listing.id != listing.id)).limit(6)
             current_listing_response = listing.response
+            current_listing_response['liked'] = self.user in listing.likes
             current_listing_response['user'] = listing.user.user_response
             response['item'] = current_listing_response
             response['similar_items'] = [l.response for l in similar_listings]

@@ -15,3 +15,10 @@ ADMIN_CHANGE_USERTYPE_LETTER_SUBJECT = 'Permissions changed'
 ADMIN_PHONE_NUMBER_CHANGED_LETTER_TEXT = 'Hi,\nYour mobile number has been changed and a new pin code sent to this ' \
                                          'number.\nHawkist'
 ADMIN_PHONE_NUMBER_CHANGED_LETTER_SUBJECT = 'Mobile number changed'
+
+# suspend account
+ADMIN_ACCOUNT_SUSPENDED_TEXT = 'Your account was suspended. For more info contact with our support: info@hawkist.co.uk'
+ADMIN_ACCOUNT_SUSPENDED_SUBJECT = 'Account suspension'
+
+ADMIN_ACCOUNT_ACTIVATED_TEXT = 'Your account was activated. Enjoy!'
+ADMIN_ACCOUNT_ACTIVATED_SUBJECT = 'Account activation'

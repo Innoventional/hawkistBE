@@ -172,6 +172,7 @@ change_user_type = function(user_id, user_type_id){
 };
 
 $('.btn_suspend_user').click(function(){
+    $("#PleaseWaitSuspension").show();
     user_id = $(this).parent().parent().data('id');
     $.ajax({
         url: '/api/admin/users',
@@ -188,6 +189,7 @@ $('.btn_suspend_user').click(function(){
                 location.reload();
             }else
             {
+                $("#PleaseWaitSuspension").hide();
                 alert(message);
             }
         }
@@ -195,6 +197,7 @@ $('.btn_suspend_user').click(function(){
 });
 
 $('.btn_activate_user').click(function(){
+    $("#PleaseWaitSuspension").show();
     user_id = $(this).parent().parent().data('id');
     $.ajax({
         url: '/api/admin/users',
@@ -211,6 +214,7 @@ $('.btn_activate_user').click(function(){
                 location.reload();
             }else
             {
+                $("#PleaseWaitSuspension").hide();
                 alert(message);
             }
         }

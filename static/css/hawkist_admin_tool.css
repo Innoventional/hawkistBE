@@ -135,3 +135,9 @@
     left: 35%;
     top: 20%;
 }
+
+#PleaseWaitSuspension {
+    position: absolute;
+    left: 45%;
+    top: 40%;
+}

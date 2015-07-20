@@ -16,7 +16,8 @@ from ui_messages.messages.admin_tool import ADMIN_USERTYPE_CHANGED_SUCCESS
 from ui_messages.messages.custom_error_titles import PHONE_VERIFICATION_INVALID_FORMAT_TITLE
 from ui_messages.messages.email import ADMIN_BACK_USER_TO_STANDARD_USERTYPE_LETTER_TEXT, ADMIN_CHANGE_USERTYPE_LETTER_TEXT, \
     ADMIN_CHANGE_USERTYPE_LETTER_SUBJECT, ADMIN_PHONE_NUMBER_CHANGED_LETTER_TEXT, \
-    ADMIN_PHONE_NUMBER_CHANGED_LETTER_SUBJECT
+    ADMIN_PHONE_NUMBER_CHANGED_LETTER_SUBJECT, ADMIN_ACCOUNT_SUSPENDED_TEXT, ADMIN_ACCOUNT_SUSPENDED_SUBJECT, \
+    ADMIN_ACCOUNT_ACTIVATED_TEXT, ADMIN_ACCOUNT_ACTIVATED_SUBJECT
 from ui_messages.messages.sms import UPDATE_USER_PHONE_NUMBER_SMS
 from utility.format_verification import username_verification, email_verification, phone_verification
 from utility.send_email import send_email, email_confirmation_sending
@@ -130,9 +131,19 @@ class AdminUsersHandler(AdminBaseHandler):
             user.system_status = 1
             need_commit = True
 
+            # send email about suspension
+            text = ADMIN_ACCOUNT_SUSPENDED_TEXT
+            subject = ADMIN_ACCOUNT_SUSPENDED_SUBJECT
+            send_email(text, subject=subject, recipient=user.email)
+
         elif action == 'unsuspend':
             user.system_status = 0
             need_commit = True
+
+            # send email about activation
+            text = ADMIN_ACCOUNT_ACTIVATED_TEXT
+            subject = ADMIN_ACCOUNT_ACTIVATED_SUBJECT
+            send_email(text, subject=subject, recipient=user.email)
 
         elif action == 'edit':
             username = self.get_arg('username')

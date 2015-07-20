@@ -66,7 +66,7 @@ class FollowersHandler(ApiHandler):
                 f_users = user.followers
                 for u in f_users:
                     current_response = u.following_response
-                    current_response['follow'] = u in self.user.followers
+                    current_response['follow'] = u in self.user.following
                     following_response.append(current_response)
             else:
                 f_users = self.user.followers

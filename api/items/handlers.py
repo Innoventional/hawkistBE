@@ -8,6 +8,7 @@ from api.tags.models import Tag, Platform, Category, Subcategory, Color, Conditi
 from api.users.models import User
 from base import ApiHandler, die, paginate
 from helpers import route
+from ui_messages.errors.followers_errors.followers_errors import INVALID_USER_ID
 from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID, CREATE_LISTING_EMPTY_FIELDS, \
     INVALID_PLATFORM_ID, INVALID_CATEGORY_ID, INVALID_SUBCATEGORY_ID, INVALID_COLOUR_ID, INVALID_CONDITION_ID, \
     WRONG_PLATFORM_CATEGORY_RELATION, WRONG_CATEGORY_SUBCATEGORY_RELATION, WRONG_SUBCATEGORY_COLOUR_RELATION, \
@@ -15,6 +16,7 @@ from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID,
     CREATE_LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE, CREATE_LISTING_TOO_MANY_PHOTOS, GET_LISTING_BY_USER_INVALID_ID, \
     CREATE_LISTING_USER_DONT_CONFIRM_EMAIL, CREATE_LISTING_USER_HAVENT_FB, DELETE_LISTING_NO_ID, \
     DELETE_LISTING_ANOTHER_USER, LIKE_LISTING_NO_ID, LIKE_YOUR_OWN_LISTING
+from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID
 from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE
 from utility.google_api import get_city_by_code
 from utility.tags import interested_user_tag_ids, interested_user_item_ids
@@ -988,6 +990,24 @@ class UserWishListHandler(ApiHandler):
         if suspension_error:
             return self.make_error(suspension_error)
 
-        wish_items = self.user.likes
-        print wish_items
+        user_id = self.get_arg('user_id', None)
+        user = None
+
+        # get followers/following of another user
+        if user_id:
+            # first of all check is received user id int type
+            try:
+                user_id = int(user_id)
+            except:
+                return self.make_error(INVALID_USER_ID % user_id.upper())
+
+            user = self.session.query(User).get(user_id)
+            if not user:
+                return self.make_error(NO_USER_WITH_ID % user_id)
+
+        if user:
+            wish_items = user.likes
+        else:
+            wish_items = self.user.likes
+
         return self.success({'items': [i.response for i in wish_items]})

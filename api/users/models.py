@@ -3,6 +3,8 @@ from sqlalchemy import Column, Integer, DateTime, String, Boolean, SmallInteger,
 from sqlalchemy.orm import relationship, backref
 from api.followers.models import user_followers
 from api.tags.models import Tag
+from api.users.blocked_users.models import user_blacklist
+from api.users.reported_users.models import user_reportlist
 from orm import Base
 
 __author__ = 'ne_luboff'
@@ -80,6 +82,16 @@ class User(Base):
                              secondary=user_followers,
                              primaryjoin=id == user_followers.c.following_user_id,
                              secondaryjoin=id == user_followers.c.user_id)
+
+    blocked = relationship('User',
+                           secondary=user_blacklist,
+                           primaryjoin=id == user_blacklist.c.user_id,
+                           secondaryjoin=id == user_blacklist.c.blocked_user_id)
+
+    reported = relationship('User',
+                            secondary=user_reportlist,
+                            primaryjoin=id == user_reportlist.c.user_id,
+                            secondaryjoin=id == user_reportlist.c.reported_user_id)
 
     def __repr__(self):
         return '<User %s (%s)>' % (self.id, self.username)

@@ -849,6 +849,24 @@ Response Success:
     
 ---
 
+**Get wishlist (list of liked listings) by user id**
+
+    Url: 'user/wishlist'
+    Method: 'GET?user_id=USER_ID'
+
+Response Success:
+    
+    {
+        'status': 0,
+        'items': [
+            {
+                ITEM_RESPONSE_DICT
+            }
+        ]
+    }
+    
+---
+
 **Get city by post code**
 
     Url: 'get_city'

@@ -21,6 +21,8 @@ from api.tags.models import *
 from api.comments.models import *
 from api.offers.models import *
 from api.followers.models import *
+from api.users.blocked_users.models import *
+from api.users.reported_users.models import *
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel

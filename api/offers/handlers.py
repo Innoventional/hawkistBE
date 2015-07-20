@@ -9,7 +9,7 @@ from helpers import route
 from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID
 from ui_messages.errors.offers_errors.offers_errors import GET_OFFERS_NO_LISTING_ID, CREATE_OFFER_NO_LISTING_ID, \
     CREATE_OFFER_EMPTY_DATA, UPDATE_OFFER_NO_NEW_STATUS, UPDATE_OFFER_INVALID_STATUS, UPDATE_OFFER_NO_OFFER_ID, \
-    UPDATE_OFFER_INVALID_OFFER_ID
+    UPDATE_OFFER_INVALID_OFFER_ID, CREATE_OFFER_YOU_OWN_LISTING
 from ui_messages.messages.offers_messages import OFFER_NEW, OFFER_ACCEPTED, OFFER_DECLINED
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
@@ -69,6 +69,10 @@ class ItemOffersHandler(ApiHandler):
         if not listing:
             return self.make_error(GET_LISTING_INVALID_ID % listing_id)
 
+        # check listing owner
+        if listing.user_id == self.user.id:
+            return self.make_error(CREATE_OFFER_YOU_OWN_LISTING)
+
         new_price = None
 
         # next validate input data
@@ -94,6 +98,8 @@ class ItemOffersHandler(ApiHandler):
         comment.listing = listing
         comment.user = self.user
         comment.text = OFFER_NEW % (self.user.username, float(offer.new_price))
+        # this comment can see only listing owner
+        comment.user_to_see_id = listing.user_id
         self.session.add(comment)
         self.session.commit()
         return self.success()

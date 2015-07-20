@@ -2,6 +2,7 @@ __author__ = 'ne_luboff'
 
 GET_OFFERS_NO_LISTING_ID = 'Get offers no listing id'
 
+CREATE_OFFER_YOU_OWN_LISTING = 'Sorry but you cannot make offers for your own listings'
 CREATE_OFFER_NO_LISTING_ID = 'Create offer no listing id'
 CREATE_OFFER_EMPTY_DATA = 'You must input new price'
 

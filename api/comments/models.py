@@ -24,6 +24,10 @@ class Comment(Base):
     listing = relationship('Listing', backref=backref('listing_comments', order_by=id, cascade="all,delete",
                                                       lazy='dynamic'), foreign_keys=listing_id)
 
+    user_to_see_id = Column(Integer, ForeignKey('users.id'), nullable=True, index=True)
+    user_to_see = relationship('User', backref=backref('user_specific_comments', order_by=id, cascade="all,delete",
+                                                       lazy='dynamic'), foreign_keys=user_to_see_id)
+
     @property
     def response(self):
         return {

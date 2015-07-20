@@ -49,20 +49,31 @@ class FollowersHandler(ApiHandler):
                 return self.make_error(NO_USER_WITH_ID % user_id)
 
         # get following people
+        following_response = []
         if following:
             if user:
                 f_users = user.following
+                for u in f_users:
+                    current_response = u.following_response
+                    current_response['follow'] = u in self.user.followers
+                    following_response.append(current_response)
             else:
                 f_users = self.user.following
+                following_response = [u.following_response for u in f_users]
         # or people I follow
         else:
             if user:
                 f_users = user.followers
+                for u in f_users:
+                    current_response = u.following_response
+                    current_response['follow'] = u in self.user.followers
+                    following_response.append(current_response)
             else:
                 f_users = self.user.followers
+                following_response = [u.following_response for u in f_users]
 
         return self.success({
-            'users': [u.following_response for u in f_users]
+            'users': following_response
         })
 
     def create(self):

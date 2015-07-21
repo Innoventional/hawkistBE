@@ -58,7 +58,7 @@ class MetaTagsHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
-            return self.make_error(suspension_error)
+            return suspension_error
 
         response = dict()
         # get platform tags

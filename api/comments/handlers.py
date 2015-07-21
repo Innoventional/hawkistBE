@@ -28,7 +28,7 @@ class ItemCommentsHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
-            return self.make_error(suspension_error)
+            return suspension_error
 
         if not listing_id:
             return self.make_error(GET_COMMENTS_NO_LISTING_ID)
@@ -51,7 +51,7 @@ class ItemCommentsHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
-            return self.make_error(suspension_error)
+            return suspension_error
 
         logger.debug('REQUEST_OBJECT_NEW_COMMENT')
         logger.debug(self.request_object)

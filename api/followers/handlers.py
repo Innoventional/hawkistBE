@@ -28,7 +28,7 @@ class FollowersHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
-            return self.make_error(suspension_error)
+            return suspension_error
 
         # get is this get request for followers or following me people
         following = self.get_arg('following', bool, None)
@@ -85,7 +85,7 @@ class FollowersHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
-            return self.make_error(suspension_error)
+            return suspension_error
 
         logger.debug('REQUEST_OBJECT_FOLLOW_USER')
         logger.debug(self.request_object)
@@ -130,7 +130,7 @@ class FollowersHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
-            return self.make_error(suspension_error)
+            return suspension_error
 
         user_to_unfollow_id = self.get_arg('user_id', int, None)
 

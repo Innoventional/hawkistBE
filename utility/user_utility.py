@@ -13,5 +13,6 @@ def update_user_last_activity(self):
 
 def check_user_suspension_status(user):
     if user.system_status == SystemStatus.Suspended:
-        return USER_SUSPENDED
+        return {'status': 403,
+                'message': USER_SUSPENDED}
     return False

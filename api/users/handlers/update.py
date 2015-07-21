@@ -36,7 +36,7 @@ class UserHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
-            return self.make_error(suspension_error)
+            return suspension_error
 
         # update cookies
         self.set_secure_cookie(USER_ID, str(self.user.id), expires_days=30)
@@ -75,7 +75,7 @@ class UserHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
-            return self.make_error(suspension_error)
+            return suspension_error
 
         username = ''
         email = ''
@@ -199,7 +199,7 @@ class UserSocialHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
-            return self.make_error(suspension_error)
+            return suspension_error
 
         logger.debug('REQUEST_OBJECT_USER_SOCIAL')
         logger.debug(self.request_object)
@@ -327,7 +327,7 @@ class UserMetaTagsHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
-            return self.make_error(suspension_error)
+            return suspension_error
 
         logger.debug('REQUEST_OBJECT_USER_ADD_METATAGS')
         logger.debug(self.request_object)
@@ -453,7 +453,7 @@ class UserMetaTagsHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
-            return self.make_error(suspension_error)
+            return suspension_error
 
         logger.debug('REQUEST_OBJECT_USER_DELETE_METATAGS')
         logger.debug(self.request_object)

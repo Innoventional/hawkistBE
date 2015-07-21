@@ -70,7 +70,7 @@ class ItemOffersHandler(ApiHandler):
             return self.make_error(GET_LISTING_INVALID_ID % listing_id)
 
         # check listing owner
-        if listing.user_id == self.user.id:
+        if str(listing.user_id) == str(self.user.id):
             return self.make_error(CREATE_OFFER_YOU_OWN_LISTING)
 
         new_price = None

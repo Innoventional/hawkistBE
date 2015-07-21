@@ -101,7 +101,7 @@ class FollowersHandler(ApiHandler):
             return self.make_error(FOLLOWING_NO_USER_TO_FOLLOW_ID)
 
         # maybe you try follow yourself
-        if self.user.id == user_to_follow_id:
+        if str(self.user.id) == str(user_to_follow_id):
             return self.make_error(FOLLOWING_TRY_FOLLOW_YOURSELF)
 
         # try get user to follow by id
@@ -139,7 +139,7 @@ class FollowersHandler(ApiHandler):
             return self.make_error(FOLLOWING_NO_USER_TO_UNFOLLOW_ID)
 
         # maybe you try unfollow yourself
-        if self.user.id == user_to_unfollow_id:
+        if str(self.user.id) == str(user_to_unfollow_id):
             return self.make_error(FOLLOWING_TRY_UNFOLLOW_YOURSELF)
 
         # try get user to unfollow by id

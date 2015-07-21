@@ -508,7 +508,7 @@ class ListingHandler(ApiHandler):
             if not user:
                 return self.make_error(GET_LISTING_BY_USER_INVALID_ID % user_id)
 
-            user_items = self.session.query(Listing).filter(Listing.user_id == user_id)
+            user_items = self.session.query(Listing).filter(Listing.user_id == user_id).order_by(desc(Listing.id))
             # pagination
             page = self.get_arg('p', int, 1)
             page_size = self.get_arg('page_size', int, 100)

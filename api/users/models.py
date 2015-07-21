@@ -88,6 +88,11 @@ class User(Base):
                            primaryjoin=id == user_blacklist.c.user_id,
                            secondaryjoin=id == user_blacklist.c.blocked_user_id)
 
+    blocked_me = relationship('User',
+                              secondary=user_blacklist,
+                              primaryjoin=id == user_blacklist.c.blocked_user_id,
+                              secondaryjoin=id == user_blacklist.c.user_id)
+
     reported = relationship('User',
                             secondary=user_reportlist,
                             primaryjoin=id == user_reportlist.c.user_id,

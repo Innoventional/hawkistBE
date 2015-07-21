@@ -58,11 +58,6 @@ class UserLoginHandler(ApiHandler):
 
             # try get existing user
             user = self.session.query(User).filter(User.phone == phone).first()
-            # check user status
-            suspension_error = check_user_suspension_status(user)
-            if suspension_error:
-                logger.debug(suspension_error)
-                return suspension_error
             if not user:
                 logger.debug('Create new user (phone registration)')
                 user = User()
@@ -77,6 +72,11 @@ class UserLoginHandler(ApiHandler):
             #     user.first_login = False
             #     self.session.commit()
 
+            # check user status
+            suspension_error = check_user_suspension_status(user)
+            if suspension_error:
+                logger.debug(suspension_error)
+                return suspension_error
             # check user ability to send one more sms
             reach_sms_limit = sms_limit_check(self)
             if reach_sms_limit:
@@ -108,11 +108,7 @@ class UserLoginHandler(ApiHandler):
 
             # try get existing fb user
             user = self.session.query(User).filter(User.facebook_id == facebook_id).first()
-            # check user status
-            suspension_error = check_user_suspension_status(user)
-            if suspension_error:
-                logger.debug(suspension_error)
-                return suspension_error
+
             if not user:
                 logger.debug('Create new user (fb registration)')
                 user = User()
@@ -151,6 +147,11 @@ class UserLoginHandler(ApiHandler):
                 user.first_login = False
                 self.session.commit()
 
+            # check user status
+            suspension_error = check_user_suspension_status(user)
+            if suspension_error:
+                logger.debug(suspension_error)
+                return suspension_error
             self.user = user
             self.session.commit()
 

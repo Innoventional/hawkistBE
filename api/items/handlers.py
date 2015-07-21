@@ -487,11 +487,15 @@ class ListingHandler(ApiHandler):
             if not listing:
                 return self.make_error(GET_LISTING_INVALID_ID % listing_id)
 
+            # before we find all suitable listings find all users who block me
+            block_me_user_id = [u.id for u in self.user.blocked_me]
+
             # find 6 items with similar category | platform | subcategory
             similar_listings = self.session.query(Listing).filter(and_(or_(Listing.platform_id == listing.platform_id,
                                                                            Listing.category_id == listing.category_id,
                                                                            Listing.subcategory_id == listing.subcategory_id),
-                                                                       Listing.id != listing.id)).limit(6)
+                                                                       Listing.id != listing.id,
+                                                                       ~Listing.user_id.in_(block_me_user_id))).limit(6)
             # find 6 items of this user
             user_listings = self.session.query(Listing).filter(and_(Listing.user_id == listing.user_id,
                                                                     Listing.id != listing.id)).limit(6)
@@ -580,6 +584,7 @@ class ListingHandler(ApiHandler):
 
                 # get all listings with right usernames
                 right_usernames_item_ids = [i.id if i.user.username in right_usernames else None for i in all_listings]
+
                 # remove all None values from right_usernames_item_ids
                 right_usernames_item_ids = [x for x in right_usernames_item_ids if x is not None]
 
@@ -588,12 +593,14 @@ class ListingHandler(ApiHandler):
                                                                             Listing.category_id.in_(right_tag_ids),
                                                                             Listing.subcategory_id.in_(right_tag_ids)))]
 
-                # before we find all suitable listings find all
+                # before we find all suitable listings find all users who block me
+                block_me_user_id = [u.id for u in self.user.blocked_me]
 
                 # finally get all items which match search terms
-                listings = all_listings.filter((Listing.id.in_(list(set(right_tag_item_ids +
+                listings = all_listings.filter(and_(Listing.id.in_(list(set(right_tag_item_ids +
                                                                         list(right_title_or_description_item_ids) +
-                                                                        right_usernames_item_ids))))).order_by(desc(Listing.id))
+                                                                        right_usernames_item_ids))),
+                                                    ~Listing.user_id.in_(block_me_user_id))).order_by(desc(Listing.id))
 
             # if not search - return listing depending on user's tags
             else:

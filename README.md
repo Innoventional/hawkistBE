@@ -901,8 +901,8 @@ Response Success:
 
 **Get wishlist (list of liked listings) by user id**
 
-    Url: 'user/wishlist'
-    Method: 'GET?user_id=USER_ID'
+    Url: 'user/wishlist?user_id=USER_ID'
+    Method: 'GET'
 
 Response Success:
     

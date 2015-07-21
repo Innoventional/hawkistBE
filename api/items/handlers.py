@@ -467,6 +467,7 @@ class ListingHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
+            logger.debug(suspension_error)
             return suspension_error
 
         # for get item by id
@@ -644,6 +645,7 @@ class ListingHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
+            logger.debug(suspension_error)
             return suspension_error
 
         # check selling ability
@@ -911,6 +913,7 @@ class ListingHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
+            logger.debug(suspension_error)
             return suspension_error
 
         logger.debug('REQUEST_OBJECT_DELETE_ITEM')
@@ -950,6 +953,7 @@ class ListingLikeHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
+            logger.debug(suspension_error)
             return suspension_error
 
         if not listing_to_like_id:
@@ -989,6 +993,7 @@ class UserWishListHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
+            logger.debug(suspension_error)
             return suspension_error
 
         user_id = self.get_arg('user_id', None)

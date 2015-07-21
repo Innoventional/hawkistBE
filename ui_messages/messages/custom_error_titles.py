@@ -20,3 +20,6 @@ POST_CODE_DOES_NOT_EXISTS_IN_GB_TITLE = 'Incorrect Post Code'
 
 # status code 8
 POST_CODE_DOES_NOT_EXISTS_TITLE = 'Post Code Not Found'
+
+# status code 403
+USER_SUSPENDED_TITLE = 'Access denied'

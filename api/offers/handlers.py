@@ -31,6 +31,7 @@ class ItemOffersHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
+            logger.debug(suspension_error)
             return suspension_error
 
         if not listing_id:
@@ -55,6 +56,7 @@ class ItemOffersHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
+            logger.debug(suspension_error)
             return suspension_error
 
         logger.debug('REQUEST_OBJECT_NEW_OFFER')
@@ -114,6 +116,7 @@ class ItemOffersHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
+            logger.debug(suspension_error)
             return suspension_error
 
         logger.debug('REQUEST_OBJECT_CHANGE_OFFER_STATUS')

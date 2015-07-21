@@ -61,6 +61,7 @@ class UserLoginHandler(ApiHandler):
             # check user status
             suspension_error = check_user_suspension_status(user)
             if suspension_error:
+                logger.debug(suspension_error)
                 return suspension_error
             if not user:
                 logger.debug('Create new user (phone registration)')
@@ -110,6 +111,7 @@ class UserLoginHandler(ApiHandler):
             # check user status
             suspension_error = check_user_suspension_status(user)
             if suspension_error:
+                logger.debug(suspension_error)
                 return suspension_error
             if not user:
                 logger.debug('Create new user (fb registration)')
@@ -162,6 +164,7 @@ class UserLoginHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
+            logger.debug(suspension_error)
             return suspension_error
 
         qs = self.session.query(User).filter(User.id != self.user.id).order_by(User.id)
@@ -211,6 +214,7 @@ class UserLoginHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(user)
         if suspension_error:
+            logger.debug(suspension_error)
             return suspension_error
 
         if user.pin != pin:

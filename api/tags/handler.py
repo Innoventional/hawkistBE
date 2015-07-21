@@ -58,6 +58,7 @@ class MetaTagsHandler(ApiHandler):
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
+            logger.debug(suspension_error)
             return suspension_error
 
         response = dict()

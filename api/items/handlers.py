@@ -588,6 +588,8 @@ class ListingHandler(ApiHandler):
                                                                             Listing.category_id.in_(right_tag_ids),
                                                                             Listing.subcategory_id.in_(right_tag_ids)))]
 
+                # before we find all suitable listings find all
+
                 # finally get all items which match search terms
                 listings = all_listings.filter((Listing.id.in_(list(set(right_tag_item_ids +
                                                                         list(right_title_or_description_item_ids) +

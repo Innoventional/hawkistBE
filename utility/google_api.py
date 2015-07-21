@@ -12,11 +12,11 @@ logger = logging.getLogger(__name__)
 
 
 def get_city_by_code(post_code):
+    post_code = post_code.replace(' ', '')
     error = ''
     city = ''
     opener = urllib2.build_opener()
-    url = 'http://maps.googleapis.com/maps/api/geocode/json?address={0}&sensor=false'.format(post_code.replace(' ',
-                                                                                                               '%20'))
+    url = 'http://maps.googleapis.com/maps/api/geocode/json?address={0}&sensor=false'.format(post_code)
     response = opener.open(url).read()
     response_dict = json.loads(response)
     request_status = response_dict['status']

@@ -5,6 +5,7 @@ from api.tags.models import Tag, Platform, Category, Subcategory
 from api.users.models import User, UserTags, UserMetaTag, UserMetaTagType
 from base import ApiHandler, die, USER_ID, OpenApiHandler
 from helpers import route
+from ui_messages.errors.users_errors.blocked_users_error import GET_BLOCKED_USER
 from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID, UPDATE_USER_INFO_NO_USERNAME, \
     UPDATE_USER_INFO_NO_EMAIL, UPDATE_USER_INFO_USERNAME_ALREADY_USED, INVALID_CONFIRM_EMAIL_LINK, \
     UPDATE_USER_LINK_FB_NO_TOKEN, UPDATE_USER_FB_ALREADY_USED, UPDATE_USER_TAGS_TAG_DOES_NOT_EXISTS, \
@@ -51,12 +52,16 @@ class UserHandler(ApiHandler):
             # if there is no user with this id - return an error
             if not user:
                 return self.make_error(NO_USER_WITH_ID % user_id)
+            # check has current user access to getting user profile
+            if self.user in user.blocked:
+                return self.make_error(GET_BLOCKED_USER % user.username.upper())
             # else we must show following details
             user_response = user.user_response
             # does this user follow you
             user_response['follow'] = True if user in self.user.followers else False
             # do you follow this user
             user_response['following'] = True if user in self.user.following else False
+            user_response['blocked'] = True if user in self.user.blocked else False
             return self.success({'user': user_response})
         # your own profile
         else:

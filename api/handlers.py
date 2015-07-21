@@ -20,6 +20,7 @@ try:
     from followers.handlers import *
     from comments.handlers import *
     from offers.handlers import *
+    from users.blocked_users.handlers import *
 except ImportError:
     logger.debug(ImportError)
 __author__ = 'ne_luboff'

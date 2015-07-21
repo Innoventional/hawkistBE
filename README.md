@@ -432,6 +432,7 @@ Response:
             USER_INFO_DICT,
             'follow': DOES THIS USER FOLLOW YOU FLAG,
             'following': DO YOU FOLLOW THIS USER FLAG
+            'blocked' : DO YOU BLOCK THIS USER
         }
     }
     
@@ -588,6 +589,55 @@ Response Failure:
     Url: 'user/followers?user_id=USER_TO_UNFOLLOW_ID'
     Method: 'DELETE'
     
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    } 
+---
+
+### Block a user
+   
+**Block someone**
+
+    Url: 'user/blocking'
+    Method: 'POST'
+    
+
+Data:
+
+    {
+        "user_id": USER_TO_BLOCK_ID,
+    }
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    } 
+---
+
+**Unblock someone**
+
+    Url: 'user/blocking?user_id=USER_TO_UNBLOCK_ID'
+    Method: 'DELETE'
 
 Response Success:
     

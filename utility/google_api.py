@@ -34,7 +34,7 @@ def get_city_by_code(post_code):
             for address_component in address_components:
                 types = address_component['types']
                 for t in types:
-                    if t == 'postal_code' and address_component['short_name'].lower() == post_code.lower():
+                    if t == 'postal_code' and address_component['short_name'].replace(' ', '').lower() == post_code.lower():
                         results_with_required_zip_code.append(result)
         if not results_with_required_zip_code:
             error = {

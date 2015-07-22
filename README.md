@@ -101,7 +101,8 @@ ITEM_INFO_DICT
         'city': LOCATION CITY,
         'photos': LIST OF LISTING PHOTOS,
         'sold': IS LISTING ALREADY SOLD FLAG,
-        'likes': NUMBERS OF LIKES
+        'likes': NUMBERS OF LIKES,
+        'comments': NUMBER OF COMMENTS
     }
     
 COMMENT_RESPONSE_DICT

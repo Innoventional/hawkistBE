@@ -188,7 +188,8 @@ class Listing(Base):
             'city': self.city,
             'photos': [photo.image_url for photo in self.listing_photos],
             'sold': self.sold,
-            'likes': len(self.likes)
+            'likes': len(self.likes),
+            'comments': self.listing_comments.count()
         }
 
 

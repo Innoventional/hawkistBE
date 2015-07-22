@@ -32,6 +32,7 @@
                 {% for b in blocked_users %}
                     <tr data-blocked_user_id="{{ b.b_user_id }}"
                         data-user_id="{{ b.user_id }}">
+                        <td>{{ b.u_u }}</td>
                         <td>{{ b.b_user_id }}</td>
                         <td>{{ b.user_id }}</td>
                         <td>

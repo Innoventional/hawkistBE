@@ -1,6 +1,7 @@
 __author__ = 'ne_luboff'
 
 GET_OFFERS_NO_LISTING_ID = 'Get offers no listing id'
+GET_OFFERS_ANOTHER_OWNER = 'Access denied. You cannot get offers of another user listing'
 
 CREATE_OFFER_YOU_OWN_LISTING = 'Sorry but you cannot make offers for your own listings'
 CREATE_OFFER_NO_LISTING_ID = 'Create offer no listing id'

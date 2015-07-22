@@ -2,7 +2,7 @@ import logging
 import datetime
 from random import choice
 import string
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 from api.users.models import User, SystemStatus, UserType
 from base import ApiHandler, die, OpenApiHandler
 from helpers import route
@@ -162,13 +162,24 @@ class UserLoginHandler(ApiHandler):
         if self.user is None:
             die(401)
 
+        # we must to know user who do this request
+        logger.debug(self.user)
+
+        # update user last active
+        update_user_last_activity(self)
+
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
 
-        qs = self.session.query(User).filter(User.id != self.user.id).order_by(User.id)
+        # NOTE! Suspended users exclude from all users query
+        # users who added current user to black list too
+        blocked_me_users_id = [u.id for u in self.user.blocked_me]
+        qs = self.session.query(User).filter(and_(User.id != self.user.id,
+                                                  User.system_status == SystemStatus.Active,
+                                                  ~User.id.in_(blocked_me_users_id))).order_by(User.id)
 
         q = self.get_argument('q')
 
@@ -212,6 +223,8 @@ class UserLoginHandler(ApiHandler):
         if not user:
             return self.make_error(message=LOG_IN_USER_NOT_FOUND % phone, status=3, title=LOG_IN_USER_NOT_FOUND_TITLE)
 
+        logger.debug(user)
+
         # check user status
         suspension_error = check_user_suspension_status(user)
         if suspension_error:
@@ -237,6 +250,7 @@ class LogoutHandler(OpenApiHandler):
         if self.user is None:
             die(401)
 
+        logger.debug(self.user)
         update_user_last_activity(self)
 
         self.user = None

@@ -54,7 +54,11 @@
                             {% end %}
                         </td>
                         <td>{{ UserType.tostring(user.user_type) }}</td>
-                        <td>{{ SystemStatus.tostring(user.system_status) }}</td>
+                        <td>{{ SystemStatus.tostring(user.system_status) }}
+                            {% if user.blocked_me %}
+                                <i class="glyphicon glyphicon-exclamation-sign red-color"
+                                   title="User was blocked or reported"></i></td>
+                            {% end %}
                         <!--check current user status and can he do anything-->
                         {% if current_user.user_type < user.user_type or current_user == user %}
                         <td>

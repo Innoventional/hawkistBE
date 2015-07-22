@@ -5,7 +5,7 @@ import datetime
 from sqlalchemy import or_, desc, and_, func
 from api.items.models import Item, ItemPhoto, Listing, ListingPhoto
 from api.tags.models import Tag, Platform, Category, Subcategory, Color, Condition
-from api.users.models import User
+from api.users.models import User, SystemStatus
 from base import ApiHandler, die, paginate
 from helpers import route
 from ui_messages.errors.followers_errors.followers_errors import INVALID_USER_ID
@@ -16,8 +16,11 @@ from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID,
     CREATE_LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE, CREATE_LISTING_TOO_MANY_PHOTOS, GET_LISTING_BY_USER_INVALID_ID, \
     CREATE_LISTING_USER_DONT_CONFIRM_EMAIL, CREATE_LISTING_USER_HAVENT_FB, DELETE_LISTING_NO_ID, \
     DELETE_LISTING_ANOTHER_USER, LIKE_LISTING_NO_ID, LIKE_YOUR_OWN_LISTING
+from ui_messages.errors.users_errors.blocked_users_error import GET_BLOCKED_USER
+from ui_messages.errors.users_errors.suspended_users_errors import GET_SUSPENDED_USER
 from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID
 from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE
+from ui_messages.messages.user_messages import TRY_TO_GET_SUSPENDED_USER_ITEMS
 from utility.google_api import get_city_by_code
 from utility.tags import interested_user_tag_ids, interested_user_item_ids
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
@@ -428,7 +431,13 @@ class PostCodeHandler(ApiHandler):
         if self.user is None:
             die(401)
 
+        logger.debug(self.user)
         update_user_last_activity(self)
+
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            logger.debug(suspension_error)
+            return suspension_error
 
         logger.debug('REQUEST_OBJECT_GET_CITY_BY_POST_CODE')
         logger.debug(self.request_object)
@@ -462,6 +471,7 @@ class ListingHandler(ApiHandler):
         if not self.user:
             die(401)
 
+        logger.debug(self.user)
         update_user_last_activity(self)
 
         # check user status
@@ -487,14 +497,18 @@ class ListingHandler(ApiHandler):
             if not listing:
                 return self.make_error(GET_LISTING_INVALID_ID % listing_id)
 
-            # before we find all suitable listings find all users who block me
+            # before we find six similar listings find all users who block current user
             block_me_user_id = [u.id for u in self.user.blocked_me]
+
+            # note! we must exclude all listings of users who are suspended
+            suspended_users_id = [u.id for u in self.session.query(User).filter(User.system_status == SystemStatus.Suspended)]
 
             # find 6 items with similar category | platform | subcategory
             similar_listings = self.session.query(Listing).filter(and_(or_(Listing.platform_id == listing.platform_id,
                                                                            Listing.category_id == listing.category_id,
                                                                            Listing.subcategory_id == listing.subcategory_id),
                                                                        Listing.id != listing.id,
+                                                                       ~Listing.user_id.in_(suspended_users_id),
                                                                        ~Listing.user_id.in_(block_me_user_id))).limit(6)
             # find 6 items of this user
             user_listings = self.session.query(Listing).filter(and_(Listing.user_id == listing.user_id,
@@ -511,6 +525,14 @@ class ListingHandler(ApiHandler):
             user = self.session.query(User).filter(User.id == user_id).first()
             if not user:
                 return self.make_error(GET_LISTING_BY_USER_INVALID_ID % user_id)
+
+            # check has current user access to getting user profile
+            if self.user in user.blocked:
+                return self.make_error(GET_BLOCKED_USER % user.username.upper())
+
+            # check is user active
+            if user.system_status == SystemStatus.Suspended:
+                return self.make_error(TRY_TO_GET_SUSPENDED_USER_ITEMS % user.username.upper())
 
             user_items = self.session.query(Listing).filter(Listing.user_id == user_id).order_by(desc(Listing.id))
             # pagination
@@ -596,11 +618,15 @@ class ListingHandler(ApiHandler):
                 # before we find all suitable listings find all users who block me
                 block_me_user_id = [u.id for u in self.user.blocked_me]
 
+                # also we must exclude all suspended users
+                suspended_users_id = [u.id for u in self.session.query(User).filter(User.system_status == SystemStatus.Suspended)]
+
                 # finally get all items which match search terms
                 listings = all_listings.filter(and_(Listing.id.in_(list(set(right_tag_item_ids +
                                                                         list(right_title_or_description_item_ids) +
                                                                         right_usernames_item_ids))),
-                                                    ~Listing.user_id.in_(block_me_user_id))).order_by(desc(Listing.id))
+                                                    ~Listing.user_id.in_(block_me_user_id),
+                                                    ~Listing.user_id.in_(suspended_users_id))).order_by(desc(Listing.id))
 
             # if not search - return listing depending on user's tags
             else:
@@ -626,9 +652,17 @@ class ListingHandler(ApiHandler):
                 #         print 'subcat'
                 #         users_subcategories_ids.append(user_tag.id)
                 #
-                # listings = self.session.query(Listing).filter(or_(Listing.platform_id.in_(users_platforms_ids),
-                #                                                   Listing.category_id.in_(users_categories_ids),
-                #                                                   Listing.subcategory_id.in_(users_subcategories_ids))).order_by(desc(Listing.id))
+                # # exclude from feed items of user who blocked current user
+                # block_me_user_id = [u.id for u in self.user.blocked_me]
+                #
+                # # and suspended users
+                # suspended_users_id = [u.id for u in self.session.query(User).filter(User.system_status == SystemStatus.Suspended)]
+                #
+                # listings = self.session.query(Listing).filter(and_(or_(Listing.platform_id.in_(users_platforms_ids),
+                #                                                        Listing.category_id.in_(users_categories_ids),
+                #                                                        Listing.subcategory_id.in_(users_subcategories_ids)),
+                #                                                    ~Listing.user_id.in_(block_me_user_id),
+                #                                                    ~Listing.user_id.in_(suspended_users_id))).order_by(desc(Listing.id))
 
                 # TODO 2015-07-08 return all items
                 listings = self.session.query(Listing).order_by(desc(Listing.id))
@@ -649,6 +683,7 @@ class ListingHandler(ApiHandler):
         if self.user is None:
             die(401)
 
+        logger.debug(self.user)
         update_user_last_activity(self)
 
         # check user status
@@ -917,6 +952,7 @@ class ListingHandler(ApiHandler):
         if not self.user:
             die(401)
 
+        logger.debug(self.user)
         update_user_last_activity(self)
 
         # check user status
@@ -957,6 +993,7 @@ class ListingLikeHandler(ApiHandler):
         if not self.user:
             die(401)
 
+        logger.debug(self.user)
         update_user_last_activity(self)
 
         # check user status
@@ -974,7 +1011,7 @@ class ListingLikeHandler(ApiHandler):
             return self.make_error(GET_LISTING_INVALID_ID % listing_to_like_id)
 
         # check item's owner
-        if listing_to_like.user_id == self.user.id:
+        if str(listing_to_like.user_id) == str(self.user.id):
             return self.make_error(LIKE_YOUR_OWN_LISTING)
 
         # get listing likes list
@@ -997,6 +1034,7 @@ class UserWishListHandler(ApiHandler):
         if not self.user:
             die(401)
 
+        logger.debug(self.user)
         update_user_last_activity(self)
 
         # check user status
@@ -1019,6 +1057,14 @@ class UserWishListHandler(ApiHandler):
             user = self.session.query(User).get(user_id)
             if not user:
                 return self.make_error(NO_USER_WITH_ID % user_id)
+
+            # check access to user profile
+            if self.user in user.blocked:
+                return self.make_error(GET_BLOCKED_USER % user.username.upper())
+
+            # check is user active
+            if user.system_status == SystemStatus.Suspended:
+                return self.make_error(GET_SUSPENDED_USER % user.username.upper())
 
         if user:
             wish_items = user.likes

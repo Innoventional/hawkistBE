@@ -13,3 +13,5 @@ BLOCK_USER_TRY_UNBLOCK_YOURSELF = 'Wow, you cannot unblock yourself'
 BLOCK_USER_ALREADY_UNBLOCKED_USER = 'User %s already unblocked'
 
 GET_BLOCKED_USER = "Sorry, but you have not access to %s's profile"
+GET_BLOCKED_USER_COMMENTS = "Sorry, but you have not access to %s's listings comments"
+GET_BLOCKED_USER_FOLLOWERS = "Sorry, but you have not access to %s's followers"

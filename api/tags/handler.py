@@ -1,9 +1,12 @@
+import logging
 from api.tags.models import Tag, Platform
 from base import ApiHandler, die
 from helpers import route
 from utility.user_utility import check_user_suspension_status, update_user_last_activity
 
 __author__ = 'ne_luboff'
+
+logger = logging.getLogger(__name__)
 
 
 @route('tags')
@@ -53,6 +56,7 @@ class MetaTagsHandler(ApiHandler):
         if self.user is None:
             die(401)
 
+        logger.debug(self.user)
         update_user_last_activity(self)
 
         # check user status

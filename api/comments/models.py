@@ -14,7 +14,6 @@ class Comment(Base):
     created_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
 
     text = Column(String, nullable=True, default='')
-    image_url = Column(String, nullable=True, default='')
 
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False, index=True)
     user = relationship('User', backref=backref('user_comments', order_by=id, cascade="all,delete", lazy='dynamic'),
@@ -34,7 +33,6 @@ class Comment(Base):
             'id': self.id,
             'created_at': self.created_at.strftime("%Y-%m-%dT%H:%M"),
             'text': self.text,
-            'image_url': self.image_url,
             'listing_id': self.listing_id,
             'user_id': self.user_id,
             'user_username': self.user.username,

@@ -2,17 +2,6 @@
 
 {% block title %}Blocked Users List{% end %}
 
-{% block js %}
-    <script type="text/javascript">
-        $("#thumbnailList1 a img").MyThumbnail({
-            thumbWidth:64,
-            thumbHeight:64,
-            backgroundColor:"#ccc",
-            imageDivClass:"myPic"
-        });
-    </script>
-{% end %}
-
 {% block content %}
     <div class="tag_navigation_div">
         <a href="../users" >All</a>
@@ -23,20 +12,21 @@
         <table class="table table-hover">
             <thead>
                 <th>Blocked User ID</th>
-                <!--<th>Blocked User Username</th>-->
+                <th>Blocked User Username</th>
                 <th>User Who Block ID</th>
-                <!--<th>User Who Block Username</th>-->
+                <th>User Who Block Username</th>
                 <th>Action</th>
             </thead>
             <tbody>
                 {% for b in blocked_users %}
-                    <tr data-blocked_user_id="{{ b.b_user_id }}"
-                        data-user_id="{{ b.user_id }}">
-                        <td>{{ b.u_u }}</td>
-                        <td>{{ b.b_user_id }}</td>
-                        <td>{{ b.user_id }}</td>
+                    <tr data-blocker_id="{{ b.blocker_id }}"
+                        data-blocked_id="{{ b.blocked_id }}">
+                        <td>{{ b.blocked_id }}</td>
+                        <td>{{ b.blocked_username }}</td>
+                        <td>{{ b.blocker_id }}</td>
+                        <td>{{ b.blocker_username }}</td>
                         <td>
-                            <a class="btn btn_delete_user red-color" href="#" title="Delete user">
+                            <a class="btn btn_delete_blocked_flag red-color" href="#" title="Delete flag">
                                 <i class="glyphicon glyphicon-trash"></i>
                             </a>
                         </td>

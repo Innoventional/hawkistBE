@@ -131,6 +131,7 @@ delete_tag = function(tag_id, completion)
 };
 
 //user tab
+
 $('.btn_change_user_type').click(function(){
     user_id = $(this).parent().parent().data('id');
     user_type = $(this).parent().parent().data('user_type');
@@ -287,6 +288,40 @@ delete_user = function(user_id, completion)
 {
     $.ajax({
         url: '/api/admin/users?' + $.param({'user_id': user_id}, true),
+        type: 'DELETE',
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            completion(status, message);
+            location.reload();
+        }
+    });
+    return false;
+};
+
+$('.btn_delete_blocked_flag').click(function(){
+    if (confirm('Do you really want to delete blocking flag of this user?'))
+    {
+        var blocker_id = $(this).parent().parent().data('blocker_id');
+        var blocked_id = $(this).parent().parent().data('blocked_id');
+
+        //console.log(blocker_id);
+        //console.log(blocked_id);
+
+        delete_blocked_flag(blocker_id, blocked_id, function(status, message){
+            if (status != 0)
+            {
+                alert(message);
+            }
+        });
+    }
+});
+
+delete_blocked_flag = function(blocker_id, blocked_id, completion)
+{
+    $.ajax({
+        url: '/api/admin/users/blocked?' + $.param({'blocker_id': blocker_id}, true) + '&'
+            + $.param({'blocked_id': blocked_id}, true),
         type: 'DELETE',
         success: function(data) {
             var status = data['status'];

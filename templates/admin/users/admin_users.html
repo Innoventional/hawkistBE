@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends '../base.html' %}
 
 {% block title %}Users List{% end %}
 
@@ -14,6 +14,11 @@
 {% end %}
 
 {% block content %}
+    <div class="tag_navigation_div">
+        <a href="#" id="current_link">All</a>
+        <a href="users/blocked">Blocked</a>
+        <a href="users/reported">Reported</a>
+    </div>
     <div id='PleaseWaitSuspension' style="display: none">
         <img src="{{ static_url('images/spinner.gif') }}"/>
     </div>

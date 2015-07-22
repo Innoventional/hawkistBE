@@ -19,6 +19,10 @@ from_number = "Hawkist"
 
 
 def send_sms(to_number, text):
+    # pre-processing
+    # if to_number started with 07 we must change it to 447
+    if str(to_number[0:2]) == '07':
+        to_number = to_number.replace('0', '44', 1)
     error = ''
     try:
         client = TwilioRestClient(account_sid, auth_token)
@@ -37,6 +41,6 @@ def send_sms(to_number, text):
         return error
 
 if __name__ == '__main__':
-    print send_sms("380937181958", 'test')
-    # print send_sms("380993351739", 'test')
+    # print send_sms("380937181958", 'test')
+    print send_sms("07446263710", 'test')
 

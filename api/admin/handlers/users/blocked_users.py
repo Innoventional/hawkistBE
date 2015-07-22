@@ -19,7 +19,8 @@ class AdminBlockedUsersHandler(AdminBaseHandler):
         logger.debug(self.user)
 
         # first get all info from flocked user table
-        blocked_users = self.session.execute('''SELECT user_id as user_id, blocked_user_id as b_user_id FROM user_blacklist;''')
+        blocked_users = self.session.execute("""SELECT user_id as user_id,
+                                                       blocked_user_id as b_user_id FROM user_blacklist;""")
 
         return self.render_string('admin/users/admin_blocked_users.html', blocked_users=blocked_users,
                                   menu_tab_active='tab_users')

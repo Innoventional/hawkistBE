@@ -1,4 +1,5 @@
 import datetime
+import logging
 from sqlalchemy import func, and_
 from api.admin.handlers.tags import AdminBaseHandler
 from api.items.models import Listing
@@ -9,6 +10,8 @@ from ui_messages.errors.admin_errors.tags_errors import ADMIN_TAG_EMPTY_TITLE, A
     ADMIN_TAG_DOES_NOT_EXIST, ADMIN_CATEGORY_ALREADY_EXISTS, ADMIN_TRY_DELETE_CATEGORY_WHICH_IS_USED
 
 __author__ = 'ne_luboff'
+
+logger = logging.getLogger(__name__)
 
 
 # route is the path of rest request
@@ -25,6 +28,8 @@ class AdminCategoryHandler(AdminBaseHandler):
             # if not authorized - redirect user to login page
             return HttpRedirect('/api/admin/login')
 
+        logger.debug(self.user)
+
         # get all categories from db and sort it by id
         categories = self.session.query(Category).order_by(Category.id)
 
@@ -39,6 +44,8 @@ class AdminCategoryHandler(AdminBaseHandler):
     def create(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         # get data from post parameters
         new_category_title = self.get_argument('new_category_title')
@@ -81,6 +88,8 @@ class AdminCategoryHandler(AdminBaseHandler):
     def update(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         category_id = self.get_argument('category_id')
         category_title = self.get_argument('category_title')
@@ -135,6 +144,8 @@ class AdminCategoryHandler(AdminBaseHandler):
     def remove(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         category_id = self.get_arg('category_id')
         category = self.session.query(Category).filter(Category.id == category_id).first()

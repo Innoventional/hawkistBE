@@ -1,4 +1,5 @@
 import datetime
+import logging
 from sqlalchemy import func, and_
 from api.admin.handlers.tags import AdminBaseHandler
 from api.items.models import Listing
@@ -10,6 +11,8 @@ from ui_messages.errors.admin_errors.tags_errors import ADMIN_TAG_EMPTY_TITLE, A
 
 __author__ = 'ne_luboff'
 
+logger = logging.getLogger(__name__)
+
 
 @route('/admin/metatags/platforms')
 class AdminPlatformHandler(AdminBaseHandler):
@@ -19,6 +22,8 @@ class AdminPlatformHandler(AdminBaseHandler):
         if not self.user:
             return HttpRedirect('/api/admin/login')
 
+        logger.debug(self.user)
+
         platforms = self.session.query(Platform).order_by(Platform.id)
 
         return self.render_string('admin/metatags/admin_platforms.html', platforms=platforms,
@@ -27,6 +32,8 @@ class AdminPlatformHandler(AdminBaseHandler):
     def create(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         new_platform_title = self.get_argument('new_platform_title')
 
@@ -49,6 +56,8 @@ class AdminPlatformHandler(AdminBaseHandler):
     def update(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         platform_id = self.get_argument('platform_id')
         platform_title = self.get_argument('platform_title')
@@ -80,6 +89,8 @@ class AdminPlatformHandler(AdminBaseHandler):
     def remove(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         platform_id = self.get_arg('platform_id')
         platform = self.session.query(Platform).filter(Platform.id == platform_id).first()

@@ -1,4 +1,5 @@
 import datetime
+import logging
 from sqlalchemy import func, and_
 from api.admin.handlers.tags import AdminBaseHandler
 from api.items.models import Listing
@@ -10,6 +11,8 @@ from ui_messages.errors.admin_errors.tags_errors import ADMIN_TAG_EMPTY_TITLE, A
 
 __author__ = 'ne_luboff'
 
+logger = logging.getLogger(__name__)
+
 
 @route('/admin/metatags/subcategories')
 class AdminSubcategoryHandler(AdminBaseHandler):
@@ -18,6 +21,8 @@ class AdminSubcategoryHandler(AdminBaseHandler):
     def read(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         subcategories = self.session.query(Subcategory).order_by(Subcategory.id)
 
@@ -28,6 +33,8 @@ class AdminSubcategoryHandler(AdminBaseHandler):
     def create(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         new_subcategory_title = self.get_argument('new_subcategory_title')
         category_id = self.get_argument('category_id')
@@ -62,6 +69,8 @@ class AdminSubcategoryHandler(AdminBaseHandler):
     def update(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         subcategory_id = self.get_argument('subcategory_id')
         subcategory_title = self.get_argument('subcategory_title')
@@ -113,6 +122,8 @@ class AdminSubcategoryHandler(AdminBaseHandler):
     def remove(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         subcategory_id = self.get_arg('subcategory_id')
         subcategory = self.session.query(Subcategory).filter(Subcategory.id == subcategory_id).first()

@@ -1,4 +1,5 @@
 import datetime
+import logging
 from sqlalchemy import func, and_
 from api.admin.handlers.tags import AdminBaseHandler
 from api.items.models import Listing
@@ -10,6 +11,8 @@ from ui_messages.errors.admin_errors.tags_errors import ADMIN_TAG_EMPTY_TITLE, A
 
 __author__ = 'ne_luboff'
 
+logger = logging.getLogger(__name__)
+
 
 @route('/admin/metatags/colours')
 class AdminColourHandler(AdminBaseHandler):
@@ -18,6 +21,8 @@ class AdminColourHandler(AdminBaseHandler):
     def read(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         colours = self.session.query(Color).order_by(Color.id)
 
@@ -28,6 +33,8 @@ class AdminColourHandler(AdminBaseHandler):
     def create(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         new_colour_title = self.get_argument('new_colour_title')
         subcategory_id = self.get_argument('subcategory_id')
@@ -69,6 +76,8 @@ class AdminColourHandler(AdminBaseHandler):
     def update(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         colour_id = self.get_argument('colour_id')
         colour_title = self.get_argument('colour_title')
@@ -134,6 +143,8 @@ class AdminColourHandler(AdminBaseHandler):
     def remove(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         colour_id = self.get_arg('colour_id')
         colour = self.session.query(Color).filter(Color.id == colour_id).first()

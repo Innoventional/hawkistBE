@@ -18,6 +18,8 @@ class AdminListingsHandler(AdminBaseHandler):
         if not self.user:
             return HttpRedirect('/api/admin/login')
 
+        logger.debug(self.user)
+
         listings = self.session.query(Listing).order_by(Listing.id)
 
         page = self.get_arg('p', int, 1)
@@ -30,6 +32,8 @@ class AdminListingsHandler(AdminBaseHandler):
     def remove(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         listing_id = self.get_arg('listing_id')
         listing = self.session.query(Listing).filter(Listing.id == listing_id).first()

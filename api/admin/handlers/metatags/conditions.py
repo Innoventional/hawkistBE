@@ -1,4 +1,5 @@
 import datetime
+import logging
 from sqlalchemy import and_
 from sqlalchemy import func
 from api.admin.handlers.tags import AdminBaseHandler
@@ -11,6 +12,8 @@ from ui_messages.errors.admin_errors.tags_errors import ADMIN_TAG_EMPTY_TITLE, A
 
 __author__ = 'ne_luboff'
 
+logger = logging.getLogger(__name__)
+
 
 @route('/admin/metatags/conditions')
 class AdminConditionHandler(AdminBaseHandler):
@@ -19,6 +22,8 @@ class AdminConditionHandler(AdminBaseHandler):
     def read(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         conditions = self.session.query(Condition).order_by(Condition.id)
 
@@ -29,6 +34,8 @@ class AdminConditionHandler(AdminBaseHandler):
     def create(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         new_condition_title = self.get_argument('new_condition_title')
         subcategory_id = self.get_argument('subcategory_id')
@@ -64,6 +71,8 @@ class AdminConditionHandler(AdminBaseHandler):
     def update(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         condition_id = self.get_argument('condition_id')
         condition_title = self.get_argument('condition_title')
@@ -116,6 +125,8 @@ class AdminConditionHandler(AdminBaseHandler):
     def remove(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         condition_id = self.get_arg('condition_id')
         condition = self.session.query(Condition).filter(Condition.id == condition_id).first()

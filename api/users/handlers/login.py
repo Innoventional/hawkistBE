@@ -56,7 +56,6 @@ class UserLoginHandler(ApiHandler):
             if phone_error:
                 return self.make_error(message=phone_error, status=2, title=PHONE_VERIFICATION_INVALID_FORMAT_TITLE)
             phone = phone_reformat(phone)
-            return phone
             # try get existing user
             user = self.session.query(User).filter(User.phone == phone).first()
             if not user:
@@ -218,6 +217,7 @@ class UserLoginHandler(ApiHandler):
         phone_error = phone_verification(phone)
         if phone_error:
             return self.make_error(message=phone_error, status=2, title=PHONE_VERIFICATION_INVALID_FORMAT_TITLE)
+        phone = phone_reformat(phone)
 
         user = self.session.query(User).filter(User.phone == phone).first()
 

@@ -19,7 +19,7 @@ from ui_messages.messages.email import ADMIN_BACK_USER_TO_STANDARD_USERTYPE_LETT
     ADMIN_PHONE_NUMBER_CHANGED_LETTER_SUBJECT, ADMIN_ACCOUNT_SUSPENDED_TEXT, ADMIN_ACCOUNT_SUSPENDED_SUBJECT, \
     ADMIN_ACCOUNT_ACTIVATED_TEXT, ADMIN_ACCOUNT_ACTIVATED_SUBJECT
 from ui_messages.messages.sms import UPDATE_USER_PHONE_NUMBER_SMS
-from utility.format_verification import username_verification, email_verification, phone_verification
+from utility.format_verification import username_verification, email_verification, phone_verification, phone_reformat
 from utility.send_email import send_email, email_confirmation_sending
 from utility.twilio_api import send_sms
 
@@ -35,6 +35,8 @@ class AdminUsersHandler(AdminBaseHandler):
     def read(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         users = self.session.query(User).order_by(User.id)
 
@@ -55,6 +57,8 @@ class AdminUsersHandler(AdminBaseHandler):
     def create(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         user_id = self.get_arg('user_id')
         new_user_type = int(self.get_arg('user_type_id'))
@@ -115,6 +119,8 @@ class AdminUsersHandler(AdminBaseHandler):
     def update(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         user_id = self.get_arg('user_id')
         action = self.get_arg('action')
@@ -191,7 +197,7 @@ class AdminUsersHandler(AdminBaseHandler):
                 phone_error = phone_verification(phone)
                 if phone_error:
                     return self.make_error(phone_error)
-
+                phone = phone_reformat(phone)
                 already_used = self.session.query(User).filter(and_(User.id != user.id,
                                                                     User.phone == phone)).first()
                 if already_used:
@@ -236,6 +242,8 @@ class AdminUsersHandler(AdminBaseHandler):
     def remove(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
 
         user_id = self.get_arg('user_id')
         user = self.session.query(User).filter(User.id == user_id).first()

@@ -1,5 +1,6 @@
 import datetime
 from sqlalchemy import Table, Column, Integer, ForeignKey, DateTime
+from sqlalchemy.orm import relationship, backref
 from orm import Base
 
 __author__ = 'ne_luboff'

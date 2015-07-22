@@ -12,7 +12,7 @@ from ui_messages.messages.custom_error_titles import PHONE_VERIFICATION_INVALID_
     LOG_IN_EMPTY_AUTHORIZATION_DATA_TITLE, LOG_IN_USER_NOT_FOUND_TITLE, LOG_IN_INCORRECT_PIN_TITLE
 from ui_messages.messages.sms import SIGN_UP_WELCOME_SMS
 from utility.facebook_api import get_facebook_user, get_facebook_photo
-from utility.format_verification import phone_verification, sms_limit_check
+from utility.format_verification import phone_verification, sms_limit_check, phone_reformat
 from utility.send_email import email_confirmation_sending
 from utility.twilio_api import send_sms
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
@@ -55,7 +55,8 @@ class UserLoginHandler(ApiHandler):
             phone_error = phone_verification(phone)
             if phone_error:
                 return self.make_error(message=phone_error, status=2, title=PHONE_VERIFICATION_INVALID_FORMAT_TITLE)
-
+            phone = phone_reformat(phone)
+            return phone
             # try get existing user
             user = self.session.query(User).filter(User.phone == phone).first()
             if not user:

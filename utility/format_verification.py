@@ -26,6 +26,14 @@ def phone_verification(phone):
     return False
 
 
+def phone_reformat(phone):
+    # pre-processing
+    # if to_number started with 07 we must change it to 447
+    if str(phone[0:2]) == '07':
+        phone = phone.replace('0', '44', 1)
+    return phone
+
+
 def username_verification(username):
     if len(username) > 50:
         return USERNAME_VERIFICATION_TOO_LONG_USERNAME

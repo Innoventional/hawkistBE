@@ -19,7 +19,8 @@ from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID,
 from ui_messages.errors.users_errors.blocked_users_error import GET_BLOCKED_USER
 from ui_messages.errors.users_errors.suspended_users_errors import GET_SUSPENDED_USER
 from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID
-from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE
+from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE, \
+    CREATE_LISTING_USER_DONT_CONFIRM_EMAIL_TITLE, CREATE_LISTING_USER_HAVENT_FB_TITLE
 from ui_messages.messages.user_messages import TRY_TO_GET_SUSPENDED_USER_ITEMS
 from utility.google_api import get_city_by_code
 from utility.tags import interested_user_tag_ids, interested_user_item_ids
@@ -694,9 +695,12 @@ class ListingHandler(ApiHandler):
 
         # check selling ability
         # if not self.user.facebook_id:
-        #     return self.make_error(CREATE_LISTING_USER_HAVENT_FB)
+        #     return self.make_error(message=CREATE_LISTING_USER_HAVENT_FB,
+        #                            title=CREATE_LISTING_USER_HAVENT_FB_TITLE)
+
         if not self.user.email_status:
-            return self.make_error(CREATE_LISTING_USER_DONT_CONFIRM_EMAIL)
+            return self.make_error(message=CREATE_LISTING_USER_DONT_CONFIRM_EMAIL,
+                                   title=CREATE_LISTING_USER_DONT_CONFIRM_EMAIL_TITLE)
 
         logger.debug('REQUEST_OBJECT_NEW_ITEM')
         logger.debug(self.request_object)

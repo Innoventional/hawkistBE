@@ -23,3 +23,6 @@ POST_CODE_DOES_NOT_EXISTS_TITLE = 'Post Code Not Found'
 
 # status code 403
 USER_SUSPENDED_TITLE = 'Access denied'
+
+CREATE_LISTING_USER_DONT_CONFIRM_EMAIL_TITLE = 'Email Not Confirmed'
+CREATE_LISTING_USER_HAVENT_FB_TITLE = 'Facebook Account Required'

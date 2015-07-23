@@ -99,8 +99,8 @@ class User(Base):
                             primaryjoin=id == user_reportlist.c.user_id,
                             secondaryjoin=id == user_reportlist.c.reported_user_id)
 
-    comment_mentions = relationship('Comments', secondary=comment_mentioned_users, backref='mentions',
-                                    collection_class=list)
+    # comment_mentions = relationship('Comments', secondary=comment_mentioned_users, backref='mentions',
+    #                                 collection_class=list)
 
     # comment_mentions = relationship('User',
     #                                 secondary=comment_mentioned_users,

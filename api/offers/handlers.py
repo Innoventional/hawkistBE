@@ -126,7 +126,7 @@ class ItemOffersHandler(ApiHandler):
         comment.created_at = datetime.datetime.utcnow()
         comment.listing = listing
         comment.user = self.user
-        comment.text = OFFER_NEW % (self.user.username, float(offer.new_price))
+        comment.text = OFFER_NEW % float(offer.new_price)
         comment.offer = offer
         # this comment can see only listing owner
         # comment.user_to_see_id = listing.user_id
@@ -184,7 +184,7 @@ class ItemOffersHandler(ApiHandler):
             comment.created_at = datetime.datetime.utcnow()
             comment.listing = offer.listing
             comment.user = self.user
-            comment.text = OFFER_ACCEPTED % (self.user.username, float(offer.new_price))
+            comment.text = OFFER_ACCEPTED % float(offer.new_price)
             self.session.add(comment)
             self.session.commit()
 
@@ -196,7 +196,7 @@ class ItemOffersHandler(ApiHandler):
             comment.created_at = datetime.datetime.utcnow()
             comment.listing = offer.listing
             comment.user = self.user
-            comment.text = OFFER_DECLINED % (self.user.username, float(offer.new_price))
+            comment.text = OFFER_DECLINED % float(offer.new_price)
             self.session.add(comment)
             self.session.commit()
 

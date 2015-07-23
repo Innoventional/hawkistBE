@@ -37,7 +37,6 @@ Response:
             "info": "Hawkist API server", 
             "server_date": "2015-06-03T15:44:59.687933"
         }
---------------------------
 
 ###Used enum classes
     
@@ -170,8 +169,8 @@ Response Failure:
         'message': '',          — Error message text
         'title': ''          — Error message title 
     }
-    
----
+
+
 
 **Login (for phone)**
 
@@ -200,7 +199,7 @@ Response Failure:
         'title': ''          — Error message title 
     }
     
----
+
     
 **Logout**
 
@@ -235,7 +234,7 @@ Response:
         "user": USER_INFO_DICT
     }
     
----
+
 
 **Update username / email / about me / avatar**
 
@@ -266,7 +265,7 @@ Response Failure:
         'title': ''          — Error message title 
     }
     
----
+
     
 **Link facebook to profile**
 
@@ -320,7 +319,7 @@ Response:
         ]
     }
 
----
+
 
 **Add tags to feed**
 
@@ -369,7 +368,7 @@ Response Failure:
         'title': ''          — Error message title 
     }
     
----
+
 
 **Feeds to short (get available platforms)**
 
@@ -384,7 +383,7 @@ Response Success:
         'user': USER_INFO_DICT
     }
     
----
+
 
 ###Another users
 
@@ -407,7 +406,7 @@ Response:
         ]
     }
     
----
+
 
 Get user by id:
 
@@ -426,7 +425,7 @@ Response:
         }
     }
     
----
+
 
 **Search user by username / email**
     
@@ -447,7 +446,7 @@ Response:
         ]
     }
     
----
+
 
 ### Following
    
@@ -473,7 +472,7 @@ Response:
         ]
     }
     
----
+
 
 **Get another user followers**
 
@@ -497,7 +496,7 @@ Response:
         ]
     }
     
----
+
 
 **Get people I follow**
 
@@ -521,7 +520,7 @@ Response:
         ]
     }
     
----
+
 
 **Get people which another user follow**
 
@@ -545,7 +544,7 @@ Response:
         ]
     }
     
----
+
 
 **Follow someone**
 
@@ -572,7 +571,8 @@ Response Failure:
         'message': '',          — Error message text
         'title': ''          — Error message title 
     } 
----
+
+
 
 **Unfollow someone**
 
@@ -593,7 +593,8 @@ Response Failure:
         'message': '',          — Error message text
         'title': ''          — Error message title 
     } 
----
+
+
 
 ### Block a user
    
@@ -622,7 +623,8 @@ Response Failure:
         'message': '',          — Error message text
         'title': ''          — Error message title 
     } 
----
+
+
 
 **Unblock someone**
 
@@ -642,7 +644,8 @@ Response Failure:
         'message': '',          — Error message text
         'title': ''          — Error message title 
     } 
----
+
+ 
  
 ### Items
    
@@ -673,7 +676,7 @@ Response:
         ]
     }
     
----
+
    
 **Get item by id**
 
@@ -777,7 +780,8 @@ Response:
         ]
     }
     
----
+
+
 
 **Create item**
 
@@ -820,7 +824,7 @@ Response Failure:
         'title': ''          — Error message title 
     }
 
----
+
    
 **Delete item**
 
@@ -848,7 +852,8 @@ Response Failure:
         'title': ''          — Error message title 
     }
     
----
+
+   
    
 **Like/dislike item**
 
@@ -869,7 +874,8 @@ Response Failure:
         'title': ''          — Error message title 
     }
 
----      
+
+
 
 **Get wishlist (list of liked listings)**
 
@@ -887,7 +893,8 @@ Response Success:
         ]
     }
     
----
+
+
 
 **Get wishlist (list of liked listings) by user id**
 
@@ -905,7 +912,8 @@ Response Success:
         ]
     }
     
----
+
+
 
 **Get city by post code**
 
@@ -934,7 +942,8 @@ Response Failure:
         'title': ''          — Error message title 
     }
     
----
+
+
 
 ### Comments
    
@@ -959,7 +968,8 @@ Response:
             }
         ]
     }
----
+
+
 
 **Create new comment**
 
@@ -1040,7 +1050,8 @@ Response Failure:
         'message': '',          — Error message text
         'title': ''          — Error message title 
     }
----
+
+
 
 **Accept an offer**
 
@@ -1093,7 +1104,6 @@ Response Failure:
         'message': '',          — Error message text
         'title': ''          — Error message title 
     }
----
 
 
 STATUS CODES FOR CUSTOM ERROR TITLE

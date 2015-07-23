@@ -120,6 +120,7 @@ COMMENT_RESPONSE_DICT
             "offer_creater_id": USER WHO CREATE OFFER ID,
             "offer_receiver_id": OFFERED LISTING OWNER ID
         },
+        "offer_id": OFFER ID OR NONE,
         "mentions": [
             {
                 "id": MENTIONED USER ID,

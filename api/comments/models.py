@@ -51,6 +51,7 @@ class Comment(Base):
             'user_username': self.user.username,
             'user_avatar': self.user.avatar,
             'offer': self.offer.response if self.offer else None,
+            'offer_id': self.offer_id,
             'mentions': [
                 {
                     'id': u.id,

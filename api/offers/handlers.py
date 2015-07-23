@@ -182,7 +182,7 @@ class ItemOffersHandler(ApiHandler):
         if str(new_status) not in ['1', '2']:
             return self.make_error(UPDATE_OFFER_INVALID_STATUS)
 
-        if new_status == 1:
+        if str(new_status) == '1':
             # update offer
             offer.status = OfferStatus.Accepted
 
@@ -198,7 +198,7 @@ class ItemOffersHandler(ApiHandler):
             self.session.add(comment)
             self.session.commit()
 
-        elif new_status == 2:
+        elif str(new_status) == '2':
             offer.status = OfferStatus.Declined
 
             # create comment

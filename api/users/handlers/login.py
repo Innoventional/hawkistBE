@@ -141,7 +141,8 @@ class UserLoginHandler(ApiHandler):
 
                 facebook_name = facebook_data.get('username', None)
                 if facebook_name:
-                    user.username = facebook_name
+                    # replaced all whitespaces with underscore symbol
+                    user.username = facebook_name.replace(" ", "_")
                 self.session.commit()
             else:
                 user.first_login = False

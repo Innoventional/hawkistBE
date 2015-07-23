@@ -37,7 +37,7 @@ def phone_reformat(phone):
 def username_verification(username):
     if len(username) > 50:
         return USERNAME_VERIFICATION_TOO_LONG_USERNAME
-    if not re.match('^\w[\w\s.-]+$', username.decode('utf-8'), re.U):
+    if not re.match('^\w[\w.-]+$', username.decode('utf-8'), re.U):
         return USERNAME_VERIFICATION_INVALID_FORMAT
     return False
 

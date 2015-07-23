@@ -54,6 +54,6 @@ def email_confirmation_sending(self, user, email):
     user.email_salt = email_salt
     self.session.commit()
 
-    text = CONFIRM_EMAIL_LETTER_TEXT % (env['server_address'], email_salt)
+    text = CONFIRM_EMAIL_LETTER_TEXT % (user.username, env['server_address'], email_salt)
     subject = CONFIRM_EMAIL_LETTER_SUBJECT
     send_email(text, subject=subject, recipient=email)

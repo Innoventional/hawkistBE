@@ -22,7 +22,7 @@ POST_CODE_DOES_NOT_EXISTS_IN_GB_TITLE = 'Incorrect Post Code'
 POST_CODE_DOES_NOT_EXISTS_TITLE = 'Post Code Not Found'
 
 # status code 403
-USER_SUSPENDED_TITLE = 'Access denied'
+USER_SUSPENDED_TITLE = 'Account Is Suspended'
 
 CREATE_LISTING_USER_DONT_CONFIRM_EMAIL_TITLE = 'Email Not Confirmed'
 CREATE_LISTING_USER_HAVENT_FB_TITLE = 'Facebook Account Required'

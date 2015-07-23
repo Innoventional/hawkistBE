@@ -17,7 +17,8 @@ from ui_messages.messages.custom_error_titles import PHONE_VERIFICATION_INVALID_
 from ui_messages.messages.email import ADMIN_BACK_USER_TO_STANDARD_USERTYPE_LETTER_TEXT, ADMIN_CHANGE_USERTYPE_LETTER_TEXT, \
     ADMIN_CHANGE_USERTYPE_LETTER_SUBJECT, ADMIN_PHONE_NUMBER_CHANGED_LETTER_TEXT, \
     ADMIN_PHONE_NUMBER_CHANGED_LETTER_SUBJECT, ADMIN_ACCOUNT_SUSPENDED_TEXT, ADMIN_ACCOUNT_SUSPENDED_SUBJECT, \
-    ADMIN_ACCOUNT_ACTIVATED_TEXT, ADMIN_ACCOUNT_ACTIVATED_SUBJECT
+    ADMIN_ACCOUNT_ACTIVATED_TEXT, ADMIN_ACCOUNT_ACTIVATED_SUBJECT, ADMIN_EMAIL_CHANGED_LETTER_SUBJECT, \
+    ADMIN_EMAIL_CHANGED_LETTER_TEXT
 from ui_messages.messages.sms import UPDATE_USER_PHONE_NUMBER_SMS
 from utility.format_verification import username_verification, email_verification, phone_verification, phone_reformat
 from utility.send_email import send_email, email_confirmation_sending
@@ -138,7 +139,7 @@ class AdminUsersHandler(AdminBaseHandler):
             need_commit = True
 
             # send email about suspension
-            text = ADMIN_ACCOUNT_SUSPENDED_TEXT
+            text = ADMIN_ACCOUNT_SUSPENDED_TEXT % user.username
             subject = ADMIN_ACCOUNT_SUSPENDED_SUBJECT
             send_email(text, subject=subject, recipient=user.email)
 
@@ -189,6 +190,12 @@ class AdminUsersHandler(AdminBaseHandler):
                 email_confirmation_sending(self, user, email)
                 need_commit = True
 
+                # send message to old email address
+                if user.email:
+                    text = ADMIN_EMAIL_CHANGED_LETTER_TEXT % user.username
+                    subject = ADMIN_EMAIL_CHANGED_LETTER_SUBJECT
+                    send_email(text, subject=subject, recipient=user.email)
+
             # phone
             if user.phone != phone and phone:
                 phone = str(phone)
@@ -205,7 +212,7 @@ class AdminUsersHandler(AdminBaseHandler):
 
                 # send message to email
                 if user.email:
-                    text = ADMIN_PHONE_NUMBER_CHANGED_LETTER_TEXT
+                    text = ADMIN_PHONE_NUMBER_CHANGED_LETTER_TEXT % (user.username, phone)
                     subject = ADMIN_PHONE_NUMBER_CHANGED_LETTER_SUBJECT
                     send_email(text, subject=subject, recipient=user.email)
 

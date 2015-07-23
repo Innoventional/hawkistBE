@@ -11,11 +11,12 @@ from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID, UPDAT
     UPDATE_USER_LINK_FB_NO_TOKEN, UPDATE_USER_FB_ALREADY_USED, UPDATE_USER_TAGS_TAG_DOES_NOT_EXISTS, \
     UPDATE_USER_TAGS_TAG_ALREADY_ADDED, UPDATE_USER_TAGS_NO_TAG_ID, UPDATE_USER_TAGS_NO_TAG_TYPE, \
     UPDATE_USER_TAGS_INVALID_TAG_ID, UPDATE_USER_TAGS_INVALID_TAG_TYPE, UPDATE_USER_TAGS_NO_EXISTING_USER_TAG
+from ui_messages.messages.email import CONFIRM_SUCCESS_EMAIL_LETTER_SUBJECT, CONFIRM_SUCCESS_EMAIL_LETTER_TEXT
 from utility.amazon import upload_file
 from utility.facebook_api import get_facebook_user
 from utility.format_verification import username_verification, email_verification
 from utility.image.processor import make_thumbnail
-from utility.send_email import email_confirmation_sending
+from utility.send_email import email_confirmation_sending, send_email
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
 __author__ = 'ne_luboff'
@@ -195,6 +196,11 @@ class UserEmailVerificationHandler(OpenApiHandler):
 
         user.email_status = True
         self.session.commit()
+
+        # send message about success
+        text = CONFIRM_SUCCESS_EMAIL_LETTER_TEXT % user.username
+        subject = CONFIRM_SUCCESS_EMAIL_LETTER_SUBJECT
+        send_email(text, subject=subject, recipient=user.email)
         return self.render_string('ui/welcome.html', menu_tab_active='')
 
 

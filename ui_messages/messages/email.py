@@ -1,9 +1,22 @@
 __author__ = 'ne_luboff'
 
 # confirm email letter
-CONFIRM_EMAIL_LETTER_SUBJECT = 'Email confirmation'
-CONFIRM_EMAIL_LETTER_TEXT = 'Welcome to Hawkist!\n' \
-                            'To confirm your email address use the link below:\n%s/api/user/confirm_email/%s'
+CONFIRM_EMAIL_LETTER_SUBJECT = 'Email Confirmation Required'
+CONFIRM_EMAIL_LETTER_TEXT = '%s,\n' \
+                            'To complete your Hawkist account we need you to confirm this email address.\n' \
+                            'Please follow this link:\n' \
+                            '%s/api/user/confirm_email/%s\n' \
+                            'Thanks,\n' \
+                            'Hawkist'
+
+CONFIRM_SUCCESS_EMAIL_LETTER_SUBJECT = 'Hawkist Account is Ready'
+CONFIRM_SUCCESS_EMAIL_LETTER_TEXT = "%s,\n" \
+                                    "Thanks for confirming your email address. Your Hawkist account is now ready to go!\n" \
+                                    "Don't forget to connect your Facebook profile to Hawkist in order to maximise your " \
+                                    "chances of selling an item.\n" \
+                                    "Hawkist\n" \
+                                    "Follow us on Facebook\n" \
+                                    "Follow us on Twitter"
 
 # change user group
 ADMIN_BACK_USER_TO_STANDARD_USERTYPE_LETTER_TEXT = 'Looks like you were excluded from Hawkist %s user group.'
@@ -12,13 +25,25 @@ ADMIN_CHANGE_USERTYPE_LETTER_TEXT = 'Congrats!\nYou were added to Hawkist %s use
 ADMIN_CHANGE_USERTYPE_LETTER_SUBJECT = 'Permissions changed'
 
 # change user phone number
-ADMIN_PHONE_NUMBER_CHANGED_LETTER_TEXT = 'Hi,\nYour mobile number has been changed and a new pin code sent to this ' \
-                                         'number.\nHawkist'
-ADMIN_PHONE_NUMBER_CHANGED_LETTER_SUBJECT = 'Mobile number changed'
+ADMIN_PHONE_NUMBER_CHANGED_LETTER_TEXT = '%s,\n' \
+                                         'Your mobile number was recently updated to %s. If you have any questions, ' \
+                                         'please contact us on info@hawkist.com.\n' \
+                                         'Thanks,\n' \
+                                         'Hawkist'
+ADMIN_PHONE_NUMBER_CHANGED_LETTER_SUBJECT = 'Mobile Number has been Changed'
+
+ADMIN_EMAIL_CHANGED_LETTER_TEXT = '%s,\n' \
+                                  'Your email address was recently updated. If you have any questions, please contact ' \
+                                  'us on info@hawkist.com.\n' \
+                                  'Thanks,\n' \
+                                  'Hawkist'
+ADMIN_EMAIL_CHANGED_LETTER_SUBJECT = 'Email Address has been Changed'
 
 # suspend account
-ADMIN_ACCOUNT_SUSPENDED_TEXT = 'Your account was suspended. For more info contact with our support: info@hawkist.co.uk'
-ADMIN_ACCOUNT_SUSPENDED_SUBJECT = 'Account suspension'
+ADMIN_ACCOUNT_SUSPENDED_TEXT = 'Dear %s,\n' \
+                               'Unfortunately your Hawkist account has been suspended. If you believe this to be a ' \
+                               'mistake, please contact Hawkist support on info@hawkist.com.'
+ADMIN_ACCOUNT_SUSPENDED_SUBJECT = 'Hawkist Account Suspended'
 
 ADMIN_ACCOUNT_ACTIVATED_TEXT = 'Your account was activated. Enjoy!'
 ADMIN_ACCOUNT_ACTIVATED_SUBJECT = 'Account activation'

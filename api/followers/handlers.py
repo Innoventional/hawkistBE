@@ -25,7 +25,7 @@ class FollowersHandler(ApiHandler):
         if self.user is None:
             die(401)
 
-        logger.debug(self)
+        logger.debug(self.user)
         update_user_last_activity(self)
 
         # check user status

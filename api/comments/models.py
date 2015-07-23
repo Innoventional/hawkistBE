@@ -31,6 +31,15 @@ class Comment(Base):
     offer = relationship('Offer', backref=backref('offer_comment', order_by=id, cascade="all,delete",
                                                   lazy='dynamic'), foreign_keys=offer_id)
 
+
+    # user_mentions = relationship('User',
+    #                                 secondary=comment_mentioned_users,
+    #                                 primaryjoin=id == comment_mentioned_users.c.user_id,
+    #                                 secondaryjoin=id == comment_mentioned_users.c.comment_id)
+
+    user_mentions = relationship('User', secondary=comment_mentioned_users, backref='user_mentions',
+                                 collection_class=list)
+
     @property
     def response(self):
         return {
@@ -41,5 +50,11 @@ class Comment(Base):
             'user_id': self.user_id,
             'user_username': self.user.username,
             'user_avatar': self.user.avatar,
-            'offer': self.offer.response if self.offer else None
+            'offer': self.offer.response if self.offer else None,
+            'mentions': [
+                {
+                    'id': u.id,
+                    'username': u.username
+                } for u in self.user_mentions
+            ]
         }

@@ -114,17 +114,28 @@ COMMENT_RESPONSE_DICT
         "user_avatar": CREATER AVATAR,
         "listing_id": COMMENTED LISTING ID,
         "text": TEXT,
-        "offer": OFFER RESPONSE DICT IF THIS COMMENT IS OFFER ELSE NOTHING
+        "offer": {
+            "id": ID,
+            "status": 0 IF THIS OFFER IS UNANSWERED,
+            "offer_creater_id": USER WHO CREATE OFFER ID,
+            "offer_receiver_id": OFFERED LISTING OWNER ID
+        },
+        "mentions": [
+            {
+                "id": MENTIONED USER ID,
+                "username": MENTIONED USER USERNAME
+            },
+            .
+            .
+            .
+            {
+                ...
+            }
+        ]
     }
     
-OFFER_RESPONSE_DICT 
     
-    {
-        "id": ID,
-        "status": 0 IF THIS OFFER IS UNANSWERED,
-        "offer_creater_id": USER WHO CREATE OFFER ID,
-        "offer_receiver_id": OFFERED LISTING OWNER ID
-    }
+    
     
 ###User registration
 

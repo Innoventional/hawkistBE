@@ -183,6 +183,12 @@ class AdminUsersHandler(AdminBaseHandler):
                 if email_error:
                     return self.make_error(email_error)
 
+                # send message to old email address
+                if user.email:
+                    text = ADMIN_EMAIL_CHANGED_LETTER_TEXT % user.username
+                    subject = ADMIN_EMAIL_CHANGED_LETTER_SUBJECT
+                    send_email(text, subject=subject, recipient=user.email)
+
                 user.email = email
                 # change email confirmation status
                 user.email_status = False
@@ -190,11 +196,7 @@ class AdminUsersHandler(AdminBaseHandler):
                 email_confirmation_sending(self, user, email)
                 need_commit = True
 
-                # send message to old email address
-                if user.email:
-                    text = ADMIN_EMAIL_CHANGED_LETTER_TEXT % user.username
-                    subject = ADMIN_EMAIL_CHANGED_LETTER_SUBJECT
-                    send_email(text, subject=subject, recipient=user.email)
+
 
             # phone
             if user.phone != phone and phone:

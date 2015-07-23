@@ -6,11 +6,12 @@ from api.items.models import Listing
 from api.offers.models import Offer, OfferStatus
 from api.users.models import User, SystemStatus
 from base import ApiHandler, die
+from environment import env
 from helpers import route
 from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID
 from ui_messages.errors.offers_errors.offers_errors import GET_OFFERS_NO_LISTING_ID, CREATE_OFFER_NO_LISTING_ID, \
     CREATE_OFFER_EMPTY_DATA, UPDATE_OFFER_NO_NEW_STATUS, UPDATE_OFFER_INVALID_STATUS, UPDATE_OFFER_NO_OFFER_ID, \
-    UPDATE_OFFER_INVALID_OFFER_ID, CREATE_OFFER_YOU_OWN_LISTING, GET_OFFERS_ANOTHER_OWNER
+    UPDATE_OFFER_INVALID_OFFER_ID, CREATE_OFFER_YOU_OWN_LISTING, GET_OFFERS_ANOTHER_OWNER, REACH_OFFER_LIMIT
 from ui_messages.errors.users_errors.blocked_users_error import GET_BLOCKED_USER
 from ui_messages.errors.users_errors.suspended_users_errors import GET_SUSPENDED_USER
 from ui_messages.messages.offers_messages import OFFER_NEW, OFFER_ACCEPTED, OFFER_DECLINED
@@ -101,6 +102,15 @@ class ItemOffersHandler(ApiHandler):
         # check is listing owner active
         if listing.user.system_status == SystemStatus.Suspended:
             return self.make_error(GET_SUSPENDED_USER % listing.user.username.upper())
+
+        # check is offer available for current user today
+        # get all user offers
+        all_user_offers = self.session.query(Offer).filter(Offer.user_id == self.user.id)
+        # get today offers
+        today_user_offers = [o for o in all_user_offers
+                             if o.created_at.strftime("%Y-%m-%d") == datetime.datetime.utcnow().strftime("%Y-%m-%d")]
+        if len(today_user_offers) >= env['offer_limit_per_day']:
+            return self.make_error(REACH_OFFER_LIMIT)
 
         new_price = None
 

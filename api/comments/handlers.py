@@ -111,6 +111,7 @@ class ItemCommentsHandler(ApiHandler):
         comment.created_at = datetime.datetime.utcnow()
         comment.listing = listing
         comment.user = self.user
+        text = text.encode('utf-8')
         comment.text = text
         # try extract mentioned users from comment text
         mentioned_user_usernames = get_users_from_comment(text)

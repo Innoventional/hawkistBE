@@ -42,5 +42,6 @@ class Offer(Base):
         return {
             'id': self.id,
             'status': self.status,
-            'offer_receiver': self.listing.user_id
+            'offer_receiver_id': self.listing.user_id,
+            'offer_creater_id': self.user_id
         }

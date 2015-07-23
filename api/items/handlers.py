@@ -609,7 +609,7 @@ class ListingHandler(ApiHandler):
                 right_tag_ids = right_platforms_ids + right_categories_ids + right_subcategories_ids
 
                 # get all listings with right usernames
-                right_usernames_item_ids = [i.id if i.user.username in right_usernames else None for i in all_listings]
+                right_usernames_item_ids = [i.id if i.user.username.lower() in right_usernames else None for i in all_listings]
 
                 # remove all None values from right_usernames_item_ids
                 right_usernames_item_ids = [x for x in right_usernames_item_ids if x is not None]

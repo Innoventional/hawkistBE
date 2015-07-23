@@ -1,6 +1,7 @@
 import datetime
 from sqlalchemy import Column, Integer, DateTime, String, Boolean, SmallInteger, ForeignKey, Enum
 from sqlalchemy.orm import relationship, backref
+from api.comments.models import comment_mentioned_users
 from api.followers.models import user_followers
 from api.tags.models import Tag
 from api.users.blocked_users.models import user_blacklist
@@ -98,6 +99,14 @@ class User(Base):
                             primaryjoin=id == user_reportlist.c.user_id,
                             secondaryjoin=id == user_reportlist.c.reported_user_id)
 
+    comment_mentions = relationship('Comments', secondary=comment_mentioned_users, backref='mentions',
+                                    collection_class=list)
+
+    # comment_mentions = relationship('User',
+    #                                 secondary=comment_mentioned_users,
+                                    # primaryjoin=id == comment_mentioned_users.c.comment_id,
+                                    # secondaryjoin=id == comment_mentioned_users.c.user_id)
+
     def __repr__(self):
         return '<User %s (%s)>' % (self.id, self.username)
 
@@ -151,7 +160,7 @@ class User(Base):
             'facebook_id': self.facebook_id,
             'email_status': self.email_status,
             'first_login': self.first_login,
-            'metatags': self.get_user_metatags(),
+            # 'metatags': self.get_user_metatags(),
             'user_type': self.user_type,
             'system_status': self.system_status,
             'city': self.city,

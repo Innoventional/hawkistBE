@@ -1,12 +1,16 @@
 import datetime
-from sqlalchemy import Column, Integer, DateTime, String, ForeignKey
+from sqlalchemy import Column, Integer, DateTime, String, ForeignKey, Table
 from sqlalchemy.orm import backref, relationship
 from orm import Base
 
 __author__ = 'ne_luboff'
 
+comment_mentioned_users = Table("comment_mentioned_users", Base.metadata,
+                                Column("comment_id", Integer, ForeignKey("comments.id"), primary_key=True),
+                                Column("user_id", Integer, ForeignKey("users.id"), primary_key=True),
+                                Column("created_at", DateTime, nullable=False, default=datetime.datetime.utcnow))
 
-# comments for listings
+
 class Comment(Base):
     __tablename__ = 'comments'
 

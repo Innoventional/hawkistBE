@@ -987,7 +987,31 @@ Response Failure:
         'message': '',          — Error message text
         'title': ''          — Error message title 
     }
----
+    
+**Get people to mention in comment**
+
+    Url: 'listings/comments_people?q=SEARCHING_QUERY'
+    Method: 'GET'
+
+
+Response:
+    
+    {
+        'status': 0,
+        'users': [
+            {
+                'id': ID,
+                'username': USERNAME
+            }, 
+            .
+            .
+            .
+            {
+                ...
+            }
+        ]
+    }
+    
 
 ### Offers
 

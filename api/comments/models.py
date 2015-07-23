@@ -23,9 +23,9 @@ class Comment(Base):
     listing = relationship('Listing', backref=backref('listing_comments', order_by=id, cascade="all,delete",
                                                       lazy='dynamic'), foreign_keys=listing_id)
 
-    user_to_see_id = Column(Integer, ForeignKey('users.id'), nullable=True, index=True)
-    user_to_see = relationship('User', backref=backref('user_specific_comments', order_by=id, cascade="all,delete",
-                                                       lazy='dynamic'), foreign_keys=user_to_see_id)
+    offer_id = Column(Integer, ForeignKey('offers.id'), nullable=True, index=True)
+    offer = relationship('Offer', backref=backref('offer_comment', order_by=id, cascade="all,delete",
+                                                  lazy='dynamic'), foreign_keys=offer_id)
 
     @property
     def response(self):
@@ -37,5 +37,5 @@ class Comment(Base):
             'user_id': self.user_id,
             'user_username': self.user.username,
             'user_avatar': self.user.avatar,
-            'offered_user': self.user_to_see_id
+            'offer': self.offer.response if self.offer else None
         }

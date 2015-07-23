@@ -108,15 +108,21 @@ ITEM_INFO_DICT
 COMMENT_RESPONSE_DICT
 
     {
-        "id": ID
+        "id": ID,
         "created_at": CREATED NAME,
         "user_id": CREATER ID,
         "user_username": CREATER USERNAME,
         "user_avatar": CREATER AVATAR,
         "listing_id": COMMENTED LISTING ID,
         "text": TEXT,
-        "image_url": IMAGE URL,
+        "offer": OFFER RESPONSE DICT IF THIS COMMENT IS OFFER ELSE NOTHING
     }
+    
+OFFER_RESPONSE_DICT 
+    
+    {
+        "id": ID,
+        "status": 0 IF THIS OFFER IS UNANSWERED}
     
 ###User registration
 
@@ -1001,29 +1007,6 @@ Response Failure:
 ---
 
 ### Offers
-   
-**Get all comments by current item**
-
-    Url: 'listings/offers/LISTING_ID'
-    Method: 'GET'
-    
-Response:
-    
-    {
-        "status": 0,
-        "offers": [
-            {
-                OFFER_RESPONSE_DICT
-            },
-            .
-            .
-            .
-            {
-                OFFER_RESPONSE_DICT
-            }
-        ]
-    }
----
 
 **Offer a new price**
 

@@ -41,11 +41,11 @@ class Offer(Base):
     def response(self):
         return {
             'id': self.id,
-            'created_at': self.created_at.strftime("%Y-%m-%dT%H:%M"),
-            'new_price': float(self.new_price),
+            # 'created_at': self.created_at.strftime("%Y-%m-%dT%H:%M"),
+            # 'new_price': float(self.new_price),
             'status': self.status,
-            'listing_id': self.listing_id,
-            'user_id': self.user_id,
-            'user_username': self.user.username,
-            'user_avatar': self.user.avatar,
+            # 'listing_id': self.listing_id,
+            # 'user_id': self.user_id,
+            # 'user_username': self.user.username,
+            # 'user_avatar': self.user.avatar,
         }

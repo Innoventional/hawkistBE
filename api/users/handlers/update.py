@@ -335,13 +335,38 @@ class UserTagsHandler(ApiHandler):
 
 @route('user/metatags')
 class UserMetaTagsHandler(ApiHandler):
-    allowed_methods = ('PUT', 'DELETE')
+    allowed_methods = ('GET', 'PUT', 'DELETE')
+
+    def read(self):
+        if self.user is None:
+            die(401)
+
+        logger.debug(self.user)
+        update_user_last_activity(self)
+
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            logger.debug(suspension_error)
+            return suspension_error
+
+        # first we must get users metatags
+        existing_user_tags_id = [metatag.platform_id for metatag in self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
+                                                                                                           UserMetaTag.metatag_type == UserMetaTagType.Platform))]
+        tags_to_be_added = self.session.query(Platform).filter(~Platform.id.in_(existing_user_tags_id)).limit(12)
+
+        return self.success(
+            {
+                "tags": [t.response for t in tags_to_be_added]
+            }
+        )
 
     def update(self):
 
         if self.user is None:
             die(401)
 
+        logger.debug(self.user)
         update_user_last_activity(self)
 
         # check user status

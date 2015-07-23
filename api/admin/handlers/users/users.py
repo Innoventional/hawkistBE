@@ -148,7 +148,7 @@ class AdminUsersHandler(AdminBaseHandler):
             need_commit = True
 
             # send email about activation
-            text = ADMIN_ACCOUNT_ACTIVATED_TEXT
+            text = ADMIN_ACCOUNT_ACTIVATED_TEXT % user.username
             subject = ADMIN_ACCOUNT_ACTIVATED_SUBJECT
             send_email(text, subject=subject, recipient=user.email)
 

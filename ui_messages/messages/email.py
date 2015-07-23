@@ -45,5 +45,9 @@ ADMIN_ACCOUNT_SUSPENDED_TEXT = 'Dear %s,\n' \
                                'mistake, please contact Hawkist support on info@hawkist.com.'
 ADMIN_ACCOUNT_SUSPENDED_SUBJECT = 'Hawkist Account Suspended'
 
-ADMIN_ACCOUNT_ACTIVATED_TEXT = 'Your account was activated. Enjoy!'
-ADMIN_ACCOUNT_ACTIVATED_SUBJECT = 'Account activation'
+ADMIN_ACCOUNT_ACTIVATED_TEXT = 'Dear %s,\n' \
+                               'Your Hawkist account has been reactivated. Please contact Hawkist support on ' \
+                               'info@hawkist.com if you have any other questions\n' \
+                               'Thanks\n' \
+                               'Hawkist Support'
+ADMIN_ACCOUNT_ACTIVATED_SUBJECT = 'Hawkist Account Reactivated'

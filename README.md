@@ -322,7 +322,7 @@ Response:
 
 ---
 
-**Add tags**
+**Add tags to feed**
 
     Url: 'user/metatags'
     Method: 'PUT'
@@ -332,12 +332,12 @@ Data:
 
     {
         "tags": [
-            {
+            
+            .
+            .{
                 "type": VALID_TAG_TYPE,         - int      
                 "id": int
             }, 
-            .
-            .
             .
             {
                 "type": VALID_TAG_TYPE, 
@@ -370,23 +370,11 @@ Response Failure:
     }
     
 ---
-    
-**Delete tags**
 
-    Url: 'user/matatags'
-    Method: 'DELETE'
+**Feeds to short (get available platforms)**
 
-
-Data:
-
-    {
-        "tags": [
-            {
-                "type": VALID_TAG_TYPE,         - int      
-                "id": int
-            }
-        ]
-    }
+    Url: 'user/metatags'
+    Method: 'GET'
 
 
 Response Success:
@@ -394,14 +382,6 @@ Response Success:
     {
         'status': 0,
         'user': USER_INFO_DICT
-    }
-    
-Response Failure:
-
-    {
-        'status': 1,
-        'message': '',          — Error message text
-        'title': ''          — Error message title 
     }
     
 ---

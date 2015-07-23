@@ -37,4 +37,5 @@ class Comment(Base):
             'user_id': self.user_id,
             'user_username': self.user.username,
             'user_avatar': self.user.avatar,
+            'offered_user': self.user_to_see_id
         }

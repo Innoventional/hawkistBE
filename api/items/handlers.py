@@ -510,10 +510,12 @@ class ListingHandler(ApiHandler):
                                                                            Listing.subcategory_id == listing.subcategory_id),
                                                                        Listing.id != listing.id,
                                                                        ~Listing.user_id.in_(suspended_users_id),
-                                                                       ~Listing.user_id.in_(block_me_user_id))).limit(6)
+                                                                       ~Listing.user_id.in_(block_me_user_id),
+                                                                       Listing.sold == False)).limit(6)
             # find 6 items of this user
             user_listings = self.session.query(Listing).filter(and_(Listing.user_id == listing.user_id,
-                                                                    Listing.id != listing.id)).limit(6)
+                                                                    Listing.id != listing.id,
+                                                                    Listing.sold == False)).limit(6)
             current_listing_response = listing.response
             current_listing_response['liked'] = self.user in listing.likes
             current_listing_response['user'] = listing.user.user_response
@@ -535,7 +537,8 @@ class ListingHandler(ApiHandler):
             if user.system_status == SystemStatus.Suspended:
                 return self.make_error(TRY_TO_GET_SUSPENDED_USER_ITEMS % user.username.upper())
 
-            user_items = self.session.query(Listing).filter(Listing.user_id == user_id).order_by(desc(Listing.id))
+            user_items = self.session.query(Listing).filter(and_(Listing.user_id == user_id,
+                                                                 Listing.sold == False)).order_by(desc(Listing.id))
             # pagination
             page = self.get_arg('p', int, 1)
             page_size = self.get_arg('page_size', int, 100)
@@ -627,7 +630,8 @@ class ListingHandler(ApiHandler):
                                                                         list(right_title_or_description_item_ids) +
                                                                         right_usernames_item_ids))),
                                                     ~Listing.user_id.in_(block_me_user_id),
-                                                    ~Listing.user_id.in_(suspended_users_id))).order_by(desc(Listing.id))
+                                                    ~Listing.user_id.in_(suspended_users_id),
+                                                    Listing.sold == False)).order_by(desc(Listing.id))
 
             # if not search - return listing depending on user's tags
             else:
@@ -663,10 +667,11 @@ class ListingHandler(ApiHandler):
                 #                                                        Listing.category_id.in_(users_categories_ids),
                 #                                                        Listing.subcategory_id.in_(users_subcategories_ids)),
                 #                                                    ~Listing.user_id.in_(block_me_user_id),
-                #                                                    ~Listing.user_id.in_(suspended_users_id))).order_by(desc(Listing.id))
+                #                                                    ~Listing.user_id.in_(suspended_users_id),
+                #                                                    Listing.sold == False)).order_by(desc(Listing.id))
 
                 # TODO 2015-07-08 return all items
-                listings = self.session.query(Listing).order_by(desc(Listing.id))
+                listings = self.session.query(Listing).filter(Listing.sold == False).order_by(desc(Listing.id))
 
             # pagination
             page = self.get_arg('p', int, 1)

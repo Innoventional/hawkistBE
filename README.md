@@ -1066,7 +1066,7 @@ Response Failure:
 
 **Accept an offer**
 
-    Url: 'listings/offers/LISTING_ID'
+    Url: 'listings/offers/OFFER_ID'
     Method: 'PUT'
 
 
@@ -1092,7 +1092,7 @@ Response Failure:
     
 **Decline an offer**
 
-    Url: 'listings/offers/LISTING_ID'
+    Url: 'listings/offers/OFFER_ID'
     Method: 'PUT'
 
 

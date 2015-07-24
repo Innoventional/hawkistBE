@@ -408,11 +408,11 @@ class UserMetaTagsHandler(ApiHandler):
                     return self.make_error(UPDATE_USER_TAGS_INVALID_TAG_ID % metatag_id)
 
                 # 'cause we have 3 types check is received metatag type valid
-                if metatag_type not in [0, 1, 2]:
+                if str(metatag_type) not in ['0', '1', '2']:
                     return self.make_error(UPDATE_USER_TAGS_INVALID_TAG_TYPE)
 
                 # for go through every possible type
-                if metatag_type == 0:
+                if str(metatag_type) == '0':
                     metatag_type = UserMetaTagType.Platform
 
                     # check is this platform exists
@@ -531,10 +531,10 @@ class UserMetaTagsHandler(ApiHandler):
                     return self.make_error(UPDATE_USER_TAGS_INVALID_TAG_ID % metatag_id)
 
                 # 'cause we have 3 types check is received metatag type valid
-                if metatag_type not in [0, 1, 2]:
+                if str(metatag_type) not in ['0', '1', '2']:
                     return self.make_error(UPDATE_USER_TAGS_INVALID_TAG_TYPE)
 
-                if metatag_type == 0:
+                if str(metatag_type) == '0':
                     metatag_type = UserMetaTagType.Platform
 
                     platform = self.session.query(Platform).filter(Platform.id == metatag_id).first()

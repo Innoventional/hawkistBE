@@ -646,11 +646,11 @@ class ListingHandler(ApiHandler):
 
                 for user_tag in user_tags:
                     if user_tag.metatag_type == 0:
-                        users_platforms_ids.append(user_tag.id)
+                        users_platforms_ids.append(user_tag.platform_id)
                     elif user_tag.metatag_type == 1:
-                        users_categories_ids.append(user_tag.id)
+                        users_categories_ids.append(user_tag.category_id)
                     elif user_tag.metatag_type == 2:
-                        users_subcategories_ids.append(user_tag.id)
+                        users_subcategories_ids.append(user_tag.subcategory_id)
 
                 # exclude from feed items of user who blocked current user
                 block_me_user_id = [u.id for u in self.user.blocked_me]

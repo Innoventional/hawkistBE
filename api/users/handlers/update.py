@@ -589,3 +589,20 @@ class UserMetaTagsHandler(ApiHandler):
                     self.session.commit()
 
         return self.success({'user': self.user.user_response})
+
+@route('delete_anthony_tags')
+class DeleteAnthonyTagsHandler(OpenApiHandler):
+    allowed_methods = ('GET', )
+
+    def read(self):
+        anthony_tags = self.session.query(UserMetaTag).filter(UserMetaTag.user_id == 77)
+        if anthony_tags.count() == 0:
+            return 'No tags to be deleted'
+
+        tag_response = ''
+        for tag in anthony_tags:
+            tag_response += tag.platform.title + ' '
+            self.session.delete(tag)
+            self.session.commit()
+
+        return 'Deleted %s' % tag_response

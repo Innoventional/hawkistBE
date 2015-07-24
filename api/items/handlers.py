@@ -636,42 +636,37 @@ class ListingHandler(ApiHandler):
             # if not search - return listing depending on user's tags
             else:
                 # TODO uncomment to return items by user interests
-                # # get all user's tag
-                # user_tags = self.user.user_metatags
-                #
-                # # separate user tags by type: platform, category, subcategory
-                # users_platforms_ids = []
-                # users_categories_ids = []
-                # users_subcategories_ids = []
-                #
-                # for user_tag in user_tags:
-                #     print user_tag.id
-                #     # platforms
-                #     if user_tag.metatag_type == 0:
-                #         print 'pl'
-                #         users_platforms_ids.append(user_tag.id)
-                #     elif user_tag.metatag_type == 1:
-                #         print 'cat'
-                #         users_categories_ids.append(user_tag.id)
-                #     elif user_tag.metatag_type == 2:
-                #         print 'subcat'
-                #         users_subcategories_ids.append(user_tag.id)
-                #
-                # # exclude from feed items of user who blocked current user
-                # block_me_user_id = [u.id for u in self.user.blocked_me]
-                #
-                # # and suspended users
-                # suspended_users_id = [u.id for u in self.session.query(User).filter(User.system_status == SystemStatus.Suspended)]
-                #
-                # listings = self.session.query(Listing).filter(and_(or_(Listing.platform_id.in_(users_platforms_ids),
-                #                                                        Listing.category_id.in_(users_categories_ids),
-                #                                                        Listing.subcategory_id.in_(users_subcategories_ids)),
-                #                                                    ~Listing.user_id.in_(block_me_user_id),
-                #                                                    ~Listing.user_id.in_(suspended_users_id),
-                #                                                    Listing.sold == False)).order_by(desc(Listing.id))
+                # get all user's tag
+                user_tags = self.user.user_metatags
+
+                # separate user tags by type: platform, category, subcategory
+                users_platforms_ids = []
+                users_categories_ids = []
+                users_subcategories_ids = []
+
+                for user_tag in user_tags:
+                    if user_tag.metatag_type == 0:
+                        users_platforms_ids.append(user_tag.id)
+                    elif user_tag.metatag_type == 1:
+                        users_categories_ids.append(user_tag.id)
+                    elif user_tag.metatag_type == 2:
+                        users_subcategories_ids.append(user_tag.id)
+
+                # exclude from feed items of user who blocked current user
+                block_me_user_id = [u.id for u in self.user.blocked_me]
+
+                # and suspended users
+                suspended_users_id = [u.id for u in self.session.query(User).filter(User.system_status == SystemStatus.Suspended)]
+
+                listings = self.session.query(Listing).filter(and_(or_(Listing.platform_id.in_(users_platforms_ids),
+                                                                       Listing.category_id.in_(users_categories_ids),
+                                                                       Listing.subcategory_id.in_(users_subcategories_ids)),
+                                                                   ~Listing.user_id.in_(block_me_user_id),
+                                                                   ~Listing.user_id.in_(suspended_users_id),
+                                                                   Listing.sold == False)).order_by(desc(Listing.id))
 
                 # TODO 2015-07-08 return all items
-                listings = self.session.query(Listing).filter(Listing.sold == False).order_by(desc(Listing.id))
+                # listings = self.session.query(Listing).filter(Listing.sold == False).order_by(desc(Listing.id))
 
             # pagination
             page = self.get_arg('p', int, 1)

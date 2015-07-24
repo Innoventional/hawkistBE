@@ -107,6 +107,11 @@ listing_likes = Table("listing_likes", Base.metadata,
                       Column("listing_id", Integer, ForeignKey("listings.id"), primary_key=True),
                       Column("created_at", DateTime, nullable=False, default=datetime.datetime.utcnow))
 
+listing_views = Table("listing_views", Base.metadata,
+                      Column("user_id", Integer, ForeignKey("users.id"), primary_key=True),
+                      Column("listing_id", Integer, ForeignKey("listings.id"), primary_key=True),
+                      Column("created_at", DateTime, nullable=False, default=datetime.datetime.utcnow))
+
 
 class Listing(Base):
     __tablename__ = 'listings'
@@ -160,6 +165,7 @@ class Listing(Base):
     location_lon = Column(Numeric, nullable=True)
 
     likes = relationship('User', secondary=listing_likes, backref='likes')
+    views = relationship('User', secondary=listing_views, backref='views')
 
     def __repr__(self):
         return '<Item %s (%s)>' % (self.id, self.title)
@@ -189,6 +195,7 @@ class Listing(Base):
             'photos': [photo.image_url for photo in self.listing_photos],
             'sold': self.sold,
             'likes': len(self.likes),
+            'views': len(self.views),
             'comments': self.listing_comments.count()
         }
 

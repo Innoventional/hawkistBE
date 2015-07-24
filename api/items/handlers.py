@@ -498,6 +498,15 @@ class ListingHandler(ApiHandler):
             if not listing:
                 return self.make_error(GET_LISTING_INVALID_ID % listing_id)
 
+            # add view
+            # first we must check owner of this listing
+            if str(listing.id) != str(self.user.id):
+                # check does this user already view this item
+                if self.user not in listing.views:
+                    # only then add view
+                    listing.views.append(self.user)
+                    self.session.commit()
+
             # before we find six similar listings find all users who block current user
             block_me_user_id = [u.id for u in self.user.blocked_me]
 
@@ -663,6 +672,7 @@ class ListingHandler(ApiHandler):
                                                                        Listing.subcategory_id.in_(users_subcategories_ids)),
                                                                    ~Listing.user_id.in_(block_me_user_id),
                                                                    ~Listing.user_id.in_(suspended_users_id),
+                                                                   Listing.user_id != self.user.id,
                                                                    Listing.sold == False)).order_by(desc(Listing.id))
 
                 # TODO 2015-07-08 return all items

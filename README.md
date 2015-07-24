@@ -101,6 +101,7 @@ ITEM_INFO_DICT
         'photos': LIST OF LISTING PHOTOS,
         'sold': IS LISTING ALREADY SOLD FLAG,
         'likes': NUMBERS OF LIKES,
+        'liked': DOES CURRENT USER ALREADY LIKED THIS ITEM,
         'comments': NUMBER OF COMMENTS,
         'views': NUMBER OF VIEWS
     }

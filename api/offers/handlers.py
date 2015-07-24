@@ -11,10 +11,12 @@ from helpers import route
 from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID
 from ui_messages.errors.offers_errors.offers_errors import GET_OFFERS_NO_LISTING_ID, CREATE_OFFER_NO_LISTING_ID, \
     CREATE_OFFER_EMPTY_DATA, UPDATE_OFFER_NO_NEW_STATUS, UPDATE_OFFER_INVALID_STATUS, UPDATE_OFFER_NO_OFFER_ID, \
-    UPDATE_OFFER_INVALID_OFFER_ID, CREATE_OFFER_YOU_OWN_LISTING, GET_OFFERS_ANOTHER_OWNER, REACH_OFFER_LIMIT
+    UPDATE_OFFER_INVALID_OFFER_ID, CREATE_OFFER_YOU_OWN_LISTING, GET_OFFERS_ANOTHER_OWNER, REACH_OFFER_LIMIT, \
+    CREATE_OFFER_OFFERED_PRICE_MUST_BE_LESS_THAN_RETAIL
 from ui_messages.errors.users_errors.blocked_users_error import GET_BLOCKED_USER
 from ui_messages.errors.users_errors.suspended_users_errors import GET_SUSPENDED_USER
 from ui_messages.messages.offers_messages import OFFER_NEW, OFFER_ACCEPTED, OFFER_DECLINED
+from utility.items import calculate_discount_value
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
 __author__ = 'ne_luboff'
@@ -122,6 +124,10 @@ class ItemOffersHandler(ApiHandler):
         if not new_price:
             return self.make_error(CREATE_OFFER_EMPTY_DATA)
 
+        # check is retail price more than new price
+        if new_price >= listing.retail_price:
+            return self.make_error(CREATE_OFFER_OFFERED_PRICE_MUST_BE_LESS_THAN_RETAIL % listing.retail_price)
+
         # create an offer
         offer = Offer()
         offer.created_at = datetime.datetime.utcnow()
@@ -186,6 +192,8 @@ class ItemOffersHandler(ApiHandler):
             # update offer
             offer.status = OfferStatus.Accepted
 
+            # update discount
+            offer.listing.discount = calculate_discount_value(offer.listing.retail_price, offer.new_price)
             # update listing price
             offer.listing.selling_price = offer.new_price
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from environment import env
 
 __author__ = 'ne_luboff'
@@ -10,6 +11,8 @@ GET_OFFERS_ANOTHER_OWNER = 'Access denied. You cannot get offers of another user
 CREATE_OFFER_YOU_OWN_LISTING = 'Sorry but you cannot make offers for your own listings'
 CREATE_OFFER_NO_LISTING_ID = 'Create offer no listing id'
 CREATE_OFFER_EMPTY_DATA = 'You must input new price'
+
+CREATE_OFFER_OFFERED_PRICE_MUST_BE_LESS_THAN_RETAIL = u'Offered price must be less than £%s'
 
 UPDATE_OFFER_NO_OFFER_ID = 'You must select offer to update (no offer id).'
 UPDATE_OFFER_NO_NEW_STATUS = 'You must select new offer status.'

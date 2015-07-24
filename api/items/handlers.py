@@ -23,6 +23,7 @@ from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS
     CREATE_LISTING_USER_DONT_CONFIRM_EMAIL_TITLE, CREATE_LISTING_USER_HAVENT_FB_TITLE
 from ui_messages.messages.user_messages import TRY_TO_GET_SUSPENDED_USER_ITEMS
 from utility.google_api import get_city_by_code
+from utility.items import calculate_discount_value
 from utility.tags import interested_user_tag_ids, interested_user_item_ids
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
@@ -925,15 +926,7 @@ class ListingHandler(ApiHandler):
         listing.selling_price = selling_price
 
         if selling_price != retail_price:
-            # calculate discount value
-            discount = int(round((retail_price - selling_price) / retail_price * 100))
-            # if discount less then 1 %
-            if discount == 0:
-                discount = 1
-            # if discount almost equal to 100 %
-            if discount == 100:
-                discount = 99
-            listing.discount = discount
+                listing.discount = calculate_discount_value(retail_price, selling_price)
 
         listing.shipping_price = shipping_price
         if collection_only:

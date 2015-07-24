@@ -10,7 +10,7 @@ from ui_messages.errors.users_errors.login_errors import SIGN_UP_EMPTY_AUTHORIZA
     LOG_IN_EMPTY_AUTHORIZATION_DATA, LOG_IN_USER_NOT_FOUND, LOG_IN_INCORRECT_PIN
 from ui_messages.messages.custom_error_titles import PHONE_VERIFICATION_INVALID_FORMAT_TITLE, \
     LOG_IN_EMPTY_AUTHORIZATION_DATA_TITLE, LOG_IN_USER_NOT_FOUND_TITLE, LOG_IN_INCORRECT_PIN_TITLE
-from ui_messages.messages.sms import SIGN_UP_WELCOME_SMS
+from ui_messages.messages.sms import SIGN_UP_WELCOME_SMS, REQUEST_NEW_PIN_SMS
 from utility.facebook_api import get_facebook_user, get_facebook_photo
 from utility.format_verification import phone_verification, sms_limit_check, phone_reformat
 from utility.send_email import email_confirmation_sending
@@ -48,6 +48,8 @@ class UserLoginHandler(ApiHandler):
 
         # for phone number authorization
         if phone:
+            # we must to know is this new user to choose sms which will be sent to him
+            new_user = False
             # first of all delete + symbol
             phone = str(phone)
             phone = phone.replace('+', '')
@@ -67,7 +69,9 @@ class UserLoginHandler(ApiHandler):
                 user.system_status = SystemStatus.Active
                 user.user_type = UserType.Standard
                 user.sent_pins_count = 0
+                user.last_activity = datetime.datetime.utcnow()
                 self.session.flush(user)
+                new_user = True
             # else:
             #     user.first_login = False
             #     self.session.commit()
@@ -84,7 +88,10 @@ class UserLoginHandler(ApiHandler):
 
             # generate pin code
             confirm_code = ''.join(choice(string.digits) for _ in xrange(4))
-            message_body = SIGN_UP_WELCOME_SMS % confirm_code
+            if new_user:
+                message_body = SIGN_UP_WELCOME_SMS % confirm_code
+            else:
+                message_body = REQUEST_NEW_PIN_SMS % confirm_code
 
             # and send it to user
             error = send_sms(phone, message_body)
@@ -117,6 +124,7 @@ class UserLoginHandler(ApiHandler):
                 user.first_login = True
                 user.system_status = SystemStatus.Active
                 user.user_type = UserType.Standard
+                user.last_activity = datetime.datetime.utcnow()
                 self.session.add(user)
                 self.session.commit()
 

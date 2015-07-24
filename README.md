@@ -343,12 +343,12 @@ Data:
 
     {
         "tags": [
-            
-            .
-            .{
+            {
                 "type": VALID_TAG_TYPE,         - int      
                 "id": int
             }, 
+            .
+            .
             .
             {
                 "type": VALID_TAG_TYPE, 

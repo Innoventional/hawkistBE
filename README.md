@@ -392,7 +392,19 @@ Response Success:
     
     {
         'status': 0,
-        'user': USER_INFO_DICT
+        'tags': [
+            {
+                "parent_id": null,
+                "id": ID,
+                "name": TITLE OF PLATFORM
+            },
+            .
+            .
+            .
+            {
+                ...
+            }
+        ]
     }
     
 

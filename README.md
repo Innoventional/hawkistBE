@@ -848,6 +848,50 @@ Response Failure:
         'status': 1 / 6,
         'message': '',          — Error message text
         'title': ''          — Error message title 
+    }    
+
+
+
+**Update item**
+
+    Url: 'listings'
+    Method: 'PUT'
+
+
+Data:
+
+    {
+        "listing_id": int,
+        "title": string,
+        "description": string,
+        "platform": int,            -- id, platform ex: XBOX
+        "category": int,            -- id, category ex: Games
+        "subcategory": int,         -- id, subcategory ex: Shooter
+        "condition": int,
+        "color": int,
+        "retail_price": float,
+        "selling_price": float,
+        "shipping_price": float,
+        "collection_only": int,
+        "barcode": "http://amazon.link_to_barcode_photo",         - not required -
+        "photos": ["http://amazon.link_to_photo"],
+        "post_code": "NR1",
+        "city": "Norwich"
+    }
+
+Response Success:
+    
+    {
+        'status': 0,
+        'item': ITEM_INFO_DICT
+    }
+    
+Response Failure:
+
+    {
+        'status': 1 / 6,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
     }
 
 

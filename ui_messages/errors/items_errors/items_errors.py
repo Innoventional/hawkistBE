@@ -33,6 +33,12 @@ CREATE_LISTING_TOO_MANY_PHOTOS = 'You can add only 4 photos'
 DELETE_LISTING_NO_ID = 'No listing to delete id'
 DELETE_LISTING_ANOTHER_USER = 'Sorry, but you cannot delete this item because you are not owner of it'
 
+# update listing
+UPDATE_LISTING_UNDEFINED_LISTING_ID = 'No listing to update id'
+UPDATE_LISTING_LISTING_SOLD = 'You cannot update sold listing'
+UPDATE_LISTING_EMPTY_FIELDS = 'You must select a %s in order to update a listing.'
+UPDATE_LISTING_SELLING_PRICE_MUST_BE_LESS_THAN_RETAIL = u'Selling price must be less than £%s'
+
 # Listing likes
 LIKE_LISTING_NO_ID = 'No listing to like id'
 LIKE_YOUR_OWN_LISTING = 'You cannot add your own listings to wishlist'

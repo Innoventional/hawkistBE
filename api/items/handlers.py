@@ -830,7 +830,7 @@ class ListingHandler(ApiHandler):
         if empty_field_error:
             empty_fields = ', '.join(empty_field_error)
             return self.make_error(message=CREATE_LISTING_EMPTY_FIELDS % empty_fields, status=6,
-                                   title=CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields)
+                                   title=CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields.capitalize())
 
         # first check all tags
         # check platforms
@@ -1130,7 +1130,7 @@ class ListingHandler(ApiHandler):
         if empty_field_error:
             empty_fields = ', '.join(empty_field_error)
             return self.make_error(message=UPDATE_LISTING_EMPTY_FIELDS % empty_fields, status=6,
-                                   title=CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields)
+                                   title=CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields.capitalize())
 
         if len(photos) > 4:
             return self.make_error(CREATE_LISTING_TOO_MANY_PHOTOS)

@@ -931,6 +931,9 @@ class ListingHandler(ApiHandler):
         listing.selling_price = selling_price
 
         if selling_price != retail_price:
+            if str(selling_price) == '0.0':
+                listing.discount = 100
+            else:
                 listing.discount = calculate_discount_value(retail_price, selling_price)
 
         listing.shipping_price = shipping_price

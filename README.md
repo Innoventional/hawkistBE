@@ -861,7 +861,7 @@ Response Failure:
 Data:
 
     {
-        "listing_id": int,
+        "id": int,
         "title": string,
         "description": string,
         "platform": int,            -- id, platform ex: XBOX

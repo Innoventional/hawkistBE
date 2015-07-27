@@ -1032,8 +1032,8 @@ class ListingHandler(ApiHandler):
         empty_field_error = []
 
         if self.request_object:
-            if 'listing_id' in self.request_object:
-                listing_id = self.request_object['listing_id']
+            if 'id' in self.request_object:
+                listing_id = self.request_object['id']
 
             if 'title' in self.request_object:
                 title = self.request_object['title']

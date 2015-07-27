@@ -58,7 +58,7 @@ class UserHandler(ApiHandler):
 
             # check has current user access to getting user profile
             if self.user in user.blocked:
-                return self.make_error(GET_BLOCKED_USER % user.username.upper())
+                return self.make_error(GET_BLOCKED_USER % user.username.encode('utf-8').upper())
 
             # else we must show following details
             user_response = user.user_response
@@ -198,7 +198,7 @@ class UserEmailVerificationHandler(OpenApiHandler):
         self.session.commit()
 
         # send message about success
-        text = CONFIRM_SUCCESS_EMAIL_LETTER_TEXT % user.username
+        text = CONFIRM_SUCCESS_EMAIL_LETTER_TEXT % user.username.encode('utf-8')
         subject = CONFIRM_SUCCESS_EMAIL_LETTER_SUBJECT
         send_email(text, subject=subject, recipient=user.email)
         return self.render_string('ui/welcome.html', menu_tab_active='')

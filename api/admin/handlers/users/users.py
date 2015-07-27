@@ -139,7 +139,7 @@ class AdminUsersHandler(AdminBaseHandler):
             need_commit = True
 
             # send email about suspension
-            text = ADMIN_ACCOUNT_SUSPENDED_TEXT % user.username
+            text = ADMIN_ACCOUNT_SUSPENDED_TEXT % user.username.encode('utf-8')
             subject = ADMIN_ACCOUNT_SUSPENDED_SUBJECT
             send_email(text, subject=subject, recipient=user.email)
 
@@ -148,7 +148,7 @@ class AdminUsersHandler(AdminBaseHandler):
             need_commit = True
 
             # send email about activation
-            text = ADMIN_ACCOUNT_ACTIVATED_TEXT % user.username
+            text = ADMIN_ACCOUNT_ACTIVATED_TEXT % user.username.encode('utf-8')
             subject = ADMIN_ACCOUNT_ACTIVATED_SUBJECT
             send_email(text, subject=subject, recipient=user.email)
 
@@ -185,7 +185,7 @@ class AdminUsersHandler(AdminBaseHandler):
 
                 # send message to old email address
                 if user.email:
-                    text = ADMIN_EMAIL_CHANGED_LETTER_TEXT % user.username
+                    text = ADMIN_EMAIL_CHANGED_LETTER_TEXT % user.username.encode('utf-8')
                     subject = ADMIN_EMAIL_CHANGED_LETTER_SUBJECT
                     send_email(text, subject=subject, recipient=user.email)
 

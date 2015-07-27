@@ -44,7 +44,8 @@ def send_email(text=None, subject=None, recipient=None, filename=None, recipient
 
     recipients = recipients if recipients else [recipient, ]
     print server.sendmail(env['mail']['from'], recipients, msg.as_string())
-    logger.debug('Message to %s send successfully(%s)' % (recipient, text.encode('utf-8')))
+    logger.debug('Message to %s send successfully' % recipient)
+    logger.debug(text.encode('utf-8'))
     server.quit()
 
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import json
 import logging
 import urllib2
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_city_by_code(post_code):
-    post_code = post_code.replace(' ', '')
+    post_code = post_code.replace(' ', '').encode('utf-8')
     error = ''
     city = ''
     opener = urllib2.build_opener()
@@ -106,6 +107,6 @@ def get_city_by_key(address_components, key):
     return result
 
 if __name__ == '__main__':
-    print get_city_by_code('61606')
+    print get_city_by_code(u'фыф')
     # print get_city_by_code('0NR100')
     # print get_city_by_code('BFPO')

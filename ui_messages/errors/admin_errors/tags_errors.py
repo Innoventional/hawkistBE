@@ -3,6 +3,7 @@ __author__ = 'ne_luboff'
 # in case if title of new platform/category/etc. is empty
 # parameter - new tag type
 ADMIN_TAG_EMPTY_TITLE = 'You must input new %s title'
+ADMIN_TAG_EMPTY_PLATFORM_DATA = 'You must input new platform title, description and select an image'
 
 # if admin user doesn't select parent tag
 # parameter - parent tag type

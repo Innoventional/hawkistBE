@@ -7,7 +7,8 @@ from api.tags.models import Platform
 from base import HttpRedirect
 from helpers import route
 from ui_messages.errors.admin_errors.tags_errors import ADMIN_TAG_EMPTY_TITLE, ADMIN_PLATFORM_ALREADY_EXISTS, \
-    ADMIN_TAG_DOES_NOT_EXIST, ADMIN_TRY_DELETE_PLATFORM_WHICH_IS_USED
+    ADMIN_TAG_DOES_NOT_EXIST, ADMIN_TRY_DELETE_PLATFORM_WHICH_IS_USED, ADMIN_TAG_EMPTY_PLATFORM_DATA
+from utility.amazon import upload_file
 
 __author__ = 'ne_luboff'
 
@@ -35,10 +36,48 @@ class AdminPlatformHandler(AdminBaseHandler):
 
         logger.debug(self.user)
 
+        platform_id = self.get_argument('editing_platform_id')
+        platform_image = self.get_argument('editing_platform_image_url')
         new_platform_title = self.get_argument('new_platform_title')
+        new_platform_description = self.get_argument('new_platform_description')
 
-        if not new_platform_title:
-            return self.make_error(ADMIN_TAG_EMPTY_TITLE % 'platform')
+        if not new_platform_title or not new_platform_description or (not self.request.files and not platform_image):
+            return self.make_error(ADMIN_TAG_EMPTY_PLATFORM_DATA)
+
+        # so, if we have platform id - it is update request
+        if platform_id:
+            platform = self.session.query(Platform).filter(Platform.id == platform_id).first()
+
+            if not platform:
+                return self.make_error(ADMIN_TAG_DOES_NOT_EXIST % ('platform', platform_id))
+
+            print platform
+
+            already_exists = self.session.query(Platform).filter(and_(func.lower(Platform.title) == new_platform_title.lower(),
+                                                                      Platform.id != platform.id)).first()
+
+            if already_exists:
+                return self.make_error(ADMIN_PLATFORM_ALREADY_EXISTS % new_platform_title.upper())
+
+            need_commit = False
+            if platform.title != new_platform_title:
+                platform.title = new_platform_title
+                need_commit = True
+
+            if platform.description != new_platform_description:
+                platform.description = new_platform_description
+                need_commit = True
+
+            if self.request.files:
+                img = self.request.files.values()[0][0]['body']
+                image_url = upload_file('platform-%s' % platform.id, img, content_type='image/jpeg')
+                platform.image_url = image_url
+                need_commit = True
+
+            if need_commit:
+                platform.updated_at = datetime.datetime.utcnow()
+                self.session.commit()
+            return self.success()
 
         already_exists = self.session.query(Platform).filter(func.lower(Platform.title) == new_platform_title.lower()).first()
 
@@ -49,7 +88,14 @@ class AdminPlatformHandler(AdminBaseHandler):
         new_platform.created_at = datetime.datetime.utcnow()
         new_platform.updated_at = datetime.datetime.utcnow()
         new_platform.title = new_platform_title
+        new_platform.description = new_platform_description
         self.session.add(new_platform)
+
+        # add platform image
+        img = self.request.files.values()[0][0]['body']
+        image_url = upload_file('platform-%s' % new_platform.id, img, content_type='image/jpeg')
+        new_platform.image_url = image_url
+
         self.session.commit()
         return self.success()
 

@@ -2,6 +2,10 @@
 
 {% block title %}Metatags{% end %}
 
+{% block js %}
+    <script src="{{ static_url('js/make_thumbnail.js') }}"></script>
+{% end %}
+
 {% block content %}
     <div class="tag_navigation_div">
         <a href="../metatags">Metatags</a>
@@ -19,15 +23,25 @@
         <table class="table table-hover">
             <thead>
                 <th>ID</th>
+                <th>Image</th>
                 <th>Title</th>
+                <th>Description</th>
                 <th>Action</th>
             </thead>
             <tbody>
                 {% for p in platforms %}
                     <tr data-id="{{ p.id }}"
-                        data-title="{{ p.title }}">
+                        data-title="{{ p.title }}"
+                        data-description="{{ p.description or '' }}"
+                        data-image_url="{{ p.image_url or '' }}">
                         <td>{{ p.id }}</td>
+                        <td align="center" id="thumbnailList1">
+                            {% if p.image_url %}
+                                <a href="{{ p.image_url }}" target="_blank"><img src="{{ p.image_url }}"></a>
+                            {% end %}
+                        </td>
                         <td>{{ p.title }}</td>
+                        <td>{{ p.description or '' }}</td>
                         <td>
                             <a class="btn btn_edit_platform silver-color" href="#" data-toggle="modal"
                                data-target="#edit_platform_modal"
@@ -54,15 +68,28 @@
                     <span class="sr-only">Close</span></button>
                     <h4 class="modal-title" id="add_new_tag_modalLabel"> Add platform </h4>
                 </div>
-                <div class="modal-body">
+                <form autocomplete="off" enctype="multipart/form-data" action="/api/admin/metatags/platforms"
+                      id="add_platform_form" method="post">
+                    <div class="modal-body">
                     <span class="label label-default">New Platform Title</span>
-                    <input type="text" class="form-control" id="new_platform_title" placeholder="Input platform title">
+                    <input type="text" class="form-control" name="new_platform_title" placeholder="Input platform title">
                     <div>&nbsp</div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default btn_reload" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary btn_add_platform">Save</button>
-                </div>
+
+                    <span class="label label-default">New Platform Title</span>
+                    <input type="text" class="form-control" name="new_platform_description"
+                           placeholder="Input platform description">
+                    <div>&nbsp</div>
+
+                    <span class="label label-default">New Platform Image</span>
+                    <td><input type="file" name="image" /></td>
+                    <div>&nbsp</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default btn_reload" data-dismiss="modal">Close</button>
+                        <!--<button type="button" class="btn btn-primary btn_add_platform">Save</button>-->
+                        <input type="submit" class="btn btn-primary save-button" value="Save" />
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -77,17 +104,52 @@
                     <span class="sr-only">Close</span></button>
                     <h4 class="modal-title" id="edit_tag_modalLabel"> Edit platform </h4>
                 </div>
-                <div class="modal-body">
-                    <input type="text" class="form-control display-none" id="editing_platform_id" disabled>
+                <form autocomplete="off" enctype="multipart/form-data" action="/api/admin/metatags/platforms"
+                      id="edit_platform_form" method="post">
+                    <div class="modal-body">
+                    <input type="text" class="form-control display-none" id="editing_platform_id"
+                           name="editing_platform_id">
 
-                    <span class="label label-default">Platform title</span>
-                    <input type="text" class="form-control" id="editing_platform_title">
+                    <span class="label label-default">Platform Title</span>
+                    <input type="text" class="form-control" name="new_platform_title"
+                           placeholder="Input platform title"  id="editing_platform_title">
                     <div>&nbsp</div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default btn_reload" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary btn_save_edited_platform">Save</button>
-                </div>
+
+                    <span class="label label-default">Platform Title</span>
+                    <input type="text" class="form-control" name="new_platform_description"
+                           id="editing_platform_description"
+                           placeholder="Input platform description">
+                    <div>&nbsp</div>
+
+                    <span class="label label-default">Platform Image</span>
+                    <div>
+                        <input type="text" class="form-control display-none" id="editing_platform_image_url"
+                               name="editing_platform_image_url">
+                        <a href="" target="_blank" id="editing_platform_image_href">
+                            <img src="" id="editing_platform_image">
+                        </a>
+                    </div>
+
+                    <td><input type="file" name="image" /></td>
+                    <div>&nbsp</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default btn_reload" data-dismiss="modal">Close</button>
+                        <!--<button type="button" class="btn btn-primary btn_add_platform">Save</button>-->
+                        <input type="submit" class="btn btn-primary save-button" value="Save" />
+                    </div>
+                </form>
+                <!--<div class="modal-body">-->
+                    <!--<input type="text" class="form-control display-none" id="editing_platform_id" disabled>-->
+
+                    <!--<span class="label label-default">Platform title</span>-->
+                    <!--<input type="text" class="form-control" id="editing_platform_title">-->
+                    <!--<div>&nbsp</div>-->
+                <!--</div>-->
+                <!--<div class="modal-footer">-->
+                    <!--<button type="button" class="btn btn-default btn_reload" data-dismiss="modal">Close</button>-->
+                    <!--<button type="button" class="btn btn-primary btn_save_edited_platform">Save</button>-->
+                <!--</div>-->
             </div>
         </div>
     </div>

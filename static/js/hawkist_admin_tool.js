@@ -364,8 +364,19 @@ $('.btn_add_platform').click(function(){
 $('.btn_edit_platform').click(function(){
     platform_id = $(this).parent().parent().data('id');
     platform_title = $(this).parent().parent().data('title');
+    platform_description = $(this).parent().parent().data('description');
+    platform_image = $(this).parent().parent().data('image_url');
     $('#editing_platform_id').val(platform_id);
     $('#editing_platform_title').val(platform_title);
+    if (platform_description) {
+        $('#editing_platform_description').val(platform_description);
+    }
+
+    if (platform_image) {
+        $('#editing_platform_image_href').attr('href', platform_image);
+        $('#editing_platform_image').attr('src', platform_image);
+        $('#editing_platform_image_url').val(platform_image);
+    }
 });
 
 $('.btn_save_edited_platform').click(function(){

@@ -141,3 +141,9 @@
     left: 45%;
     top: 40%;
 }
+
+#editing_platform_image {
+    max-width:89px;
+    max-height:89px;
+    border-radius: 5px;
+}

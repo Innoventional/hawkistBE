@@ -3,14 +3,7 @@
 {% block title %}Users List{% end %}
 
 {% block js %}
-    <script type="text/javascript">
-        $("#thumbnailList1 a img").MyThumbnail({
-            thumbWidth:64,
-            thumbHeight:64,
-            backgroundColor:"#ccc",
-            imageDivClass:"myPic"
-        });
-    </script>
+    <script src="{{ static_url('js/make_thumbnail.js') }}"></script>
 {% end %}
 
 {% block content %}

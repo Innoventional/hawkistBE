@@ -49,12 +49,16 @@ class Platform(Base):
     updated_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
 
     title = Column(String, nullable=False, default='')
+    description = Column(String, nullable=False, default='')
+    image_url = Column(String, nullable=False, default='')
 
     @property
     def response(self):
         return {
             'id': self.id,
             'name': self.title,
+            'description': self.description,
+            'image_url': self.image_url,
             'parent_id': None
         }
 

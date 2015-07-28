@@ -180,6 +180,10 @@ class UserHandler(ApiHandler):
             self.user.updated_at = datetime.datetime.utcnow()
             self.session.commit()
 
+        if self.user.email and self.user.username:
+            self.user.first_login = False
+            self.session.commit()
+
         return self.success({'user': self.user.user_response})
 
 

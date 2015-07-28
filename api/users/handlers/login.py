@@ -72,9 +72,6 @@ class UserLoginHandler(ApiHandler):
                 user.last_activity = datetime.datetime.utcnow()
                 self.session.flush(user)
                 new_user = True
-            # else:
-            #     user.first_login = False
-            #     self.session.commit()
 
             # check user status
             suspension_error = check_user_suspension_status(user)
@@ -152,10 +149,10 @@ class UserLoginHandler(ApiHandler):
                     # replaced all whitespaces with underscore symbol
                     user.username = facebook_name.replace(" ", "_")
                 self.session.commit()
-            else:
-                if user.email and user.username:
-                    user.first_login = False
-                self.session.commit()
+            # else:
+                # if user.email and user.username:
+                #     user.first_login = False
+                # self.session.commit()
 
             # check user status
             suspension_error = check_user_suspension_status(user)
@@ -245,9 +242,8 @@ class UserLoginHandler(ApiHandler):
         if user.pin != pin:
             return self.make_error(message=LOG_IN_INCORRECT_PIN % pin, status=4, title=LOG_IN_INCORRECT_PIN_TITLE)
 
-        if user.username and user.email:
-            user.first_login = False
-
+        # if user.username and user.email:
+        #     user.first_login = False
         self.user = user
         self.session.commit()
         return self.success({'user': self.user.user_response})

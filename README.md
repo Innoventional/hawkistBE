@@ -855,7 +855,7 @@ Response Failure:
 **Update item**
 
     Url: 'listings'
-    Method: 'PUT'
+    Method: 'POST'
 
 
 Data:

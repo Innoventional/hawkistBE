@@ -467,7 +467,7 @@ class PostCodeHandler(ApiHandler):
 # TODO for listing edition
 @route('listings')
 class ListingHandler(ApiHandler):
-    allowed_methods = ('GET', 'POST', 'DELETE', 'PUT')
+    allowed_methods = ('GET', 'POST', 'DELETE', )
 
     def read(self):
 
@@ -714,9 +714,7 @@ class ListingHandler(ApiHandler):
             return self.make_error(message=CREATE_LISTING_USER_DONT_CONFIRM_EMAIL,
                                    title=CREATE_LISTING_USER_DONT_CONFIRM_EMAIL_TITLE)
 
-        logger.debug('REQUEST_OBJECT_NEW_ITEM')
-        logger.debug(self.request_object)
-
+        listing_id = ''
         title = ''
         description = ''
         platform_id = ''
@@ -736,8 +734,11 @@ class ListingHandler(ApiHandler):
         empty_field_error = []
 
         if self.request_object:
+            if 'id' in self.request_object:
+                listing_id = self.request_object['id']
+
             if 'title' in self.request_object:
-                title = self.request_object['title']
+                    title = self.request_object['title']
 
             if 'description' in self.request_object:
                 description = self.request_object['description']
@@ -781,187 +782,411 @@ class ListingHandler(ApiHandler):
             if 'city' in self.request_object:
                 city = self.request_object['city']
 
-        if not title:
-            empty_field_error.append('title')
+        # first check is this update or create request
+        # so, if listing id in request objects go to update
+        if listing_id:
+            logger.debug('REQUEST_OBJECT_UPDATE_ITEM')
+            logger.debug(self.request_object)
 
-        if not description:
-            empty_field_error.append('description')
+            # try get this listing
+            listing_to_update = self.session.query(Listing).filter(Listing.id == listing_id).first()
 
-        if not platform_id:
-            empty_field_error.append('platform')
+            if not listing_to_update:
+                return self.make_error(GET_LISTING_INVALID_ID % listing_id)
 
-        if not category_id:
-            empty_field_error.append('category')
+            # check is this listing available to sell
+            if listing_to_update.sold:
+                return self.make_error(UPDATE_LISTING_LISTING_SOLD)
 
-        if not subcategory_id:
-            empty_field_error.append('subcategory')
+            if not title:
+                empty_field_error.append('title')
 
-        if not condition_id:
-            empty_field_error.append('condition')
+            if not description:
+                empty_field_error.append('description')
 
-        if not color_id:
-            empty_field_error.append('colour')
+            if not platform_id:
+                empty_field_error.append('platform')
 
-        if not retail_price:
-            empty_field_error.append('retail price')
+            if not category_id:
+                empty_field_error.append('category')
 
-        if not selling_price:
-            empty_field_error.append('selling price')
+            if not subcategory_id:
+                empty_field_error.append('subcategory')
 
-        if not shipping_price and not collection_only:
-            empty_field_error.append('shipping price or collection only')
+            if not condition_id:
+                empty_field_error.append('condition')
 
-        if not photos:
-            empty_field_error.append('photos')
+            if not color_id:
+                empty_field_error.append('colour')
 
-        for photo in photos:
-            if not photo:
-                empty_field_error.append('photos')
-                break
+            if not selling_price:
+                empty_field_error.append('selling price')
 
-        if not post_code:
-            empty_field_error.append('post code')
+            if not shipping_price and not collection_only:
+                empty_field_error.append('shipping price or collection only')
 
-        if not city:
-            logger.debug('NO CITY')
-            if 'post code' not in empty_field_error:
+            if not post_code:
                 empty_field_error.append('post code')
 
-        if empty_field_error:
-            empty_fields = ', '.join(empty_field_error)
-            return self.make_error(message=CREATE_LISTING_EMPTY_FIELDS % empty_fields, status=6,
-                                   title=CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields.capitalize())
+            if not city:
+                logger.debug('NO CITY')
+                if 'post code' not in empty_field_error:
+                    empty_field_error.append('post code')
 
-        # first check all tags
-        # check platforms
-        platform = self.session.query(Platform).filter(Platform.id == platform_id).first()
-        if not platform:
-            return self.make_error(INVALID_PLATFORM_ID % platform_id)
+            if not photos:
+                empty_field_error.append('photos')
 
-        # check category
-        category = self.session.query(Category).filter(Category.id == category_id).first()
-        if not category:
-            return self.make_error(INVALID_CATEGORY_ID % category_id)
+            for photo in photos:
+                if not photo:
+                    empty_field_error.append('photos')
+                    break
 
-        # check subcategory
-        subcategory = self.session.query(Subcategory).filter(Subcategory.id == subcategory_id).first()
-        if not subcategory:
-            return self.make_error(INVALID_SUBCATEGORY_ID % category_id)
+            if empty_field_error:
+                empty_fields = ', '.join(empty_field_error)
+                return self.make_error(message=UPDATE_LISTING_EMPTY_FIELDS % empty_fields, status=6,
+                                       title=CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields.capitalize())
 
-        # check color
-        colour = self.session.query(Color).filter(Color.id == color_id).first()
-        if not colour:
-            return self.make_error(INVALID_COLOUR_ID % color_id)
+            if len(photos) > 4:
+                return self.make_error(CREATE_LISTING_TOO_MANY_PHOTOS)
 
-        # check condition
-        condition = self.session.query(Condition).filter(Condition.id == condition_id).first()
-        if not condition:
-            return self.make_error(INVALID_CONDITION_ID % condition_id)
+            # finally update listing
+            need_commit = False
 
-        # check is this nesting right
-        platform_categories = [c.id for c in platform.category_platform]
-        if category_id not in platform_categories:
-            return self.make_error(WRONG_PLATFORM_CATEGORY_RELATION % (platform.title.upper(), category.title.upper(),
-                                                                       category.platform.title.upper()))
+            if listing_to_update.title != title:
+                listing_to_update.title = title
+                need_commit = True
 
-        category_subcategories = [c.id for c in category.subcategory_category]
-        if subcategory_id not in category_subcategories:
-            return self.make_error(WRONG_CATEGORY_SUBCATEGORY_RELATION % (category.title.upper(),
-                                                                          category.platform.title.upper(),
-                                                                          subcategory.title.upper(),
-                                                                          subcategory.category.platform.title.upper(),
-                                                                          subcategory.category.title.upper()))
+            if listing_to_update.description != description:
+                listing_to_update.description = description
+                need_commit = True
 
-        subcategory_color = [c.id for c in subcategory.color_subcategory]
-        if color_id not in subcategory_color:
-            return self.make_error(WRONG_SUBCATEGORY_COLOUR_RELATION % (subcategory.title.upper(),
-                                                                        subcategory.category.platform.title.upper(),
-                                                                        subcategory.category.title.upper(),
-                                                                        colour.title.upper(),
-                                                                        colour.subcategory.category.platform.title.upper(),
-                                                                        colour.subcategory.category.title.upper(),
-                                                                        colour.subcategory.title.upper()))
+            platform = listing_to_update.platform
+            category = listing_to_update.category
+            subcategory = listing_to_update.subcategory
 
-        subcategory_condition = [c.id for c in subcategory.condition_subcategory]
-        if condition_id not in subcategory_condition:
-            return self.make_error(WRONG_SUBCATEGORY_CONDITION_RELATION % (subcategory.title.upper(),
-                                                                           subcategory.category.platform.title.upper(),
-                                                                           subcategory.category.title.upper(),
-                                                                           condition.title.upper(),
-                                                                           condition.subcategory.category.platform.title.upper(),
-                                                                           condition.subcategory.category.title.upper(),
-                                                                           condition.subcategory.title.upper()))
+            if str(listing_to_update.platform_id) != str(platform_id):
+                # check platforms
+                platform = self.session.query(Platform).filter(Platform.id == platform_id).first()
+                if not platform:
+                    return self.make_error(INVALID_PLATFORM_ID % platform_id)
+                listing_to_update.platform_id = platform_id
+                need_commit = True
 
-        # secondary check other fields
-        # price handler
-        retail_price = float(retail_price)
-        selling_price = float(selling_price)
-        if shipping_price:
-            shipping_price = float(shipping_price)
-        else:
-            shipping_price = 0
+            if str(listing_to_update.category_id) != str(category_id):
+                # check category
+                category = self.session.query(Category).filter(Category.id == category_id).first()
+                if not category:
+                    return self.make_error(INVALID_CATEGORY_ID % category_id)
 
-        if retail_price < 1:
-            return self.make_error(CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1)
+                # check is this category in platform
+                platform_categories = [c.id for c in platform.category_platform]
+                if category_id not in platform_categories:
+                    return self.make_error(WRONG_PLATFORM_CATEGORY_RELATION % (platform.title.upper(),
+                                                                               category.title.upper(),
+                                                                               category.platform.title.upper()))
+                listing_to_update.category_id = category_id
+                need_commit = True
 
-        if selling_price > retail_price or selling_price == retail_price:
-                return self.make_error(CREATE_LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE)
+            if str(listing_to_update.subcategory_id) != str(subcategory_id):
+                # check subcategory
+                subcategory = self.session.query(Subcategory).filter(Subcategory.id == subcategory_id).first()
+                if not subcategory:
+                    return self.make_error(INVALID_SUBCATEGORY_ID % category_id)
 
-        if len(photos) > 4:
-            return self.make_error(CREATE_LISTING_TOO_MANY_PHOTOS)
+                category_subcategories = [c.id for c in category.subcategory_category]
+                if subcategory_id not in category_subcategories:
+                    return self.make_error(WRONG_CATEGORY_SUBCATEGORY_RELATION % (category.title.upper(),
+                                                                                  category.platform.title.upper(),
+                                                                                  subcategory.title.upper(),
+                                                                                  subcategory.category.platform.title.upper(),
+                                                                                  subcategory.category.title.upper()))
+                listing_to_update.subcategory_id = subcategory_id
+                need_commit = True
 
-        # finally create listing
-        listing = Listing()
-        listing.user = self.user
-        listing.created_at = datetime.datetime.utcnow()
-        listing.updated_at = datetime.datetime.utcnow()
-        listing.title = title
-        listing.description = description
-        listing.sold = False
+            if str(listing_to_update.color_id) != str(color_id):
+                # check color
+                colour = self.session.query(Color).filter(Color.id == color_id).first()
+                if not colour:
+                    return self.make_error(INVALID_COLOUR_ID % color_id)
+                subcategory_color = [c.id for c in subcategory.color_subcategory]
+                if color_id not in subcategory_color:
+                    return self.make_error(WRONG_SUBCATEGORY_COLOUR_RELATION % (subcategory.title.upper(),
+                                                                                subcategory.category.platform.title.upper(),
+                                                                                subcategory.category.title.upper(),
+                                                                                colour.title.upper(),
+                                                                                colour.subcategory.category.platform.title.upper(),
+                                                                                colour.subcategory.category.title.upper(),
+                                                                                colour.subcategory.title.upper()))
+                listing_to_update.color_id = color_id
+                need_commit = True
 
-        if barcode:
-            listing.barcode = barcode
+            if str(listing_to_update.condition_id) != str(condition_id):
+                # check condition
+                condition = self.session.query(Condition).filter(Condition.id == condition_id).first()
+                if not condition:
+                    return self.make_error(INVALID_CONDITION_ID % condition_id)
+                subcategory_condition = [c.id for c in subcategory.condition_subcategory]
+                if condition_id not in subcategory_condition:
+                    return self.make_error(WRONG_SUBCATEGORY_CONDITION_RELATION % (subcategory.title.upper(),
+                                                                                   subcategory.category.platform.title.upper(),
+                                                                                   subcategory.category.title.upper(),
+                                                                                   condition.title.upper(),
+                                                                                   condition.subcategory.category.platform.title.upper(),
+                                                                                   condition.subcategory.category.title.upper(),
+                                                                                   condition.subcategory.title.upper()))
+                listing_to_update.condition_id = condition_id
+                need_commit = True
 
-        listing.platform_id = platform_id
-        listing.category_id = category_id
-        listing.subcategory_id = subcategory_id
-        listing.condition_id = condition_id
-        listing.color_id = color_id
-        listing.retail_price = retail_price
-        listing.selling_price = selling_price
-
-        if selling_price != retail_price:
-            if str(selling_price) == '0.0':
-                listing.discount = 100
+            selling_price = float(selling_price)
+            if shipping_price:
+                shipping_price = float(shipping_price)
             else:
-                listing.discount = calculate_discount_value(retail_price, selling_price)
+                shipping_price = 0
 
-        listing.shipping_price = shipping_price
-        if collection_only:
-            listing.collection_only = True
+            if float(listing_to_update.selling_price) != float(selling_price):
+                if float(selling_price) > float(listing_to_update.retail_price) \
+                        or float(selling_price) == float(listing_to_update.retail_price):
+                    return self.make_error(UPDATE_LISTING_SELLING_PRICE_MUST_BE_LESS_THAN_RETAIL
+                                           % listing_to_update.retail_price)
+                listing_to_update.selling_price = selling_price
+                listing_to_update.discount = calculate_discount_value(float(listing_to_update.retail_price), selling_price)
+                need_commit = True
+
+            if listing_to_update.shipping_price != shipping_price:
+                listing_to_update.shipping_price = shipping_price
+                need_commit = True
+
+            if collection_only:
+                collection_only = True
+            else:
+                collection_only = False
+
+            if listing_to_update.collection_only != collection_only:
+                listing_to_update.collection_only = collection_only
+                need_commit = True
+
+            if listing_to_update.post_code != post_code:
+                listing_to_update.post_code = post_code
+                need_commit = True
+
+            if listing_to_update.city != city:
+                listing_to_update.city = city
+                self.user.city = city
+                need_commit = True
+
+            # photos
+            # first add all new photos to listing_photo table
+            for photo in photos:
+                # check is this photo new
+                listing_photo = self.session.query(ListingPhoto).filter(and_(ListingPhoto.listing_id == listing_to_update.id,
+                                                                             ListingPhoto.image_url == photo)).first()
+                if not listing_photo:
+                    listing_photo = ListingPhoto()
+                    listing_photo.created_at = datetime.datetime.utcnow()
+                    listing_photo.listing = listing_to_update
+                    listing_photo.image_url = photo
+                    self.session.add(listing_photo)
+                    self.session.commit()
+
+            # next get all listing photos and remove from it photos which are not in currently received
+            all_photos = listing_to_update.listing_photos
+            for ph in all_photos:
+                if ph.image_url not in photos:
+                    self.session.delete(ph)
+                    self.session.commit()
+
+            if need_commit:
+                listing_to_update.updated_at = datetime.datetime.utcnow()
+                self.session.commit()
+
+            return self.success({'item': listing_to_update.response})
+
+        # else it is create new listing request
         else:
-            listing.collection_only = False
+            logger.debug('REQUEST_OBJECT_NEW_ITEM')
+            logger.debug(self.request_object)
 
-        listing.post_code = post_code
-        listing.city = city
+            if not title:
+                empty_field_error.append('title')
 
-        # self.session.flush(item)
-        # self.session.commit()
+            if not description:
+                empty_field_error.append('description')
 
-        # photos
-        for photo in photos:
-            listing_photo = ListingPhoto()
-            listing_photo.created_at = datetime.datetime.utcnow()
-            listing_photo.listing = listing
-            listing_photo.image_url = photo
-            self.session.add(listing_photo)
+            if not platform_id:
+                empty_field_error.append('platform')
+
+            if not category_id:
+                empty_field_error.append('category')
+
+            if not subcategory_id:
+                empty_field_error.append('subcategory')
+
+            if not condition_id:
+                empty_field_error.append('condition')
+
+            if not color_id:
+                empty_field_error.append('colour')
+
+            if not retail_price:
+                empty_field_error.append('retail price')
+
+            if not selling_price:
+                empty_field_error.append('selling price')
+
+            if not shipping_price and not collection_only:
+                empty_field_error.append('shipping price or collection only')
+
+            if not photos:
+                empty_field_error.append('photos')
+
+            for photo in photos:
+                if not photo:
+                    empty_field_error.append('photos')
+                    break
+
+            if not post_code:
+                empty_field_error.append('post code')
+
+            if not city:
+                logger.debug('NO CITY')
+                if 'post code' not in empty_field_error:
+                    empty_field_error.append('post code')
+
+            if empty_field_error:
+                empty_fields = ', '.join(empty_field_error)
+                return self.make_error(message=CREATE_LISTING_EMPTY_FIELDS % empty_fields, status=6,
+                                       title=CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields.capitalize())
+
+            # first check all tags
+            # check platforms
+            platform = self.session.query(Platform).filter(Platform.id == platform_id).first()
+            if not platform:
+                return self.make_error(INVALID_PLATFORM_ID % platform_id)
+
+            # check category
+            category = self.session.query(Category).filter(Category.id == category_id).first()
+            if not category:
+                return self.make_error(INVALID_CATEGORY_ID % category_id)
+
+            # check subcategory
+            subcategory = self.session.query(Subcategory).filter(Subcategory.id == subcategory_id).first()
+            if not subcategory:
+                return self.make_error(INVALID_SUBCATEGORY_ID % category_id)
+
+            # check color
+            colour = self.session.query(Color).filter(Color.id == color_id).first()
+            if not colour:
+                return self.make_error(INVALID_COLOUR_ID % color_id)
+
+            # check condition
+            condition = self.session.query(Condition).filter(Condition.id == condition_id).first()
+            if not condition:
+                return self.make_error(INVALID_CONDITION_ID % condition_id)
+
+            # check is this nesting right
+            platform_categories = [c.id for c in platform.category_platform]
+            if category_id not in platform_categories:
+                return self.make_error(WRONG_PLATFORM_CATEGORY_RELATION % (platform.title.upper(), category.title.upper(),
+                                                                           category.platform.title.upper()))
+
+            category_subcategories = [c.id for c in category.subcategory_category]
+            if subcategory_id not in category_subcategories:
+                return self.make_error(WRONG_CATEGORY_SUBCATEGORY_RELATION % (category.title.upper(),
+                                                                              category.platform.title.upper(),
+                                                                              subcategory.title.upper(),
+                                                                              subcategory.category.platform.title.upper(),
+                                                                              subcategory.category.title.upper()))
+
+            subcategory_color = [c.id for c in subcategory.color_subcategory]
+            if color_id not in subcategory_color:
+                return self.make_error(WRONG_SUBCATEGORY_COLOUR_RELATION % (subcategory.title.upper(),
+                                                                            subcategory.category.platform.title.upper(),
+                                                                            subcategory.category.title.upper(),
+                                                                            colour.title.upper(),
+                                                                            colour.subcategory.category.platform.title.upper(),
+                                                                            colour.subcategory.category.title.upper(),
+                                                                            colour.subcategory.title.upper()))
+
+            subcategory_condition = [c.id for c in subcategory.condition_subcategory]
+            if condition_id not in subcategory_condition:
+                return self.make_error(WRONG_SUBCATEGORY_CONDITION_RELATION % (subcategory.title.upper(),
+                                                                               subcategory.category.platform.title.upper(),
+                                                                               subcategory.category.title.upper(),
+                                                                               condition.title.upper(),
+                                                                               condition.subcategory.category.platform.title.upper(),
+                                                                               condition.subcategory.category.title.upper(),
+                                                                               condition.subcategory.title.upper()))
+
+            # secondary check other fields
+            # price handler
+            retail_price = float(retail_price)
+            selling_price = float(selling_price)
+            if shipping_price:
+                shipping_price = float(shipping_price)
+            else:
+                shipping_price = 0
+
+            if retail_price < 1:
+                return self.make_error(CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1)
+
+            if selling_price > retail_price or selling_price == retail_price:
+                    return self.make_error(CREATE_LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE)
+
+            if len(photos) > 4:
+                return self.make_error(CREATE_LISTING_TOO_MANY_PHOTOS)
+
+            # finally create listing
+            listing = Listing()
+            listing.user = self.user
+            listing.created_at = datetime.datetime.utcnow()
+            listing.updated_at = datetime.datetime.utcnow()
+            listing.title = title
+            listing.description = description
+            listing.sold = False
+
+            if barcode:
+                listing.barcode = barcode
+
+            listing.platform_id = platform_id
+            listing.category_id = category_id
+            listing.subcategory_id = subcategory_id
+            listing.condition_id = condition_id
+            listing.color_id = color_id
+            listing.retail_price = retail_price
+            listing.selling_price = selling_price
+
+            if selling_price != retail_price:
+                if str(selling_price) == '0.0':
+                    listing.discount = 100
+                else:
+                    listing.discount = calculate_discount_value(retail_price, selling_price)
+
+            listing.shipping_price = shipping_price
+            if collection_only:
+                listing.collection_only = True
+            else:
+                listing.collection_only = False
+
+            listing.post_code = post_code
+            listing.city = city
+
+            # self.session.flush(item)
+            # self.session.commit()
+
+            # photos
+            for photo in photos:
+                listing_photo = ListingPhoto()
+                listing_photo.created_at = datetime.datetime.utcnow()
+                listing_photo.listing = listing
+                listing_photo.image_url = photo
+                self.session.add(listing_photo)
+                self.session.commit()
+
+            # update user location
+            self.user.city = city
+
             self.session.commit()
-
-        # update user location
-        self.user.city = city
-
-        self.session.commit()
-        return self.success({'item': listing.response})
+            return self.success({'item': listing.response})
 
     def remove(self):
         if not self.user:

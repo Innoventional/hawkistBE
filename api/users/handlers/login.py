@@ -153,7 +153,8 @@ class UserLoginHandler(ApiHandler):
                     user.username = facebook_name.replace(" ", "_")
                 self.session.commit()
             else:
-                user.first_login = False
+                if user.email and user.username:
+                    user.first_login = False
                 self.session.commit()
 
             # check user status

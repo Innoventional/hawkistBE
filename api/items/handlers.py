@@ -819,6 +819,9 @@ class ListingHandler(ApiHandler):
             if not color_id:
                 empty_field_error.append('colour')
 
+            if not retail_price:
+                empty_field_error.append('retail price')
+
             if not selling_price:
                 empty_field_error.append('selling price')
 
@@ -937,11 +940,16 @@ class ListingHandler(ApiHandler):
                 listing_to_update.condition_id = condition_id
                 need_commit = True
 
+            retail_price = float(retail_price)
             selling_price = float(selling_price)
             if shipping_price:
                 shipping_price = float(shipping_price)
             else:
                 shipping_price = 0
+
+            if float(listing_to_update.retail_price) != float(retail_price):
+                listing_to_update.retail_price = retail_price
+                need_commit = True
 
             if float(listing_to_update.selling_price) != float(selling_price):
                 if float(selling_price) > float(listing_to_update.retail_price) \

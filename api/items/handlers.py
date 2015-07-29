@@ -641,7 +641,7 @@ class ListingHandler(ApiHandler):
                                                                         right_usernames_item_ids))),
                                                     ~Listing.user_id.in_(block_me_user_id),
                                                     ~Listing.user_id.in_(suspended_users_id),
-                                                    Listing.sold == False)).order_by(desc(Listing.selling_price))
+                                                    Listing.sold == False)).order_by(Listing.selling_price)
 
             # if not search - return listing depending on user's tags
             else:

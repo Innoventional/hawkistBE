@@ -147,3 +147,7 @@
     max-height:89px;
     border-radius: 5px;
 }
+
+.unresized {
+    resize: none;
+}

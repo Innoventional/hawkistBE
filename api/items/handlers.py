@@ -25,7 +25,6 @@ from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS
 from ui_messages.messages.user_messages import TRY_TO_GET_SUSPENDED_USER_ITEMS
 from utility.google_api import get_city_by_code
 from utility.items import calculate_discount_value
-from utility.tags import interested_user_tag_ids, interested_user_item_ids
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
 __author__ = 'ne_luboff'
@@ -642,7 +641,7 @@ class ListingHandler(ApiHandler):
                                                                         right_usernames_item_ids))),
                                                     ~Listing.user_id.in_(block_me_user_id),
                                                     ~Listing.user_id.in_(suspended_users_id),
-                                                    Listing.sold == False)).order_by(desc(Listing.id))
+                                                    Listing.sold == False)).order_by(desc(Listing.selling_price))
 
             # if not search - return listing depending on user's tags
             else:

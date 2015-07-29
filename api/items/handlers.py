@@ -31,6 +31,9 @@ __author__ = 'ne_luboff'
 
 logger = logging.getLogger(__name__)
 
+# not shipping price
+NOT_SHIPPING = 'not_applicable'
+
 
 @route('items')
 class ItemsHandler(ApiHandler):
@@ -824,7 +827,7 @@ class ListingHandler(ApiHandler):
             if not selling_price:
                 empty_field_error.append('selling price')
 
-            if not shipping_price and not collection_only:
+            if (not shipping_price or shipping_price == NOT_SHIPPING) and not collection_only:
                 empty_field_error.append('shipping price or collection only')
 
             if not post_code:
@@ -955,11 +958,12 @@ class ListingHandler(ApiHandler):
                 listing_to_update.discount = calculate_discount_value(float(listing_to_update.retail_price), selling_price)
                 need_commit = True
 
-            if shipping_price:
-                shipping_price = float(shipping_price)
-                if listing_to_update.shipping_price != shipping_price:
-                    listing_to_update.shipping_price = shipping_price
-                    need_commit = True
+            if str(listing_to_update.shipping_price) != str(shipping_price):
+                if shipping_price == NOT_SHIPPING:
+                    listing_to_update.shipping_price = None
+                else:
+                    listing_to_update.shipping_price = float(shipping_price)
+                need_commit = True
 
             if collection_only:
                 collection_only = True
@@ -1038,7 +1042,7 @@ class ListingHandler(ApiHandler):
             if not selling_price:
                 empty_field_error.append('selling price')
 
-            if not shipping_price and not collection_only:
+            if (not shipping_price or shipping_price == NOT_SHIPPING) and not collection_only:
                 empty_field_error.append('shipping price or collection only')
 
             if not photos:
@@ -1162,7 +1166,7 @@ class ListingHandler(ApiHandler):
                 else:
                     listing.discount = calculate_discount_value(retail_price, selling_price)
 
-            if shipping_price:
+            if shipping_price != NOT_SHIPPING:
                 listing.shipping_price = float(shipping_price)
             if collection_only:
                 listing.collection_only = True

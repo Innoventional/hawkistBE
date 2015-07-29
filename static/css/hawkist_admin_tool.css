@@ -151,3 +151,8 @@
 .unresized {
     resize: none;
 }
+
+.platform-description {
+    max-width: 400px;
+    text-align: justify;
+}

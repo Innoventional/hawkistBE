@@ -188,7 +188,7 @@ class Listing(Base):
             'retail_price': float(self.retail_price),
             'selling_price': float(self.selling_price),
             'discount': self.discount,
-            'shipping_price': float(self.shipping_price),
+            'shipping_price': float(self.shipping_price) if self.shipping_price else None,
             'collection_only': self.collection_only,
             'post_code': self.post_code,
             'city': self.city,

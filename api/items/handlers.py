@@ -941,10 +941,6 @@ class ListingHandler(ApiHandler):
 
             retail_price = float(retail_price)
             selling_price = float(selling_price)
-            if shipping_price:
-                shipping_price = float(shipping_price)
-            else:
-                shipping_price = 0
 
             if float(listing_to_update.retail_price) != float(retail_price):
                 listing_to_update.retail_price = retail_price
@@ -959,9 +955,11 @@ class ListingHandler(ApiHandler):
                 listing_to_update.discount = calculate_discount_value(float(listing_to_update.retail_price), selling_price)
                 need_commit = True
 
-            if listing_to_update.shipping_price != shipping_price:
-                listing_to_update.shipping_price = shipping_price
-                need_commit = True
+            if shipping_price:
+                shipping_price = float(shipping_price)
+                if listing_to_update.shipping_price != shipping_price:
+                    listing_to_update.shipping_price = shipping_price
+                    need_commit = True
 
             if collection_only:
                 collection_only = True
@@ -1128,10 +1126,6 @@ class ListingHandler(ApiHandler):
             # price handler
             retail_price = float(retail_price)
             selling_price = float(selling_price)
-            if shipping_price:
-                shipping_price = float(shipping_price)
-            else:
-                shipping_price = 0
 
             if retail_price < 1:
                 return self.make_error(CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1)
@@ -1168,7 +1162,8 @@ class ListingHandler(ApiHandler):
                 else:
                     listing.discount = calculate_discount_value(retail_price, selling_price)
 
-            listing.shipping_price = shipping_price
+            if shipping_price:
+                listing.shipping_price = float(shipping_price)
             if collection_only:
                 listing.collection_only = True
             else:

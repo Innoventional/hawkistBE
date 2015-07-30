@@ -465,6 +465,33 @@ class PostCodeHandler(ApiHandler):
             # return self.make_error(error)
         return self.success({'city': data})
 
+@route('check_selling_ability')
+class CheckSellingAbilityHandler(ApiHandler):
+    allowed_methods = ('GET', )
+
+    def read(self):
+
+        if self.user is None:
+            die(401)
+
+        logger.debug(self.user)
+        update_user_last_activity(self)
+
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            logger.debug(suspension_error)
+            return suspension_error
+
+        # if not self.user.facebook_id:
+        #     return self.make_error(message=CREATE_LISTING_USER_HAVENT_FB,
+        #                            title=CREATE_LISTING_USER_HAVENT_FB_TITLE)
+
+        if not self.user.email_status:
+            return self.make_error(message=CREATE_LISTING_USER_DONT_CONFIRM_EMAIL,
+                                   title=CREATE_LISTING_USER_DONT_CONFIRM_EMAIL_TITLE)
+
+        return self.success()
+
 
 # TODO for listing edition
 @route('listings')
@@ -706,15 +733,6 @@ class ListingHandler(ApiHandler):
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
-
-        # check selling ability
-        # if not self.user.facebook_id:
-        #     return self.make_error(message=CREATE_LISTING_USER_HAVENT_FB,
-        #                            title=CREATE_LISTING_USER_HAVENT_FB_TITLE)
-
-        if not self.user.email_status:
-            return self.make_error(message=CREATE_LISTING_USER_DONT_CONFIRM_EMAIL,
-                                   title=CREATE_LISTING_USER_DONT_CONFIRM_EMAIL_TITLE)
 
         listing_id = ''
         title = ''

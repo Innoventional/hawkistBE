@@ -751,6 +751,8 @@ Response Failure:
         'title': ''          — Error message title 
     }
        
+       
+       
 **Get item by user id**
 
     Url: 'listings?user_id=USER_ID'
@@ -806,6 +808,29 @@ Response:
         ]
     }
     
+
+
+
+**Check user selling ability**
+
+    Url: 'check_selling_ability'
+    Method: 'GET'
+
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }    
+   
 
 
 

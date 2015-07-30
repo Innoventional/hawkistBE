@@ -176,8 +176,25 @@ class Listing(Base):
         except:
             return self.shipping_price
 
-    @property
-    def response(self):
+    def get_comment_count(self, user_id):
+        # so, we must go through every listing comment and check does current user can see it
+        # first get all comments
+        listing_comments = self.listing_comments
+        listing_comment_count = 0
+        if listing_comments:
+            for comment in listing_comments:
+                # check is this just comment of offer
+                if comment.offer:
+                    # check get current user access to this offer
+                    if str(comment.offer.user_id) == str(user_id) \
+                            or str(comment.offer.listing.user_id) == str(user_id):
+                        listing_comment_count += 1
+                else:
+                    listing_comment_count += 1
+        return listing_comment_count
+
+    # @property
+    def response(self, user_id):
         return {
             'id': self.id,
             'user_id': self.user_id,
@@ -202,7 +219,7 @@ class Listing(Base):
             'sold': self.sold,
             'likes': len(self.likes),
             'views': len(self.views),
-            'comments': self.listing_comments.count()
+            'comments': self.get_comment_count(user_id)
         }
 
 

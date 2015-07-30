@@ -529,12 +529,12 @@ class ListingHandler(ApiHandler):
             user_listings = self.session.query(Listing).filter(and_(Listing.user_id == listing.user_id,
                                                                     Listing.id != listing.id,
                                                                     Listing.sold == False)).limit(6)
-            current_listing_response = listing.response
+            current_listing_response = listing.response(self.user.id)
             current_listing_response['liked'] = self.user in listing.likes
             current_listing_response['user'] = listing.user.user_response
             response['item'] = current_listing_response
-            response['similar_items'] = [l.response for l in similar_listings]
-            response['user_items'] = [l.response for l in user_listings]
+            response['similar_items'] = [l.response(self.user.id) for l in similar_listings]
+            response['user_items'] = [l.response(self.user.id) for l in user_listings]
         # for get items by user
         elif user_id:
             # first try to get user by id
@@ -559,7 +559,7 @@ class ListingHandler(ApiHandler):
             if paginator['pages'] < page:
                 listings = []
             response['paginator'] = paginator
-            response['items'] = [l.response for l in listings]
+            response['items'] = [l.response(self.user.id) for l in listings]
         # else return all items
         else:
             # first check does we need search
@@ -689,7 +689,7 @@ class ListingHandler(ApiHandler):
             if paginator['pages'] < page:
                 listings = []
             response['paginator'] = paginator
-            response['items'] = [l.response for l in listings]
+            response['items'] = [l.response(self.user.id) for l in listings]
 
         return self.success(response)
 
@@ -1008,7 +1008,7 @@ class ListingHandler(ApiHandler):
                 listing_to_update.updated_at = datetime.datetime.utcnow()
                 self.session.commit()
 
-            return self.success({'item': listing_to_update.response})
+            return self.success({'item': listing_to_update.response(self.user.id)})
 
         # else it is create new listing request
         else:
@@ -1192,7 +1192,7 @@ class ListingHandler(ApiHandler):
             self.user.city = city
 
             self.session.commit()
-            return self.success({'item': listing.response})
+            return self.success({'item': listing.response(self.user.id)})
 
     def remove(self):
         if not self.user:
@@ -1609,4 +1609,4 @@ class UserWishListHandler(ApiHandler):
         else:
             wish_items = self.user.likes
 
-        return self.success({'items': [i.response for i in wish_items]})
+        return self.success({'items': [i.response(self.user.id) for i in wish_items]})

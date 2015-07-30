@@ -170,6 +170,12 @@ class Listing(Base):
     def __repr__(self):
         return '<Item %s (%s)>' % (self.id, self.title)
 
+    def get_shipping_price_value(self):
+        try:
+            return float(self.shipping_price)
+        except:
+            return self.shipping_price
+
     @property
     def response(self):
         return {
@@ -188,7 +194,7 @@ class Listing(Base):
             'retail_price': float(self.retail_price),
             'selling_price': float(self.selling_price),
             'discount': self.discount,
-            'shipping_price': float(self.shipping_price) if self.shipping_price else None,
+            'shipping_price': self.get_shipping_price_value(),
             'collection_only': self.collection_only,
             'post_code': self.post_code,
             'city': self.city,

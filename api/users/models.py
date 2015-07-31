@@ -61,7 +61,6 @@ class User(Base):
     thumbnail = Column(String, nullable=True, default='')
 
     # email must be verified for sales
-    # TODO first email status is False
     email_status = Column(Boolean, nullable=False, default=False)
     email_salt = Column(String, nullable=True, default='')
 
@@ -102,6 +101,10 @@ class User(Base):
     comment_mentions = relationship('Comment', secondary=comment_mentioned_users, backref='mentions',
                                     collection_class=list)
 
+    # stripe_customer_id = Column(Integer, ForeignKey('cards.id'), nullable=True)
+    # stripe_customer = relationship('StripeCustomer', backref=backref('stripe_customers', order_by=id,
+    #                                                                  cascade="all,delete", lazy='dynamic'),
+    #                                foreign_keys=stripe_customer_id)
 
     def __repr__(self):
         return '<User %s (%s)>' % (self.id, self.username)

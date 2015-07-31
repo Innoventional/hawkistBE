@@ -160,7 +160,8 @@ class ItemCommentsPeopleHandler(ApiHandler):
             'users': [
                 {
                     'id': user.id,
-                    'username': user.username
+                    'username': user.username,
+                    'avatar': user.avatar
                 } for user in qs]
         }
         logger.debug(response)

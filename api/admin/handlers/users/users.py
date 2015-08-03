@@ -3,7 +3,7 @@ from random import choice
 import string
 import datetime
 from sqlalchemy import and_, func
-from api.admin.handlers.tags import AdminBaseHandler
+from api.admin.handlers.login import AdminBaseHandler
 from api.users.models import User, SystemStatus, UserType
 from base import paginate, HttpRedirect
 from environment import env

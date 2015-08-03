@@ -2,7 +2,7 @@ import datetime
 import logging
 from sqlalchemy import and_
 from sqlalchemy import func
-from api.admin.handlers.tags import AdminBaseHandler
+from api.admin.handlers.login import AdminBaseHandler
 from api.items.models import Listing
 from api.tags.models import Condition, Subcategory
 from base import HttpRedirect

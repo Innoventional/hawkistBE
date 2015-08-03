@@ -7,7 +7,6 @@ try:
     from users.handlers.update import *
     from items.handlers import *
     from tags.handler import *
-    from admin.handlers.tags import *
     from admin.handlers.users.users import *
     from admin.handlers.users.blocked_users import *
     from admin.handlers.login import *

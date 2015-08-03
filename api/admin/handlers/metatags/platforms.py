@@ -1,7 +1,7 @@
 import datetime
 import logging
 from sqlalchemy import func, and_
-from api.admin.handlers.tags import AdminBaseHandler
+from api.admin.handlers.login import AdminBaseHandler
 from api.items.models import Listing
 from api.tags.models import Platform
 from base import HttpRedirect

@@ -1,4 +1,3 @@
-import json
 import logging
 import datetime
 from api.payments.models import StripeCustomer

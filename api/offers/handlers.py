@@ -1,10 +1,9 @@
 import logging
 import datetime
-from sqlalchemy import and_
 from api.comments.models import Comment
 from api.items.models import Listing
 from api.offers.models import Offer, OfferStatus
-from api.users.models import User, SystemStatus
+from api.users.models import SystemStatus
 from base import ApiHandler, die
 from environment import env
 from helpers import route
@@ -27,45 +26,6 @@ logger = logging.getLogger(__name__)
 @route('listings/offers/(.*)')
 class ItemOffersHandler(ApiHandler):
     allowed_methods = ('POST', 'PUT')
-    # allowed_methods = ('GET', 'POST', 'PUT')
-
-    # def read(self, listing_id):
-    #
-    #     if self.user is None:
-    #         die(401)
-    #
-    #     logger.debug(self.user)
-    #     update_user_last_activity(self)
-    #
-    #     # check user status
-    #     suspension_error = check_user_suspension_status(self.user)
-    #     if suspension_error:
-    #         logger.debug(suspension_error)
-    #         return suspension_error
-    #
-    #     if not listing_id:
-    #         return self.make_error(GET_OFFERS_NO_LISTING_ID)
-    #
-    #     listing = self.session.query(Listing).get(listing_id)
-    #
-    #     if not listing:
-    #         return self.make_error(GET_LISTING_INVALID_ID % listing_id)
-    #
-    #     # check listing owner
-    #     if str(listing.user.id) != str(self.user.id):
-    #         return self.make_error(GET_OFFERS_ANOTHER_OWNER)
-    #
-    #     # we must exclude offers of suspended users
-    #     suspended_users_id = [u.id for u in self.session.query(User).filter(User.system_status == SystemStatus.Suspended)]
-    #
-    #     # and user who block current user
-    #     block_me_user_id = [u.id for u in self.user.blocked_me]
-    #
-    #     listing_offers = self.session.query(Offer).filter(and_(Offer.listing_id == listing_id,
-    #                                                            Offer.status == OfferStatus.Active,
-    #                                                            ~Offer.user_id.in_(suspended_users_id),
-    #                                                            ~Offer.user_id.in_(block_me_user_id))).order_by(Offer.created_at)
-    #     return self.success({'offers': [o.response for o in listing_offers]})
 
     def create(self, listing_id):
 

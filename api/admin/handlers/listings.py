@@ -1,5 +1,5 @@
 import logging
-from api.admin.handlers.tags import AdminBaseHandler
+from api.admin.handlers.login import AdminBaseHandler
 from api.items.models import Listing
 from base import HttpRedirect, paginate
 from helpers import route

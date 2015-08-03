@@ -1,12 +1,15 @@
-from api.admin.handlers.tags import AdminBaseHandler
 from api.users.models import User, UserType
-from base import HttpRedirect
+from base import HttpRedirect, OpenApiHandler
 from environment import env
 from helpers import route, encrypt_password
 from ui_messages.errors.admin_errors.admin_login_errors import ADMIN_LOGIN_USER_NOT_FOUND, \
     ADMIN_LOGIN_USER_WRONG_PASSWORD, ADMIN_LOGIN_USER_ACCESS_DENIED
 
 __author__ = 'ne_luboff'
+
+
+class AdminBaseHandler(OpenApiHandler):
+    pass
 
 
 @route('admin')

@@ -3,8 +3,8 @@
 import logging
 import datetime
 from sqlalchemy import or_, desc, and_, func
-from api.items.models import Item, ItemPhoto, Listing, ListingPhoto
-from api.tags.models import Tag, Platform, Category, Subcategory, Color, Condition
+from api.items.models import Listing, ListingPhoto, ListingStatus
+from api.tags.models import Platform, Category, Subcategory, Color, Condition
 from api.users.models import User, SystemStatus
 from base import ApiHandler, die, paginate
 from helpers import route
@@ -16,7 +16,8 @@ from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID,
     CREATE_LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE, CREATE_LISTING_TOO_MANY_PHOTOS, GET_LISTING_BY_USER_INVALID_ID, \
     CREATE_LISTING_USER_DONT_CONFIRM_EMAIL, CREATE_LISTING_USER_HAVENT_FB, DELETE_LISTING_NO_ID, \
     DELETE_LISTING_ANOTHER_USER, LIKE_LISTING_NO_ID, LIKE_YOUR_OWN_LISTING, UPDATE_LISTING_UNDEFINED_LISTING_ID, \
-    UPDATE_LISTING_LISTING_SOLD, UPDATE_LISTING_EMPTY_FIELDS, UPDATE_LISTING_SELLING_PRICE_MUST_BE_LESS_THAN_RETAIL
+    UPDATE_LISTING_LISTING_SOLD, UPDATE_LISTING_EMPTY_FIELDS, UPDATE_LISTING_SELLING_PRICE_MUST_BE_LESS_THAN_RETAIL, \
+    DELETE_RESERVED_LISTING, DELETE_SOLD_LISTING
 from ui_messages.errors.users_errors.blocked_users_error import GET_BLOCKED_USER
 from ui_messages.errors.users_errors.suspended_users_errors import GET_SUSPENDED_USER
 from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID
@@ -33,398 +34,6 @@ logger = logging.getLogger(__name__)
 
 # not shipping price
 NOT_SHIPPING = 'not_applicable'
-
-
-@route('items')
-class ItemsHandler(ApiHandler):
-    allowed_methods = ('GET', 'POST', )
-
-    def read(self):
-
-        if not self.user:
-            die(401)
-
-        update_user_last_activity(self)
-
-        item_id = self.get_arg('item_id', int)
-        q = self.get_arg('q', str)
-        response = dict()
-
-        # get item by id
-        if item_id:
-            # first get this item
-            item = self.session.query(Item).filter(Item.id == item_id).first()
-            if not item:
-                return self.make_error('No item with id %s' % item_id)
-
-            # find 6 items with similar category | platform | subcategory
-            similar_items = self.session.query(Item).filter(and_(or_(Item.platform_id == item.platform_id,
-                                                                     Item.category_id == item.category_id,
-                                                                     Item.subcategory_id == item.subcategory_id),
-                                                                 Item.id != item.id)).limit(6)
-            # find 6 items of this user
-            user_items = self.session.query(Item).filter(and_(Item.user_id == item.user_id,
-                                                              Item.id != item.id)).limit(6)
-            # current_item_response = item.item_response
-            # current_item_response['user'] = item.user.user_response
-            response['item'] = item.item_response
-            response['similar_items'] = [i.item_response for i in similar_items]
-            response['user_items'] = [i.item_response for i in user_items]
-        # else return all items
-        else:
-            # TODO uncomment to return items by user interests
-            # user_tags_set = interested_user_tag_ids(self)
-            # item_ids = interested_user_item_ids(self, user_tags_set)
-            # items = self.session.query(Item).filter(Item.id.in_(list(item_ids))).order_by(desc(Item.id))
-
-            # TODO 2015-07-08 return all items
-            items = self.session.query(Item).order_by(desc(Item.id))
-
-            # search
-            # if we have searching query we must filtered all items
-            if q:
-                # first we must get all items
-                all_items = self.session.query(Item)
-
-                # next get all tags names to search.
-                # note! we can search only by platform name, category name and subcategory name
-                tag_names_to_search = set()
-                for i in items:
-                    tag_names_to_search.add(i.platform.name.lower())
-                    tag_names_to_search.add(i.category.name.lower())
-                    tag_names_to_search.add(i.subcategory.name.lower())
-
-                # this is set with suitable tag names
-                right_tag_names = set()
-                right_title_or_description_item_ids = set()
-
-                # we search by every word in phrase
-                # so separate query string by whitespace symbol
-                q_list = q.lower().split(' ')
-
-                # go through every query word and search it in tags and items titles/descriptions
-                for q_word in q_list:
-
-                    # search in every tag key by every query word
-                    for key in tag_names_to_search:
-                        if q_word in key:
-                            right_tag_names.add(key)
-
-                    # filtered items and get items with fit description or title
-                    right_title_or_description = [i.id for i in all_items.filter(or_(func.lower(Item.title).ilike(u'%{0}%'.format(q_word)),
-                                                                                     func.lower(Item.description).ilike(u'%{0}%'.format(q_word))))]
-                    if right_title_or_description:
-                        for i in right_title_or_description:
-                            right_title_or_description_item_ids.add(i)
-
-                # next step - get right tags ids
-                right_tag_ids = [t.id for t in self.session.query(Tag).filter(func.lower(Tag.name).in_(right_tag_names))]
-
-                # select items by suitable tag name
-                right_tag_item_ids = [i.id for i in all_items.filter(or_(Item.platform_id.in_(right_tag_ids),
-                                                                         Item.category_id.in_(right_tag_ids),
-                                                                         Item.subcategory_id.in_(right_tag_ids)))]
-
-                # finally get all items which match search terms
-                items = all_items.filter(Item.id.in_(list(set(right_tag_item_ids +
-                                                              list(right_title_or_description_item_ids))))).order_by(desc(Item.id))
-
-
-                # TODO optimize using this
-                # filtered them by platform | category | subcategory | title | condition
-                # items = all_items.filter(or_(Item.platform.name.ilike(u'%{0}%'.format(q)),
-                #                              Item.category.name.ilike(u'%{0}%'.format(q)),
-                #                              Item.subcategory.name.ilike(u'%{0}%'.format(q)),
-                #                              Item.title.ilike(u'%{0}%'.format(q)),
-                #                              Item.description.ilike(u'%{0}%'.format(q))))
-            # pagination
-            page = self.get_arg('p', int, 1)
-            page_size = self.get_arg('page_size', int, 100)
-            paginator, items = paginate(items, page, page_size)
-            if paginator['pages'] < page:
-                items = []
-            response['paginator'] = paginator
-            response['items'] = [i.item_response for i in items]
-
-        return self.success(response)
-
-    def create(self):
-
-        if self.user is None:
-            die(401)
-
-        update_user_last_activity(self)
-
-        # check selling ability
-        # if not self.user.facebook_id:
-        #     return self.make_error("Sorry, but you can't sale anything 'cause you don't link your FB account")
-        if not self.user.email_status:
-            return self.make_error("Sorry, but you can't sale anything because you don't confirm your email.")
-
-        logger.debug('REQUEST_OBJECT_NEW_ITEM')
-        logger.debug(self.request_object)
-
-        title = ''
-        description = ''
-        platform_id = ''
-        category_id = ''
-        subcategory_id = ''
-        condition_id = ''
-        color_id = ''
-        retail_price = ''
-        selling_price = ''
-        shipping_price = ''
-        collection_only = ''
-        barcode = ''
-        photos = ''
-        post_code = ''
-        city = ''
-
-        empty_field_error = []
-
-        if self.request_object:
-            if 'title' in self.request_object:
-                title = self.request_object['title']
-
-            if 'description' in self.request_object:
-                description = self.request_object['description']
-
-            if 'platform' in self.request_object:
-                platform_id = self.request_object['platform']
-
-            if 'category' in self.request_object:
-                category_id = self.request_object['category']
-
-            if 'subcategory' in self.request_object:
-                subcategory_id = self.request_object['subcategory']
-
-            if 'condition' in self.request_object:
-                condition_id = self.request_object['condition']
-
-            if 'color' in self.request_object:
-                color_id = self.request_object['color']
-
-            if 'retail_price' in self.request_object:
-                retail_price = self.request_object['retail_price']
-
-            if 'selling_price' in self.request_object:
-                selling_price = self.request_object['selling_price']
-
-            if 'shipping_price' in self.request_object:
-                shipping_price = self.request_object['shipping_price']
-
-            if 'collection_only' in self.request_object:
-                collection_only = self.request_object['collection_only']
-
-            if 'barcode' in self.request_object:
-                barcode = self.request_object['barcode']
-
-            if 'photos' in self.request_object:
-                photos = self.request_object['photos']
-
-            if 'post_code' in self.request_object:
-                post_code = self.request_object['post_code']
-
-            if 'city' in self.request_object:
-                city = self.request_object['city']
-
-        if not title:
-            empty_field_error.append('title')
-
-        if not description:
-            empty_field_error.append('description')
-
-        if not platform_id:
-            empty_field_error.append('platform')
-
-        if not category_id:
-            empty_field_error.append('category')
-
-        if not subcategory_id:
-            empty_field_error.append('subcategory')
-
-        if not condition_id:
-            empty_field_error.append('condition')
-
-        if not color_id:
-            empty_field_error.append('color')
-
-        if not retail_price:
-            empty_field_error.append('retail price')
-
-        if not selling_price:
-            empty_field_error.append('selling price')
-
-        if not shipping_price and not collection_only:
-            empty_field_error.append('shipping price or collection only')
-
-        if not photos:
-            empty_field_error.append('photos')
-
-        for photo in photos:
-            if not photo:
-                empty_field_error.append('photos')
-                break
-
-        if not post_code:
-            empty_field_error.append('post code')
-
-        if not city:
-            logger.debug('NO CITY')
-            if 'post code' not in empty_field_error:
-                empty_field_error.append('post code')
-
-        if empty_field_error:
-            empty_fields = ', '.join(empty_field_error)
-            response = {
-                'status': 6,
-                'message': CREATE_LISTING_EMPTY_FIELDS % empty_fields,
-                'title': CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields.capitalize()
-            }
-            logger.debug(response)
-            return response
-
-        # first check all tags
-        # check platforms
-        platform = self.session.query(Tag).filter(Tag.id == platform_id).first()
-        if not platform:
-            return self.make_error('No platform with id %s' % platform_id)
-
-        # check category
-        category = self.session.query(Tag).filter(Tag.id == category_id).first()
-        if not category:
-            return self.make_error('No category with id %s' % category_id)
-
-        # check subcategory
-        subcategory = self.session.query(Tag).filter(Tag.id == subcategory_id).first()
-        if not subcategory:
-            return self.make_error('No subcategory with id %s' % subcategory_id)
-
-        # check is this nesting right
-        platform_children_ids = [child.id for child in platform.children_tags]
-        if category_id not in platform_children_ids:
-            # hotfix for this build
-            # start
-            c_name = category.name.upper()
-            p_name = ''
-            p2_name = ''
-            if category.parent_tag and category.parent_tag.name != 'platform':
-                p_name = category.parent_tag.name.upper()
-                if category.parent_tag.parent_tag and category.parent_tag.parent_tag.name != 'platform':
-                    p2_name = category.parent_tag.parent_tag.name.upper()
-            if p_name:
-                if p2_name:
-                    text = "Platform tag %s hasn't child %s (%s > %s). Try again" % (platform.name.upper(), c_name,
-                                                                                     p2_name, p_name)
-                else:
-                    text = "Platform tag %s hasn't child %s (%s). Try again" % (platform.name.upper(), c_name, p_name)
-            else:
-                text = "Platform tag %s hasn't child %s. Try again" % (platform.name.upper(), c_name)
-            return self.make_error(text)
-            # end
-            # return self.make_error("Platform tag %s hasn't child %s. Try again" % (platform.name.upper(),
-            #                                                                        category.name.upper()))
-
-        category_children_ids = [child.id for child in category.children_tags]
-        if subcategory_id not in category_children_ids:
-            # hotfix for this build
-            # start
-            c_name = subcategory.name.upper()
-            p_name = ''
-            p2_name = ''
-            if subcategory.parent_tag and subcategory.parent_tag.name != 'platform':
-                p_name = subcategory.parent_tag.name.upper()
-                if subcategory.parent_tag.parent_tag and subcategory.parent_tag.parent_tag.name != 'platform':
-                    p2_name = subcategory.parent_tag.parent_tag.name.upper()
-            if p_name:
-                if p2_name:
-                    text = "Category tag %s hasn't child %s (%s > %s). Try again" % (category.name.upper(), c_name,
-                                                                                     p2_name, p_name)
-                else:
-                    text = "Category tag %s hasn't child %s (%s). Try again" % (category.name.upper(), c_name, p_name)
-            else:
-                text = "Category tag %s hasn't child %s. Try again" % (category.name.upper(), c_name)
-            return self.make_error(text)
-            # end
-            # return self.make_error("Category tag %s hasn't child %s. Try again" % (category.name.upper(),
-            #                                                                        subcategory.name.upper()))
-
-        # check condition
-        condition = self.session.query(Tag).filter(Tag.id == condition_id).first()
-        if not condition:
-            return self.make_error('No condition with id %s' % condition_id)
-
-        # check color
-        color = self.session.query(Tag).filter(Tag.id == color_id).first()
-        if not color:
-            return self.make_error('No color with id %s' % color_id)
-
-        # secondary check other fields
-        # price handler
-        retail_price = float(retail_price)
-        selling_price = float(selling_price)
-        shipping_price = float(shipping_price)
-        if retail_price < 1:
-            return self.make_error(u'Retail price must be greater than £1')
-
-        if selling_price > retail_price or selling_price == retail_price:
-                return self.make_error("Retail price must be greater than selling price")
-
-        if shipping_price < 0:
-            return self.make_error('Shipping price must be greater than or equal to £0')
-
-        if len(photos) > 3:
-            return self.make_error('You can add only 3 photos')
-
-        # finally create item
-        item = Item()
-        item.user = self.user
-        item.created_at = datetime.datetime.utcnow()
-        item.updated_at = datetime.datetime.utcnow()
-        item.title = title
-        item.description = description
-
-        if barcode:
-            item.barcode = barcode
-
-        item.platform_id = platform_id
-        item.category_id = category_id
-        item.subcategory_id = subcategory_id
-        item.condition_id = condition_id
-        item.color_id = color_id
-        item.retail_price = retail_price
-        item.selling_price = selling_price
-
-        if selling_price != retail_price:
-            # calculate discount value
-            discount = int(round((retail_price - selling_price) / retail_price * 100))
-            if discount == 0:
-                discount = 1
-            item.discount = discount
-
-        item.shipping_price = shipping_price
-        if collection_only:
-            item.collection_only = True
-        else:
-            item.collection_only = False
-
-        item.post_code = post_code
-        item.city = city
-
-        # self.session.flush(item)
-        # self.session.commit()
-
-        # photos
-        for photo in photos:
-            item_photo = ItemPhoto()
-            item_photo.created_at = datetime.datetime.utcnow()
-            item_photo.item = item
-            item_photo.image_url = photo
-            self.session.add(item_photo)
-            self.session.commit()
-
-        self.session.commit()
-        return self.success({'item': item.item_response})
 
 
 @route('get_city')
@@ -551,11 +160,11 @@ class ListingHandler(ApiHandler):
                                                                        Listing.id != listing.id,
                                                                        ~Listing.user_id.in_(suspended_users_id),
                                                                        ~Listing.user_id.in_(block_me_user_id),
-                                                                       Listing.sold == False)).limit(6)
+                                                                       Listing.status == ListingStatus.Active)).limit(6)
             # find 6 items of this user
             user_listings = self.session.query(Listing).filter(and_(Listing.user_id == listing.user_id,
                                                                     Listing.id != listing.id,
-                                                                    Listing.sold == False)).limit(6)
+                                                                    Listing.status == ListingStatus.Active)).limit(6)
             current_listing_response = listing.response(self.user.id)
             current_listing_response['liked'] = self.user in listing.likes
             current_listing_response['user'] = listing.user.user_response
@@ -578,7 +187,7 @@ class ListingHandler(ApiHandler):
                 return self.make_error(TRY_TO_GET_SUSPENDED_USER_ITEMS % user.username.upper())
 
             user_items = self.session.query(Listing).filter(and_(Listing.user_id == user_id,
-                                                                 Listing.sold == False)).order_by(desc(Listing.id))
+                                                                 Listing.status == ListingStatus.Active)).order_by(desc(Listing.id))
             # pagination
             page = self.get_arg('p', int, 1)
             page_size = self.get_arg('page_size', int, 100)
@@ -671,7 +280,7 @@ class ListingHandler(ApiHandler):
                                                                         right_usernames_item_ids))),
                                                     ~Listing.user_id.in_(block_me_user_id),
                                                     ~Listing.user_id.in_(suspended_users_id),
-                                                    Listing.sold == False)).order_by(Listing.selling_price)
+                                                    Listing.status == ListingStatus.Active)).order_by(Listing.selling_price)
 
             # if not search - return listing depending on user's tags
             else:
@@ -704,7 +313,7 @@ class ListingHandler(ApiHandler):
                                                                    ~Listing.user_id.in_(block_me_user_id),
                                                                    ~Listing.user_id.in_(suspended_users_id),
                                                                    Listing.user_id != self.user.id,
-                                                                   Listing.sold == False)).order_by(desc(Listing.id))
+                                                                   Listing.status == ListingStatus.Active)).order_by(desc(Listing.id))
 
                 # TODO 2015-07-08 return all items
                 # listings = self.session.query(Listing).filter(Listing.sold == False).order_by(desc(Listing.id))
@@ -1165,7 +774,7 @@ class ListingHandler(ApiHandler):
             listing.updated_at = datetime.datetime.utcnow()
             listing.title = title
             listing.description = description
-            listing.sold = False
+            listing.status = ListingStatus.Active
 
             if barcode:
                 listing.barcode = barcode
@@ -1212,6 +821,7 @@ class ListingHandler(ApiHandler):
             self.session.commit()
             return self.success({'item': listing.response(self.user.id)})
 
+    @property
     def remove(self):
         if not self.user:
             die(401)
@@ -1242,6 +852,12 @@ class ListingHandler(ApiHandler):
         # check is it item of current user
         if listing.user.id != self.user.id:
             return self.make_error(DELETE_LISTING_ANOTHER_USER)
+
+        if listing.status == ListingStatus.Reserved:
+            return self.make_error(DELETE_RESERVED_LISTING)
+
+        if listing.status == ListingStatus.Sold:
+            return self.make_error(DELETE_SOLD_LISTING)
 
         self.session.delete(listing)
         self.session.commit()
@@ -1577,7 +1193,7 @@ class ListingLikeHandler(ApiHandler):
             listing_likes.append(self.user)
         # else delete this user like
         else:
-            listing_likes.remove(self.user)
+            listing_likes.remove
         self.session.commit()
         return self.success()
 

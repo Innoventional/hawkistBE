@@ -94,8 +94,8 @@ class CardHandler(ApiHandler):
                 return self.make_error(stripe_error)
 
             # get customer id and card id from stripe response
-            customer_id = stripe_response['id']
-            stripe_card_id = stripe_response['sources']['data'][0]['id']
+            customer_id = stripe_data['id']
+            stripe_card_id = stripe_data['sources']['data'][0]['id']
 
             stripe_customer = StripeCustomer()
             stripe_customer.created_at = datetime.datetime.utcnow()

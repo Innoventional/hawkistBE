@@ -40,20 +40,23 @@ Response:
 
 
 --------------------------
-###Used enum classes
+### User registration
 
-    
-class UserType(Enum):
+UserType
 
     Admin = 0
     Developer = 1
     Support = 2
     Standard = 3
         
-class SystemStatus(Enum):
+        
+        
+SystemStatus
 
     Active = 0
     Suspended = 1
+    
+    
     
 USER_INFO_DICT
     
@@ -78,71 +81,8 @@ USER_INFO_DICT
         'review': REVIEW NUMBER,
         'response_time': AVERAGE USER RESPONSE TIME
     }
-    
-ITEM_INFO_DICT
-    
-    {
-        'id': ID,
-        'user_id': SELLER ID,
-        'user_username': SELLER USERNAME,
-        'user_avatar': SELLER AVATAR,
-        'created_at': CREATED TIME,
-        'title': TITLE,
-        'description': DESCRIPTION,
-        'platform': PLATFORM ID,
-        'category': CATEGORY ID,
-        'subcategory': SUBCATEGORY ID,
-        'condition': CONDITION ID,
-        'color': COLOUR ID,
-        'retail_price': RETAIL PRICE,
-        'selling_price': SELLING PRICE,
-        'discount': DISCOUNT VALUE,
-        'shipping_price': SHIPPING PRICE,
-        'collection_only': COLLECTION ONLY FLAG,
-        'post_code': POST CODE,
-        'city': LOCATION CITY,
-        'photos': LIST OF LISTING PHOTOS,
-        'sold': IS LISTING ALREADY SOLD FLAG,
-        'likes': NUMBERS OF LIKES,
-        'liked': DOES CURRENT USER ALREADY LIKED THIS ITEM,
-        'comments': NUMBER OF COMMENTS,
-        'views': NUMBER OF VIEWS
-    }
-    
-COMMENT_RESPONSE_DICT
 
-    {
-        "id": ID,
-        "created_at": CREATED NAME,
-        "user_id": CREATER ID,
-        "user_username": CREATER USERNAME,
-        "user_avatar": CREATER AVATAR,
-        "listing_id": COMMENTED LISTING ID,
-        "text": TEXT,
-        "offer": {
-            "id": ID,
-            "status": 0 IF THIS OFFER IS UNANSWERED,
-            "offer_creater_id": USER WHO CREATE OFFER ID,
-            "offer_receiver_id": OFFERED LISTING OWNER ID
-        },
-        "offer_id": OFFER ID OR NONE,
-        "mentions": [
-            {
-                "id": MENTIONED USER ID,
-                "username": MENTIONED USER USERNAME
-            },
-            .
-            .
-            .
-            {
-                ...
-            }
-        ]
-    }
-    
-    
---------------------------
-###User registration
+
 
 **Registration**
 
@@ -237,7 +177,7 @@ Response:
     
     
 --------------------------
-###User profile
+### User profile
 
 **Your profile**
 
@@ -313,7 +253,7 @@ Response Failure:
 
 
 --------------------------
-###Tags
+### Tags
     
 **Get the list of all tags**
 
@@ -416,7 +356,7 @@ Response Success:
     
 
 --------------------------
-###Another users
+### Another users
 
 **Get all users in application**
     
@@ -679,6 +619,42 @@ Response Failure:
  
 --------------------------
 ### Items
+
+ListingStatus
+
+    Active = 0
+    Reserved = 1
+    Sold = 2
+    
+ITEM_INFO_DICT
+    
+    {
+        'id': ID,
+        'user_id': SELLER ID,
+        'user_username': SELLER USERNAME,
+        'user_avatar': SELLER AVATAR,
+        'created_at': CREATED TIME,
+        'title': TITLE,
+        'description': DESCRIPTION,
+        'platform': PLATFORM ID,
+        'category': CATEGORY ID,
+        'subcategory': SUBCATEGORY ID,
+        'condition': CONDITION ID,
+        'color': COLOUR ID,
+        'retail_price': RETAIL PRICE,
+        'selling_price': SELLING PRICE,
+        'discount': DISCOUNT VALUE,
+        'shipping_price': SHIPPING PRICE,
+        'collection_only': COLLECTION ONLY FLAG,
+        'post_code': POST CODE,
+        'city': LOCATION CITY,
+        'photos': LIST OF LISTING PHOTOS,
+        'sold': IS LISTING ALREADY SOLD FLAG,
+        'likes': NUMBERS OF LIKES,
+        'liked': DOES CURRENT USER ALREADY LIKED THIS ITEM,
+        'comments': NUMBER OF COMMENTS,
+        'views': NUMBER OF VIEWS
+    }
    
 **Get all items (user feeds)**
 
@@ -1045,6 +1021,37 @@ Response Failure:
 
 --------------------------
 ### Comments
+
+COMMENT_RESPONSE_DICT
+
+    {
+        "id": ID,
+        "created_at": CREATED NAME,
+        "user_id": CREATER ID,
+        "user_username": CREATER USERNAME,
+        "user_avatar": CREATER AVATAR,
+        "listing_id": COMMENTED LISTING ID,
+        "text": TEXT,
+        "offer": {
+            "id": ID,
+            "status": 0 IF THIS OFFER IS UNANSWERED,
+            "offer_creater_id": USER WHO CREATE OFFER ID,
+            "offer_receiver_id": OFFERED LISTING OWNER ID
+        },
+        "offer_id": OFFER ID OR NONE,
+        "mentions": [
+            {
+                "id": MENTIONED USER ID,
+                "username": MENTIONED USER USERNAME
+            },
+            .
+            .
+            .
+            {
+                ...
+            }
+        ]
+    }
    
 **Get all comments by current item**
 

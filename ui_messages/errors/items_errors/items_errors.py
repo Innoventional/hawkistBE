@@ -32,6 +32,8 @@ CREATE_LISTING_TOO_MANY_PHOTOS = 'You can add only 4 photos'
 # Delete the listing
 DELETE_LISTING_NO_ID = 'No listing to delete id'
 DELETE_LISTING_ANOTHER_USER = 'Sorry, but you cannot delete this item because you are not owner of it'
+DELETE_RESERVED_LISTING = 'You cannot delete reserved listing'
+DELETE_SOLD_LISTING = 'You cannot delete sold listing'
 
 # update listing
 UPDATE_LISTING_UNDEFINED_LISTING_ID = 'No listing to update id'

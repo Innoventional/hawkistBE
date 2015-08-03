@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, DateTime, String, Boolean, SmallInteger,
 from sqlalchemy.orm import relationship, backref
 from api.comments.models import comment_mentioned_users
 from api.followers.models import user_followers
-from api.tags.models import Tag
+from api.items.models import ListingStatus
 from api.users.blocked_users.models import user_blacklist
 from api.users.reported_users.models import user_reportlist
 from orm import Base
@@ -142,7 +142,7 @@ class User(Base):
         user_listings = self.listings
         sold_user_listings = []
         for l in user_listings:
-            if l.sold:
+            if l.status == ListingStatus.Sold:
                 sold_user_listings.append(l)
         return len(sold_user_listings)
 
@@ -159,7 +159,6 @@ class User(Base):
             'facebook_id': self.facebook_id,
             'email_status': self.email_status,
             'first_login': self.first_login,
-            # 'metatags': self.get_user_metatags(),
             'user_type': self.user_type,
             'system_status': self.system_status,
             'city': self.city,
@@ -179,18 +178,6 @@ class User(Base):
             'rating': 4,
             'review': 17,
         }
-
-
-class UserTags(Base):
-    __tablename__ = 'users_tags'
-
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False, index=True)
-    user = relationship(User, backref=backref('user_tags', order_by=id, cascade="all,delete", lazy='dynamic'),
-                        foreign_keys=user_id)
-    tag_id = Column(Integer, ForeignKey('tags.id'), nullable=False, index=True)
-    tag = relationship(Tag, backref=backref('tag_users', order_by=id, cascade="all,delete", lazy='dynamic'),
-                       foreign_keys=tag_id)
 
 
 class UserMetaTagType(Enum):

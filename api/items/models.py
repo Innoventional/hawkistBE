@@ -1,106 +1,11 @@
 import datetime
-from sqlalchemy import Column, DateTime, ForeignKey, String, Boolean, Numeric, Table
+from sqlalchemy import Column, DateTime, ForeignKey, String, Boolean, Numeric, Table, Enum, SmallInteger
 from sqlalchemy import Integer
 from sqlalchemy.orm import relationship, backref
-from api.users.models import User
 from orm import Base
 
 __author__ = 'ne_luboff'
 
-
-class Item(Base):
-    __tablename__ = 'items'
-
-    id = Column(Integer, primary_key=True)
-    created_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
-    updated_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
-
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False, index=True)
-    user = relationship(User, backref=backref('items', order_by=id, cascade="all,delete", lazy='dynamic'),
-                        foreign_keys=user_id)
-
-    title = Column(String, nullable=False, default='')
-    description = Column(String, nullable=False, default='')
-    barcode = Column(String, nullable=False, default='')
-
-    # item details (tags)
-    platform_id = Column(Integer, ForeignKey('tags.id'), nullable=False, index=True)
-    platform = relationship('Tag', backref=backref('platform_items', order_by=id, cascade="all,delete", lazy='dynamic'),
-                            foreign_keys=platform_id)
-
-    category_id = Column(Integer, ForeignKey('tags.id'), nullable=False, index=True)
-    category = relationship('Tag', backref=backref('category_items', order_by=id, cascade="all,delete", lazy='dynamic'),
-                            foreign_keys=category_id)
-
-    subcategory_id = Column(Integer, ForeignKey('tags.id'), nullable=False, index=True)
-    subcategory = relationship('Tag', backref=backref('subcategory_items', order_by=id, cascade="all,delete",
-                                                    lazy='dynamic'), foreign_keys=subcategory_id)
-
-    condition_id = Column(Integer, ForeignKey('tags.id'), nullable=False, index=True)
-    condition = relationship('Tag', backref=backref('condition_items', order_by=id, cascade="all,delete",
-                                                  lazy='dynamic'), foreign_keys=condition_id)
-
-    color_id = Column(Integer, ForeignKey('tags.id'), nullable=False, index=True)
-    color = relationship('Tag', backref=backref('color_items', order_by=id, cascade="all,delete", lazy='dynamic'),
-                         foreign_keys=color_id)
-
-    # price
-    retail_price = Column(Numeric, nullable=False)
-    selling_price = Column(Numeric, nullable=True)
-    discount = Column(Integer, nullable=True)
-
-    shipping_price = Column(Numeric, nullable=True)
-    collection_only = Column(Boolean, nullable=False, default=False)
-
-    # location info info
-    post_code = Column(String, nullable=True)
-    city = Column(String, nullable=True)
-    location_lat = Column(Numeric, nullable=True)
-    location_lon = Column(Numeric, nullable=True)
-
-    def __repr__(self):
-        return '<Item %s (%s)>' % (self.id, self.title)
-
-    @property
-    def item_response(self):
-        return {
-            'id': self.id,
-            'user_id': self.user_id,
-            'user_username': self.user.username,
-            'user_avatar': self.user.avatar,
-            'created_at': self.created_at.strftime("%Y-%m-%dT%H:%M:%S"),
-            'title': self.title,
-            'description': self.description,
-            'platform': self.platform_id,
-            'category': self.category_id,
-            'subcategory': self.subcategory_id,
-            'condition': self.condition_id,
-            'color': self.color_id,
-            'retail_price': self.retail_price,
-            'selling_price': self.selling_price,
-            'discount': self.discount,
-            'shipping_price': self.shipping_price,
-            'collection_only': self.collection_only,
-            'post_code': self.post_code,
-            'city': self.city,
-            'photos': [photo.image_url for photo in self.item_photos],
-        }
-
-
-class ItemPhoto(Base):
-    __tablename__ = 'item_photos'
-
-    id = Column(Integer, primary_key=True)
-    created_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
-
-    item_id = Column(Integer, ForeignKey('items.id'), nullable=False, index=True)
-    item = relationship(Item, backref=backref('item_photos', order_by=id, cascade="all,delete", lazy='dynamic'),
-                        foreign_keys=item_id)
-
-    image_url = Column(String, nullable=False)
-
-
-# TODO new release
 
 listing_likes = Table("listing_likes", Base.metadata,
                       Column("user_id", Integer, ForeignKey("users.id"), primary_key=True),
@@ -111,6 +16,12 @@ listing_views = Table("listing_views", Base.metadata,
                       Column("user_id", Integer, ForeignKey("users.id"), primary_key=True),
                       Column("listing_id", Integer, ForeignKey("listings.id"), primary_key=True),
                       Column("created_at", DateTime, nullable=False, default=datetime.datetime.utcnow))
+
+
+class ListingStatus(Enum):
+    Active = 0
+    Reserved = 1
+    Sold = 2
 
 
 class Listing(Base):
@@ -128,6 +39,7 @@ class Listing(Base):
     description = Column(String, nullable=False, default='')
     barcode = Column(String, nullable=False, default='')
     sold = Column(Boolean, nullable=False, default=False)
+    status = Column(SmallInteger, nullable=True, default=ListingStatus.Active)
 
     # listing details (metatags)
     platform_id = Column(Integer, ForeignKey('platforms.id'), nullable=False, index=True)
@@ -193,7 +105,6 @@ class Listing(Base):
                     listing_comment_count += 1
         return listing_comment_count
 
-    # @property
     def response(self, user_id):
         return {
             'id': self.id,
@@ -217,6 +128,7 @@ class Listing(Base):
             'city': self.city,
             'photos': [photo.image_url for photo in self.listing_photos],
             'sold': self.sold,
+            'status': self.status,
             'likes': len(self.likes),
             'views': len(self.views),
             'comments': self.get_comment_count(user_id)

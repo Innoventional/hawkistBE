@@ -57,6 +57,6 @@ class AdminBlockedUsersHandler(AdminBaseHandler):
         if blocked not in blocker.blocked:
             return self.make_error(BLOCK_USER_ALREADY_UNBLOCKED_USER % blocked.username.upper())
 
-        blocker.blocked.remove(blocked)
+        blocker.blocked.remove
         self.session.commit()
         return self.success()

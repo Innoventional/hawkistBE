@@ -177,7 +177,7 @@ class FollowersHandler(ApiHandler):
             return self.make_error(FOLLOWING_ALREADY_UNFOLLOW_THIS_USER % user_to_unfollow.username.upper())
 
         # else remove this user from current user following
-        self.user.following.remove(user_to_unfollow)
+        self.user.following.remove
         self.session.commit()
 
         return self.success()

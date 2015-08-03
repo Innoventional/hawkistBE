@@ -105,7 +105,7 @@ class ApiManager(object):
         key = ApiKey(api_key=api_key, api_pass=api_pass)
         session.add(key)
         session.commit()
-        session.remove()
+        session.remove
 
         print 'API Key: ', api_key
         print 'API Pass:', api_pass

@@ -9,3 +9,5 @@ ADD_CARD_NO_STRIPE_TOKEN = 'No stripe token in request'
 UPDATE_CARD_EMPTY_FIELDS = 'You must select a %s in order to update bank card.'
 UPDATE_CARD_NO_ID = 'No card to update id'
 UPDATE_CARD_INVALID_ID = 'Invalid stripe card id (%s)'
+
+DELETE_CARD_NO_CARD_ID = 'No card to delete id'

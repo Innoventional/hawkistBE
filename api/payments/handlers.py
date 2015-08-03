@@ -5,10 +5,10 @@ from api.payments.models import StripeCustomer
 from base import ApiHandler, die
 from helpers import route
 from ui_messages.errors.payment_errors import ADD_CARD_EMPTY_FIELDS, ADD_CARD_NO_STRIPE_TOKEN, UPDATE_CARD_EMPTY_FIELDS, \
-    BANK_CARD_ALREADY_USED, UPDATE_CARD_NO_ID, UPDATE_CARD_INVALID_ID
+    BANK_CARD_ALREADY_USED, UPDATE_CARD_NO_ID, UPDATE_CARD_INVALID_ID, DELETE_CARD_NO_CARD_ID
 from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE
 from utility.stripe_api import stripe_create_customer, stripe_retrieve_customer, stripe_retrieve_card_info, \
-    stripe_retrieve_card, stripe_update_card_info, stripe_add_new_card
+    stripe_retrieve_card, stripe_update_card_info, stripe_add_new_card, stripe_delete_card
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
 __author__ = 'ne_luboff'
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 # add new card and create stripe card/customer
 @route('user/cards')
 class CardHandler(ApiHandler):
-    allowed_methods = ('POST', 'GET', 'PUT')
+    allowed_methods = ('POST', 'GET', 'PUT', 'DELETE')
 
     def read(self):
         if self.user is None:
@@ -196,7 +196,6 @@ class CardHandler(ApiHandler):
 
         stripe_customer = stripe_retrieve_customer(self.user.stripe_customer.stripe_customer_id)
 
-
         # check is any card in this stripe account
         stripe_customer_cards = stripe_customer['sources']['data']
         if stripe_card_id not in str(stripe_customer_cards):
@@ -211,8 +210,39 @@ class CardHandler(ApiHandler):
         self.session.commit()
         return self.success()
 
+    def remove(self):
+        if self.user is None:
+            die(401)
 
+        logger.debug(self.user)
+        update_user_last_activity(self)
 
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            logger.debug(suspension_error)
+            return suspension_error
+
+        card_to_delete_id = self.get_arg('card_id', None)
+
+        if not card_to_delete_id:
+            return self.make_error(DELETE_CARD_NO_CARD_ID)
+
+        # first get customer
+        if not self.user.stripe_customer:
+            return self.make_error('NO STRIPE CUSTOMER')
+
+        stripe_customer = stripe_retrieve_customer(self.user.stripe_customer.stripe_customer_id)
+
+        # check is any card in this stripe account
+        stripe_customer_cards = stripe_customer['sources']['data']
+        if card_to_delete_id not in str(stripe_customer_cards):
+            return self.make_error(UPDATE_CARD_INVALID_ID % card_to_delete_id)
+
+        stripe_card = stripe_retrieve_card(stripe_customer, card_to_delete_id)
+        stripe_delete_card(stripe_card)
+        self.user.stripe_customer.updated_at = datetime.datetime.utcnow()
+        self.session.commit()
+        return self.success()
 
     # TODO first edition. With all card info
     # def create(self):

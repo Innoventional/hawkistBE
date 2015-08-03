@@ -104,48 +104,14 @@ def stripe_update_card_info(card, name=None, address_line1=None, address_line2=N
     if need_commit:
         card.save()
 
-# "address_city": null,
-#   "address_country": null,
-#   "address_line1": null,
-#   "address_line1_check": null,
-#   "address_line2": null,
-#   "address_state": null,
-#   "address_zip": null,
-#   "address_zip_check": null,
-#   "brand": "Visa",
-#   "country": "US",
-#   "customer": "cus_6hj6xWiBBKO1rH",
-#   "cvc_check": "pass",
-#   "dynamic_last4": null,
-#   "exp_month": 8,
-#   "exp_year": 2016,
-#   "fingerprint": "HAoWaNuylF5LQwTi",
-#   "funding": "credit",
-#   "id": "card_16Vi1AArfhEk5XzXC2GRK4tL",
-#   "last4": "1881",
-#   "metadata": {},
-#   "name": null,
-#   "object": "card",
-#   "tokenization_method": null
 
-def stripe_get_customer(token):
-    customer = stripe.Customer.retrieve("cus_6hj6xWiBBKO1rH")
-    card = customer.sources.retrieve("card_16UJeRArfhEk5XzXwbkhgiT4")
-    return card
-
-
-def stripe_update_card(token):
-    # first get card
-    card = stripe_get_customer('qwq')
-    card.name = 'Liubov M)'
-    card.save()
-    return card
+def stripe_delete_card(card):
+    card.delete()
 
 
 # test stripe customer
 if __name__ == '__main__':
-    print stripe_update_card('qwqw')
-
+    print 'In utility/stripe_api'
     # first generate token
     # test_card_number = 4242424242424242
     # test_card_exp_month = 12

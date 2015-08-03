@@ -1311,6 +1311,28 @@ Response Failure:
     }
 
 
+
+**Delete card**
+
+    Url: 'user/cards?card_id=CARD_TO_DELETE_ID'
+    Method: 'DELETE'
+
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }
+
+
 STATUS CODES FOR CUSTOM ERROR TITLE
 -----------------------------------
     

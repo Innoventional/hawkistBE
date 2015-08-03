@@ -74,6 +74,7 @@ class CardHandler(ApiHandler):
 
         # first check have this user stripe customer
         if self.user.stripe_customer:
+            logger.debug('Add new card to existing stripe account')
             # get customer object
             stripe_customer = stripe_retrieve_customer(self.user.stripe_customer.stripe_customer_id)
             # add new stripe card to existing customer
@@ -82,6 +83,7 @@ class CardHandler(ApiHandler):
                 return self.make_error(error)
             self.user.stripe_customer.updated_at = datetime.datetime.utcnow()
         else:
+            logger.debug('Create new stripe account')
             # create new customer
             # first try create stripe customer object
             stripe_response = stripe_create_customer(stripe_token, 'Hawkist_user_%s' % self.user.id)

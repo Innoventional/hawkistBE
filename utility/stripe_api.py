@@ -1,7 +1,7 @@
 import logging
 import stripe
 from environment import env
-from ui_messages.errors.utility_errors.stripe_api_errors import STRIPE_INVALID_TOKEN
+from ui_messages.errors.utility_errors.stripe_api_errors import STRIPE_INVALID_TOKEN, STRIPE_TOKEN_ALREADY_USED
 
 __author__ = 'ne_luboff'
 
@@ -24,13 +24,26 @@ def stripe_create_customer(token, cardholder):
     except stripe.error.InvalidRequestError, e:
         logger.debug(str(e))
         if 'No such token' in str(e):
-            error = 'Stripe invalid token'
-            # error = STRIPE_INVALID_TOKEN
+            error = STRIPE_INVALID_TOKEN
     finally:
         return {
             'data': customer,
             'error': error
         }
+
+
+def stripe_add_new_card(customer, token):
+    error = ''
+    try:
+        customer.sources.create(source=token)
+    except stripe.error.InvalidRequestError, e:
+        logger.debug(str(e))
+        if 'No such token' in str(e):
+            error = STRIPE_INVALID_TOKEN
+        elif 'You cannot use a Stripe token more than once':
+            error = STRIPE_TOKEN_ALREADY_USED
+    finally:
+        return error
 
 
 def stripe_retrieve_customer(customer_id):

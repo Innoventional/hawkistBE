@@ -8,7 +8,7 @@ from ui_messages.errors.payment_errors import ADD_CARD_EMPTY_FIELDS, ADD_CARD_NO
     BANK_CARD_ALREADY_USED, UPDATE_CARD_NO_ID, UPDATE_CARD_INVALID_ID
 from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE
 from utility.stripe_api import stripe_create_customer, stripe_retrieve_customer, stripe_retrieve_card_info, \
-    stripe_retrieve_card, stripe_update_card_info
+    stripe_retrieve_card, stripe_update_card_info, stripe_add_new_card
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
 __author__ = 'ne_luboff'
@@ -72,27 +72,38 @@ class CardHandler(ApiHandler):
         if not stripe_token:
             return self.make_error(ADD_CARD_NO_STRIPE_TOKEN)
 
-        # first try create stripe customer object
-        stripe_response = stripe_create_customer(stripe_token, 'Hawkist_user_%s' % self.user.id)
-        logger.debug('CREATE_CUSTOMER_STRIPE_RESPONSE')
-        logger.debug(stripe_response)
-        stripe_error, stripe_data = stripe_response['error'], stripe_response['data']
-        if stripe_error:
-            return self.make_error(stripe_error)
+        # first check have this user stripe customer
+        if self.user.stripe_customer:
+            # get customer object
+            stripe_customer = stripe_retrieve_customer(self.user.stripe_customer.stripe_customer_id)
+            # add new stripe card to existing customer
+            error = stripe_add_new_card(stripe_customer, stripe_token)
+            if error:
+                return self.make_error(error)
+            self.user.stripe_customer.updated_at = datetime.datetime.utcnow()
+        else:
+            # create new customer
+            # first try create stripe customer object
+            stripe_response = stripe_create_customer(stripe_token, 'Hawkist_user_%s' % self.user.id)
+            logger.debug('CREATE_CUSTOMER_STRIPE_RESPONSE')
+            logger.debug(stripe_response)
+            stripe_error, stripe_data = stripe_response['error'], stripe_response['data']
+            if stripe_error:
+                return self.make_error(stripe_error)
 
-        # get customer id and card id from stripe response
-        customer_id = stripe_response['id']
-        stripe_card_id = stripe_response['sources']['data'][0]['id']
+            # get customer id and card id from stripe response
+            customer_id = stripe_response['id']
+            stripe_card_id = stripe_response['sources']['data'][0]['id']
 
-        stripe_customer = StripeCustomer()
-        stripe_customer.created_at = datetime.datetime.utcnow()
-        stripe_customer.updated_at = datetime.datetime.utcnow()
-        stripe_customer.stripe_customer_id = customer_id
-        stripe_customer.stripe_card_id = stripe_card_id
-        self.session.add(stripe_customer)
+            stripe_customer = StripeCustomer()
+            stripe_customer.created_at = datetime.datetime.utcnow()
+            stripe_customer.updated_at = datetime.datetime.utcnow()
+            stripe_customer.stripe_customer_id = customer_id
+            stripe_customer.stripe_card_id = stripe_card_id
+            self.session.add(stripe_customer)
 
-        # set relationship to stripe account
-        self.user.stripe_customer = stripe_customer
+            # set relationship to stripe account
+            self.user.stripe_customer = stripe_customer
         self.session.commit()
         return self.success()
 

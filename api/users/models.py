@@ -101,10 +101,10 @@ class User(Base):
     comment_mentions = relationship('Comment', secondary=comment_mentioned_users, backref='mentions',
                                     collection_class=list)
 
-    # stripe_customer_id = Column(Integer, ForeignKey('cards.id'), nullable=True)
-    # stripe_customer = relationship('StripeCustomer', backref=backref('stripe_customers', order_by=id,
-    #                                                                  cascade="all,delete", lazy='dynamic'),
-    #                                foreign_keys=stripe_customer_id)
+    stripe_customer_id = Column(Integer, ForeignKey('stripe_customers.id'), nullable=True)
+    stripe_customer = relationship('StripeCustomer', backref=backref('user_stripe_account', order_by=id,
+                                                                     cascade="all,delete", lazy='dynamic'),
+                                   foreign_keys=stripe_customer_id)
 
     def __repr__(self):
         return '<User %s (%s)>' % (self.id, self.username)

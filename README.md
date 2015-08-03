@@ -38,7 +38,10 @@ Response:
             "server_date": "2015-06-03T15:44:59.687933"
         }
 
+
+--------------------------
 ###Used enum classes
+
     
 class UserType(Enum):
 
@@ -138,8 +141,7 @@ COMMENT_RESPONSE_DICT
     }
     
     
-    
-    
+--------------------------
 ###User registration
 
 **Registration**
@@ -233,7 +235,8 @@ Response:
         'status': 0
     }
     
-
+    
+--------------------------
 ###User profile
 
 **Your profile**
@@ -307,7 +310,9 @@ Response Failure:
         'message': '',          — Error message text
         'title': ''          — Error message title 
     }
-    
+
+
+--------------------------
 ###Tags
     
 **Get the list of all tags**
@@ -410,7 +415,7 @@ Response Success:
     }
     
 
-
+--------------------------
 ###Another users
 
 **Get all users in application**
@@ -473,7 +478,7 @@ Response:
     }
     
 
-
+--------------------------
 ### Following
    
 **Get my followers**
@@ -621,7 +626,7 @@ Response Failure:
     } 
 
 
-
+--------------------------
 ### Block a user
    
 **Block someone**
@@ -672,7 +677,7 @@ Response Failure:
     } 
 
  
- 
+--------------------------
 ### Items
    
 **Get all items (user feeds)**
@@ -1038,8 +1043,7 @@ Response Failure:
     }
     
 
-
-
+--------------------------
 ### Comments
    
 **Get all comments by current item**
@@ -1118,6 +1122,7 @@ Response:
     }
     
 
+--------------------------
 ### Offers
 
 **Offer a new price**
@@ -1190,6 +1195,111 @@ Response Success:
     
     {
         'status': 0,
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }
+    
+
+--------------------------
+### Stripe
+
+CARD_INFO_DICT
+    
+    "id": STRIPE CARD ID,
+    "name": CARDHOLDER NAME,
+    "last4": LAST 4 NUMBER OF CARD,
+    "address_line1": ADDRESS LINE 1,
+    "address_line2": ADDRESS LINE 2,
+    "city": ADDRESS CITY,
+    "postcode": ADDRESS POST CODE,
+    "exp_month": MONTH OF CARD EXPIRATION,
+    "exp_year": YEAR OF CARD EXPIRATION
+
+
+
+**Get all bank cards**
+
+    Url: 'user/cards'
+    Method: 'GET'
+
+
+
+Response:
+    
+    {
+        'status': 0,
+        'cards': [
+            {
+                CARD_INFO_DICT
+            },
+            {
+                ...
+            },
+            {
+                CARD_INFO_DICT
+            }
+        ]
+    }
+
+    
+    
+**Add new bank card**
+
+    Url: 'user/cards'
+    Method: 'POST'
+
+
+Data:
+
+    {
+        "stripe_token": STRIPE TOKEN
+    }
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }
+
+
+
+**Update card**
+
+    Url: 'user/cards'
+    Method: 'PUT'
+
+
+Data:
+
+    {
+        'id': STRIPE CARD ID,
+        'name': CARDHOLDER NAME,
+        'city': CARD CITY,
+        'postcode': CARD POSTCODE,
+        'address_line1': ADDRESS LINE 1,
+        'address_line2': ADDRESS LINE 2,
+        'exp_month': EXPIRATION CARD MONTH,
+        'exp_year': EXPIRATION CARD YEAR
+    }
+
+Response Success:
+    
+    {
+        'status': 0
     }
     
 Response Failure:

@@ -84,7 +84,7 @@ class Listing(Base):
 
     def get_shipping_price_value(self):
         try:
-            return float(self.shipping_price)
+            return "%.02f" % float(self.shipping_price)
         except:
             return self.shipping_price
 
@@ -119,8 +119,10 @@ class Listing(Base):
             'subcategory': self.subcategory_id,
             'condition': self.condition_id,
             'color': self.color_id,
-            'retail_price': float(self.retail_price),
-            'selling_price': float(self.selling_price),
+            'retail_price': "%.02f" % float(self.retail_price),
+            # 'retail_price': float(self.retail_price),
+            'selling_price': "%.02f" % float(self.selling_price),
+            # 'selling_price': float(self.selling_price),
             'discount': self.discount,
             'shipping_price': self.get_shipping_price_value(),
             'collection_only': self.collection_only,

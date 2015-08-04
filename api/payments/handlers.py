@@ -85,7 +85,7 @@ class CardHandler(ApiHandler):
             logger.debug('Create new stripe account')
             # create new customer
             # first try create stripe customer object
-            stripe_response = stripe_create_customer(stripe_token, 'Hawkist_user_%s' % self.user.id)
+            stripe_response = stripe_create_customer(stripe_token, self.user.id)
             logger.debug('CREATE_CUSTOMER_STRIPE_RESPONSE')
             logger.debug(stripe_response)
             stripe_error, stripe_data = stripe_response['error'], stripe_response['data']

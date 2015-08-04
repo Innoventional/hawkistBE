@@ -102,7 +102,7 @@ class ItemOffersHandler(ApiHandler):
         comment.created_at = datetime.datetime.utcnow()
         comment.listing = listing
         comment.user = self.user
-        comment.text = OFFER_NEW % float(offer.new_price)
+        comment.text = OFFER_NEW % "%.02f" % float(offer.new_price)
         comment.offer = offer
         # this comment can see only listing owner
         # comment.user_to_see_id = listing.user_id

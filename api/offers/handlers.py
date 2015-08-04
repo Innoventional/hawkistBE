@@ -86,7 +86,8 @@ class ItemOffersHandler(ApiHandler):
 
         # check is retail price more than new price
         if float(new_price) >= float(listing.retail_price):
-            return self.make_error(CREATE_OFFER_OFFERED_PRICE_MUST_BE_LESS_THAN_RETAIL % listing.retail_price)
+            return self.make_error(CREATE_OFFER_OFFERED_PRICE_MUST_BE_LESS_THAN_RETAIL
+                                   % "%.02f" % float(listing.retail_price))
 
         # create an offer
         offer = Offer()

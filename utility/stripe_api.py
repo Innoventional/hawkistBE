@@ -1,7 +1,8 @@
 import logging
 import stripe
 from environment import env
-from ui_messages.errors.utility_errors.stripe_api_errors import STRIPE_INVALID_TOKEN, STRIPE_TOKEN_ALREADY_USED
+from ui_messages.errors.utility_errors.stripe_api_errors import STRIPE_INVALID_TOKEN, STRIPE_TOKEN_ALREADY_USED, \
+    STRIPE_BAD_CONNECTION
 
 __author__ = 'ne_luboff'
 
@@ -106,7 +107,15 @@ def stripe_update_card_info(card, name=None, address_line1=None, address_line2=N
 
 
 def stripe_delete_card(card):
-    card.delete()
+    error = ''
+    try:
+        card.delete()
+    except stripe.APIConnectionError, e:
+        error = str(e)
+        # if 'Unexpected error communicating with Stripe' in str(e):
+        #     error = STRIPE_BAD_CONNECTION
+    finally:
+        return error
 
 
 # test stripe customer

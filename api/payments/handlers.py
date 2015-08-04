@@ -238,7 +238,9 @@ class CardHandler(ApiHandler):
             return self.make_error(UPDATE_CARD_INVALID_ID % card_to_delete_id)
 
         stripe_card = stripe_retrieve_card(stripe_customer, card_to_delete_id)
-        stripe_delete_card(stripe_card)
+        stripe_delete_error = stripe_delete_card(stripe_card)
+        if stripe_delete_error:
+            return self.make_error(stripe_delete_error)
         self.user.stripe_customer.updated_at = datetime.datetime.utcnow()
         self.session.commit()
         return self.success()

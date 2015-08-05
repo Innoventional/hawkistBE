@@ -11,6 +11,11 @@ __author__ = 'ne_luboff'
 
 
 def phone_verification(phone):
+    """
+    Phone verification.
+    We must replaced plus sign.
+    Check minimum and maximum length of number and is this number contains only of digits.
+    """
     phone = str(phone)
     phone = phone.replace('+', '')
     try:
@@ -27,14 +32,20 @@ def phone_verification(phone):
 
 
 def phone_reformat(phone):
-    # pre-processing
-    # if to_number started with 07 we must change it to 447
+    """
+    Pre-processing for Great Britain numbers.
+    If mobile number started with 07 we must change it to 447.
+    """
     if str(phone[0:2]) == '07':
         phone = phone.replace('0', '44', 1)
     return phone
 
 
 def username_verification(username):
+    """
+    Username verification.
+    Usernames can consist of chars, digits, dots and dashes only.
+    """
     if len(username) > 50:
         return USERNAME_VERIFICATION_TOO_LONG_USERNAME
     if not re.match('^\w[\w.-]+$', username.decode('utf-8'), re.U):
@@ -43,13 +54,20 @@ def username_verification(username):
 
 
 def email_verification(email):
+    """
+    Verification for email format.
+    Valid email address example: test_email@mail.com.
+    """
     if not re.match(r"^([\w+_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$", email.decode('utf-8'), re.U):
         return EMAIL_VERIFICATION_INVALID_FORMAT
     return False
 
 
-# check user avability to send one more sms
 def sms_limit_check(self):
+    """
+    Check does current user reach sms limit per hour.
+    Standard sms limit count - 3.
+    """
     if not self.user:
         return False
     if self.user.last_pin_sending:

@@ -19,6 +19,12 @@ listing_views = Table("listing_views", Base.metadata,
 
 
 class ListingStatus(Enum):
+    """
+    Listing statuses:
+        Active - listing is available to buy;
+        Reserved - someone try to buy this listing;
+        Sold - this listing is sold.
+    """
     Active = 0
     Reserved = 1
     Sold = 2
@@ -89,6 +95,10 @@ class Listing(Base):
             return self.shipping_price
 
     def get_comment_count(self, user_id):
+        """
+        Offer comments has own visibility area - only user who offer new price and listing owner can see it.
+        So we must calculate comments count for every user individually.
+        """
         # so, we must go through every listing comment and check does current user can see it
         # first get all comments
         listing_comments = self.listing_comments
@@ -106,6 +116,7 @@ class Listing(Base):
         return listing_comment_count
 
     def response(self, user_id):
+        print self.likes
         return {
             'id': self.id,
             'user_id': self.user_id,
@@ -120,9 +131,7 @@ class Listing(Base):
             'condition': self.condition_id,
             'color': self.color_id,
             'retail_price': "%.02f" % float(self.retail_price),
-            # 'retail_price': float(self.retail_price),
             'selling_price': "%.02f" % float(self.selling_price),
-            # 'selling_price': float(self.selling_price),
             'discount': self.discount,
             'shipping_price': self.get_shipping_price_value(),
             'collection_only': self.collection_only,
@@ -132,6 +141,7 @@ class Listing(Base):
             'sold': self.sold,
             'status': self.status,
             'likes': len(self.likes),
+            'liked': user_id in [user.id for user in self.likes],
             'views': len(self.views),
             'comments': self.get_comment_count(user_id)
         }

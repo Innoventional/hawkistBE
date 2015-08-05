@@ -13,6 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 def get_city_by_code(post_code):
+    """
+    Google api handler to get Great Britain postal town by post code.
+    """
     post_code = post_code.replace(' ', '').encode('utf-8')
     error = ''
     city = ''

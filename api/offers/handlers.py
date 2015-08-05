@@ -163,7 +163,7 @@ class ItemOffersHandler(ApiHandler):
             comment.created_at = datetime.datetime.utcnow()
             comment.listing = offer.listing
             comment.user = self.user
-            comment.text = OFFER_ACCEPTED % float(offer.new_price)
+            comment.text = OFFER_ACCEPTED % "%.02f" % float(offer.new_price)
             self.session.add(comment)
             self.session.commit()
 
@@ -175,7 +175,7 @@ class ItemOffersHandler(ApiHandler):
             comment.created_at = datetime.datetime.utcnow()
             comment.listing = offer.listing
             comment.user = self.user
-            comment.text = OFFER_DECLINED % float(offer.new_price)
+            comment.text = OFFER_DECLINED % "%.02f" % float(offer.new_price)
             self.session.add(comment)
             self.session.commit()
 

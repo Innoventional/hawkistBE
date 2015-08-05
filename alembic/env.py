@@ -24,6 +24,7 @@ from api.followers.models import *
 from api.users.blocked_users.models import *
 from api.users.reported_users.models import *
 from api.payments.models import *
+from api.orders.models import *
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel

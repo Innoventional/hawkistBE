@@ -6,6 +6,12 @@ logger = logging.getLogger(__name__)
 
 
 def get_facebook_user(token):
+    """
+    Use facebook graph api for getting info about user.
+    Facebook response will be successful if token is valid.
+    Get current (depending on token) user id in our application,
+    email and username (which contains of first name and last name).
+    """
     data = {}
     error = None
     try:
@@ -31,6 +37,9 @@ def get_facebook_user(token):
 
 
 def get_facebook_photo(token):
+    """
+    Special requests for getting facebook avatar and thumbnail icon.
+    """
     photo = dict()
     error = None
     try:

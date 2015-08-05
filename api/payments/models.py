@@ -81,7 +81,7 @@ class StripeCharges(Base):
     paid = Column(Boolean, default=False)
     refunded = Column(Boolean, default=False)
     payment_sum = Column(Numeric, nullable=True)
-    application_fee_sum = Column(Numeric, nullable=True)
+    payment_sum_without_application_fee = Column(Numeric, nullable=True)
     transaction_status = Column(String, default="failed")
 
     buyer_id = Column(Integer, ForeignKey('users.id'), nullable=True, index=True)
@@ -91,3 +91,15 @@ class StripeCharges(Base):
     listing_id = Column(Integer, ForeignKey('listings.id'), nullable=True, index=True)
     listing = relationship('Listing', backref=backref('listing_charges', order_by=id, cascade="all,delete",
                                                       lazy='dynamic'), foreign_keys=listing_id)
+
+    def test_timeout_function(self):
+        # change status to freeze
+        self.system_status = ChargesStatus.Frozen
+        # send sms
+        from utility.twilio_api import send_sms
+        print send_sms("380993351739", 'test timeout %s' % datetime.datetime.utcnow())
+
+    def automatic_transfer(self):
+        # send money to seller app wallet
+        # self.listing.user.stripe_customer.stripe_app_wallet
+        pass

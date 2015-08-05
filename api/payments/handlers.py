@@ -38,6 +38,8 @@ class CardHandler(ApiHandler):
             return suspension_error
 
         card_response = []
+        if not self.user.stripe_customer:
+            return self.make_error(CREATE_CHARGE_NO_STRIPE_ACCOUNT)
         # select all users cards
         cards = self.user.stripe_customer
         # retrieve stripe acc
@@ -414,12 +416,113 @@ class CardHandler(ApiHandler):
     #     return self.success()
 
 
-@route('listings/buy')
-class BuyListingHandler(ApiHandler):
-    allowed_methods = ('POST', 'PUT')
+# @route('listings/buy')
+# class BuyListingHandler(ApiHandler):
+#     allowed_methods = ('POST', 'PUT')
+#
+#     def create(self):
+#
+#         if self.user is None:
+#             die(401)
+#
+#         logger.debug(self.user)
+#         update_user_last_activity(self)
+#
+#         suspension_error = check_user_suspension_status(self.user)
+#         if suspension_error:
+#             logger.debug(suspension_error)
+#             return suspension_error
+#
+#         logger.debug('REQUEST_OBJECT_ADD_NEW_CHARGE')
+#         logger.debug(self.request_object)
+#
+#         stripe_card_id = ''
+#         listing_id = ''
+#
+#         if self.request_object:
+#             if 'stripe_card_id' in self.request_object:
+#                 stripe_card_id = self.request_object['stripe_card_id']
+#
+#             if 'listing_id' in self.request_object:
+#                 listing_id = self.request_object['listing_id']
+#
+#         if not stripe_card_id:
+#             return self.make_error(CREATE_CHARGE_NO_CARD_ID)
+#
+#         if not listing_id:
+#             return self.make_error(CREATE_CHARGE_NO_LISTING_ID)
+#
+#         # validate listing
+#         # try get listing object
+#         listing = self.session.query(Listing).filter(Listing.id == listing_id).first()
+#         if not listing:
+#             return self.make_error(GET_LISTING_INVALID_ID % listing_id)
+#
+#         # check listing owner
+#         if str(self.user.id) == str(listing.user.id):
+#             return self.make_error(CREATE_CHARGE_BUY_YOUR_OWN_LISTING)
+#
+#         # check listing status
+#         if listing.status == ListingStatus.Reserved:
+#             return self.make_error(CREATE_CHARGE_BUY_RESERVED_LISTING)
+#         elif listing.status == ListingStatus.Sold:
+#             return self.make_error(CREATE_CHARGE_BUY_SOLD_LISTING)
+#
+#         # validate card
+#         # check does this user has stripe customer
+#         if not self.user.stripe_customer:
+#             return self.make_error(CREATE_CHARGE_NO_STRIPE_ACCOUNT)
+#
+#         stripe_customer = stripe_retrieve_customer(self.user.stripe_customer.stripe_customer_id)
+#
+#         # check is any card in this stripe account
+#         stripe_customer_cards = stripe_customer['sources']['data']
+#         if stripe_card_id not in str(stripe_customer_cards):
+#             return self.make_error(UPDATE_CARD_INVALID_ID % stripe_card_id)
+#
+#         # stripe_card = stripe_retrieve_card(stripe_customer, stripe_card_id)
+#
+#         # calculate charge amount
+#         amount = listing.selling_price
+#         if listing.shipping_price:
+#             amount += listing.shipping_price
+#
+#         # so try create stripe charge
+#         stripe_response = stripe_create_charges(customer_id=self.user.stripe_customer.stripe_customer_id,
+#                                                 card_id=stripe_card_id, amount=int(amount*100), description=listing.id)
+#         logger.debug('STRIPE_RESPONSE')
+#         logger.debug(stripe_response)
+#
+#         stripe_error, stripe_charge = stripe_response['error'], stripe_response['data']
+#         if stripe_error:
+#             return self.make_error(stripe_error)
+#
+#         # if this is success payment create new row in payments table
+#         new_charge = StripeCharges()
+#         new_charge.created_at = datetime.datetime.utcnow()
+#         new_charge.updated_at = datetime.datetime.utcnow()
+#         new_charge.date_finish = new_charge.created_at + datetime.timedelta(days=7)
+#         new_charge.system_status = ChargesStatus.Active
+#
+#         new_charge.charge_id = stripe_charge['id']
+#         new_charge.transaction_id = stripe_charge['balance_transaction']
+#         new_charge.paid = stripe_charge['paid']
+#         new_charge.refunded = stripe_charge['refunded']
+#         new_charge.payment_sum = amount
+#         new_charge.application_fee_sum = float(listing.selling_price) * env['stripe_hawkist_fee_persentage']
+#         new_charge.transaction_status = stripe_charge['status']
+#
+#         new_charge.buyer_id = self.user.id
+#         new_charge.listing_id = listing.id
+#         self.session.add(new_charge)
+#         self.session.commit()
+#         return self.success()
 
-    def create(self):
+@route('user/wallet')
+class WalletHandler(ApiHandler):
+    allowed_methods = ('GET', )
 
+    def read(self):
         if self.user is None:
             die(401)
 
@@ -431,87 +534,25 @@ class BuyListingHandler(ApiHandler):
             logger.debug(suspension_error)
             return suspension_error
 
-        logger.debug('REQUEST_OBJECT_ADD_NEW_CHARGE')
-        logger.debug(self.request_object)
-
-        stripe_card_id = ''
-        listing_id = ''
-
-        if self.request_object:
-            if 'stripe_card_id' in self.request_object:
-                stripe_card_id = self.request_object['stripe_card_id']
-
-            if 'listing_id' in self.request_object:
-                listing_id = self.request_object['listing_id']
-
-        if not stripe_card_id:
-            return self.make_error(CREATE_CHARGE_NO_CARD_ID)
-
-        if not listing_id:
-            return self.make_error(CREATE_CHARGE_NO_LISTING_ID)
-
-        # validate listing
-        # try get listing object
-        listing = self.session.query(Listing).filter(Listing.id == listing_id).first()
-        if not listing:
-            return self.make_error(GET_LISTING_INVALID_ID % listing_id)
-
-        # check listing owner
-        if str(self.user.id) == str(listing.user.id):
-            return self.make_error(CREATE_CHARGE_BUY_YOUR_OWN_LISTING)
-
-        # check listing status
-        if listing.status == ListingStatus.Reserved:
-            return self.make_error(CREATE_CHARGE_BUY_RESERVED_LISTING)
-        elif listing.status == ListingStatus.Sold:
-            return self.make_error(CREATE_CHARGE_BUY_SOLD_LISTING)
-
-        # validate card
         # check does this user has stripe customer
-        if not self.user.stripe_customer:
-            return self.make_error(CREATE_CHARGE_NO_STRIPE_ACCOUNT)
+        need_commit = False
+        if not self.user.app_wallet:
+            self.user.app_wallet = 0
+            need_commit = True
 
-        stripe_customer = stripe_retrieve_customer(self.user.stripe_customer.stripe_customer_id)
+        if not self.user.app_wallet:
+            self.user.app_wallet_pending = 0
+            need_commit = True
 
-        # check is any card in this stripe account
-        stripe_customer_cards = stripe_customer['sources']['data']
-        if stripe_card_id not in str(stripe_customer_cards):
-            return self.make_error(UPDATE_CARD_INVALID_ID % stripe_card_id)
+        if need_commit:
+            self.user.updated_at = datetime.datetime.utcnow()
+            self.session.commit()
 
-        # stripe_card = stripe_retrieve_card(stripe_customer, stripe_card_id)
-
-        # calculate charge amount
-        amount = listing.selling_price
-        if listing.shipping_price:
-            amount += listing.shipping_price
-
-        # so try create stripe charge
-        stripe_response = stripe_create_charges(customer_id=self.user.stripe_customer.stripe_customer_id,
-                                                card_id=stripe_card_id, amount=int(amount*100), description=listing.id)
-        logger.debug('STRIPE_RESPONSE')
-        logger.debug(stripe_response)
-
-        stripe_error, stripe_charge = stripe_response['error'], stripe_response['data']
-        if stripe_error:
-            return self.make_error(stripe_error)
-
-        # if this is success payment create new row in payments table
-        new_charge = StripeCharges()
-        new_charge.created_at = datetime.datetime.utcnow()
-        new_charge.updated_at = datetime.datetime.utcnow()
-        new_charge.date_finish = new_charge.created_at + datetime.timedelta(days=7)
-        new_charge.system_status = ChargesStatus.Active
-
-        new_charge.charge_id = stripe_charge['id']
-        new_charge.transaction_id = stripe_charge['balance_transaction']
-        new_charge.paid = stripe_charge['paid']
-        new_charge.refunded = stripe_charge['refunded']
-        new_charge.payment_sum = amount
-        new_charge.application_fee_sum = float(listing.selling_price) * env['stripe_hawkist_fee_persentage']
-        new_charge.transaction_status = stripe_charge['status']
-
-        new_charge.buyer_id = self.user.id
-        new_charge.listing_id = listing.id
-        self.session.add(new_charge)
-        self.session.commit()
-        return self.success()
+        return self.success(
+            {
+                'balance': {
+                    'active': "%.02f" % float(self.user.app_wallet),
+                    'pending': "%.02f" % float(self.user.app_wallet_pending)
+                }
+            }
+        )

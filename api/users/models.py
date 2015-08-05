@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, Integer, DateTime, String, Boolean, SmallInteger, ForeignKey, Enum
+from sqlalchemy import Column, Integer, DateTime, String, Boolean, SmallInteger, ForeignKey, Enum, Numeric
 from sqlalchemy.orm import relationship, backref
 from api.comments.models import comment_mentioned_users
 from api.followers.models import user_followers
@@ -105,6 +105,10 @@ class User(Base):
     stripe_customer = relationship('StripeCustomer', backref=backref('user_stripe_account', order_by=id,
                                                                      cascade="all,delete", lazy='dynamic'),
                                    foreign_keys=stripe_customer_id)
+
+    app_wallet = Column(Numeric, nullable=False, default=0)
+    app_wallet_pending = Column(Numeric, nullable=False, default=0)
+
 
     def __repr__(self):
         return '<User %s (%s)>' % (self.id, self.username)

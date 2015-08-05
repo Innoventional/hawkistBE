@@ -166,7 +166,7 @@ class ListingHandler(ApiHandler):
                                                                     Listing.id != listing.id,
                                                                     Listing.status == ListingStatus.Active)).limit(6)
             current_listing_response = listing.response(self.user.id)
-            current_listing_response['liked'] = self.user in listing.likes
+            # current_listing_response['liked'] = self.user in listing.likes
             current_listing_response['user'] = listing.user.user_response
             response['item'] = current_listing_response
             response['similar_items'] = [l.response(self.user.id) for l in similar_listings]

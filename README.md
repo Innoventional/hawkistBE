@@ -971,7 +971,6 @@ Response Success:
     
 
 
-
 **Get wishlist (list of liked listings) by user id**
 
     Url: 'user/wishlist?user_id=USER_ID'
@@ -990,7 +989,35 @@ Response Success:
     
 
 
+**Buy item (create stripe charge)**
 
+    Url: 'listings/buy'
+    Method: 'POST'
+
+
+Data:
+
+    {
+        "stripe_card_id": STRIPE CARD ID,
+        "listing_id": LISTING ID
+    }
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }
+    
+    
+    
 **Get city by post code**
 
     Url: 'get_city'
@@ -1324,35 +1351,6 @@ Response Failure:
     Url: 'user/cards?card_id=CARD_TO_DELETE_ID'
     Method: 'DELETE'
 
-
-Response Success:
-    
-    {
-        'status': 0
-    }
-    
-Response Failure:
-
-    {
-        'status': 1,
-        'message': '',          — Error message text
-        'title': ''          — Error message title 
-    }
-
-
-
-**Buy item (create stripe charge)**
-
-    Url: 'listings/buy'
-    Method: 'PUT'
-
-
-Data:
-
-    {
-        "stripe_card_id": STRIPE CARD ID,
-        "listing_id": LISTING ID
-    }
 
 Response Success:
     

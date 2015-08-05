@@ -11,3 +11,11 @@ UPDATE_CARD_NO_ID = 'No card to update id'
 UPDATE_CARD_INVALID_ID = 'Invalid stripe card id (%s)'
 
 DELETE_CARD_NO_CARD_ID = 'No card to delete id'
+
+CREATE_CHARGE_NO_CARD_ID = 'You must select card to buy the listing'
+CREATE_CHARGE_NO_LISTING_ID = 'No listing to buy id'
+CREATE_CHARGE_NO_STRIPE_ACCOUNT = 'First add bank card'
+
+CREATE_CHARGE_BUY_YOUR_OWN_LISTING = 'Sorry, but you cannot byu your own listings'
+CREATE_CHARGE_BUY_RESERVED_LISTING = 'Sorry, but this listing is reserved'
+CREATE_CHARGE_BUY_SOLD_LISTING = 'Sorry, but this listing is sold out'

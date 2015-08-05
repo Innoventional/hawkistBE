@@ -1340,6 +1340,34 @@ Response Failure:
     }
 
 
+
+**Buy item (create stripe charge)**
+
+    Url: 'listings/buy'
+    Method: 'PUT'
+
+
+Data:
+
+    {
+        "stripe_card_id": STRIPE CARD ID,
+        "listing_id": LISTING ID
+    }
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }
+
 STATUS CODES FOR CUSTOM ERROR TITLE
 -----------------------------------
     

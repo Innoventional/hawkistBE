@@ -347,8 +347,123 @@ def stripe_create_charges(customer_id=None, card_id=None, amount=None, currency=
             currency=currency,
             customer=customer_id,
             source=card_id,
-            description=description
+            description='Hawkist_listing_%s' % description
         )
+    except stripe.error.CardError, e:
+        error = str(e)
+    except stripe.error.InvalidRequestError, e:
+        error = str(e)
+    except stripe.error.AuthenticationError, e:
+        error = str(e)
+    except stripe.error.APIConnectionError, e:
+        error = str(e)
+    except stripe.error.StripeError, e:
+        error = str(e)
+    except Exception, e:
+        error = str(e)
+    finally:
+        return {
+            'error': error,
+            'data': charge
+        }
+
+
+def stripe_refund(charge_id):
+    """
+    Refund money function.
+    Return all charged money to customer.
+    """
+    error = ''
+    refund = ''
+    try:
+        # first get charge by id
+        charge = stripe.Charge.retrieve(charge_id)
+        # then refund it
+        refund = charge.refunds.create()
+    except stripe.error.CardError, e:
+        error = str(e)
+    except stripe.error.InvalidRequestError, e:
+        error = str(e)
+    except stripe.error.AuthenticationError, e:
+        error = str(e)
+    except stripe.error.APIConnectionError, e:
+        error = str(e)
+    except stripe.error.StripeError, e:
+        error = str(e)
+    except Exception, e:
+        error = str(e)
+    finally:
+        return {
+            'error': error,
+            'data': refund
+        }
+
+
+def stripe_create_transfer(destination=None, amount=None, currency='gbp', description=None,
+                           charge=None, customer_id=None, card_id=None):
+    error = ''
+    transfer = ''
+    try:
+        # charge = stripe.Charge.create(
+        #     amount=amount,
+        #     currency=currency,
+        #     destination=destination_card_id,
+        #     customer=customer_id,
+        #     source=card_id,
+        #     description='Hawkist_payment_for_listing_%s' % description
+        # )
+        transfer = stripe.Transfer.create(
+            amount=amount,
+            destination=destination,
+            description=description,
+            currency=currency,
+            source_transaction=charge
+        )
+        # charge = stripe.Transfer.create(
+        #     amount=amount,
+        #     currency=currency,
+        #     destination=destination_card_id,
+        #     source_transaction=destination_card_id,
+        #     description='Hawkist_payment_for_listing_%s' % description
+        # )
+    except stripe.error.CardError, e:
+        error = str(e)
+    except stripe.error.InvalidRequestError, e:
+        error = str(e)
+    except stripe.error.AuthenticationError, e:
+        error = str(e)
+    except stripe.error.APIConnectionError, e:
+        error = str(e)
+    except stripe.error.StripeError, e:
+        error = str(e)
+    except Exception, e:
+        error = str(e)
+    finally:
+        return {
+            'error': error,
+            'data': transfer
+        }
+
+
+def stripe_test(amount=None, customer=None, destination=None, card=None):
+    error = ''
+    charge = ''
+    try:
+        # first create token for payment
+        charge = stripe.Charge.create(
+            amount=amount,
+            currency='gbp',
+            customer=customer,
+            card=card,
+            destination=destination
+        )
+        # charge = stripe.Transfer.create(
+        #     amount=amount,
+        #     currency=currency,
+        #     destination=destination_card_id,
+        #     source_transaction=destination_card_id,
+        #     description='Hawkist_payment_for_listing_%s' % description
+        # )
     except stripe.error.CardError, e:
         error = str(e)
     except stripe.error.InvalidRequestError, e:
@@ -371,8 +486,16 @@ def stripe_create_charges(customer_id=None, card_id=None, amount=None, currency=
 # test stripe customer
 if __name__ == '__main__':
     print 'In utility/stripe_api'
-    print stripe_create_charges(customer_id='cus_6hj6xWiBBKO1rH', card_id='card_16UJeRArfhEk5XzXwbkhgiT4', amount=1200,
-                                description='ne_luboff test charge')
+    print stripe_refund('ch_16W6vIArfhEk5XzXKfbubPkP')
+    # print stripe_create_charges(customer_id='cus_6hj6xWiBBKO1rH', card_id='card_16UJeRArfhEk5XzXwbkhgiT4', amount=1200,
+    #                             description='ne_luboff test charge')
+    # print stripe_create_transfer(destination_card_id='cus_6jDv0u0vdbtIPH', source_transaction='cus_6jDv0u0vdbtIPH', amount=1000,
+    #                              description='test', customer_id='cus_6hj6xWiBBKO1rH', card_id='card_16UJeRArfhEk5XzXwbkhgiT4')
+
+    # print stripe_create_transfer(destination='cus_6jDv0u0vdbtIPH', amount=1000, description='test',
+    #                              charge='ch_16W6vIArfhEk5XzXKfbubPkP')
+    # print stripe_test(amount=1234, customer='cus_6hj6xWiBBKO1rH', destination='cus_6jDv0u0vdbtIPH',
+    #                   card='card_16UJeRArfhEk5XzXwbkhgiT4')
     # first generate token
     # test_card_number = 4242424242424242
     # test_card_exp_month = 12

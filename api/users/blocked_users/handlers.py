@@ -99,7 +99,7 @@ class BlockingUsersHandler(ApiHandler):
             return self.make_error(BLOCK_USER_ALREADY_UNBLOCKED_USER % user_to_unblock.username.upper())
 
         # else remove this user from current user blocked users
-        self.user.blocked.remove
+        self.user.blocked.remove(user_to_unblock)
         self.session.commit()
 
         return self.success()

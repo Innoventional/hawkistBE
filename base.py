@@ -100,7 +100,7 @@ class ThreadableRequestHandler(web.RequestHandler):
 
     def on_finish(self):
         if hasattr(self, '_session'):
-            self._session.remove
+            self._session.remove()
 
 
 class BaseRequestHandler(ThreadableRequestHandler):

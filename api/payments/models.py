@@ -67,40 +67,27 @@ class ChargesStatus(Enum):
     Finished = 2
 
 
-class ChargesTransactionStatus(Enum):
-    Succeeded = 0
-    Failed = 1
+class StripeCharges(Base):
+    __tablename__ = 'stripe_charges'
 
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    created_at = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
+    date_finish = Column(DateTime, nullable=True)
+    system_status = Column(SmallInteger, nullable=False, default=ChargesStatus.Active)
 
-# stripe charges
-# class StripeCharges(Base):
-#     __tablename__ = 'stripe_charges'
-#
-#     id = Column(Integer, primary_key=True)
-#     created_at = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
-#     updated_at = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
-#     date_start = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
-#     date_finish = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
-#     system_status = Column(SmallInteger, nullable=False, default=ChargesStatus.Active)
-#
-#     payment_sum = Column(Numeric, nullable=True)
-#     payment_currency = Column(String(3), nullable=False)
-#     charge_id = Column(String, nullable=True)
-#     transaction_id = Column(String, nullable=True)
-#     paid = Column(Boolean, default=False)
-#     transaction_status = Column(String, default=ChargesTransactionStatus.Failed)
-#     refunded = Column(Boolean, default=False)
-#
-#     buyer_stripe_card_id = Column(String, nullable=True)
-#     buyer_id = Column(Integer, ForeignKey('users.id'), nullable=False, index=True)
-#     buyer = relationship('User', backref=backref('buyer', order_by=id, cascade="all,delete", lazy='dynamic'),
-#                          foreign_keys=buyer_id)
-#
-#     seller_stripe_card_id = Column(String, nullable=True)
-#     seller_id = Column(Integer, ForeignKey('users.id'), nullable=False, index=True)
-#     seller = relationship('User', backref=backref('seller', order_by=id, cascade="all,delete", lazy='dynamic'),
-#                           foreign_keys=seller_id)
-#
-#     listing_id = Column(Integer, ForeignKey('listings.id'), nullable=False, index=True)
-#     listing = relationship('Listing', backref=backref('listing_charges', order_by=id, cascade="all,delete",
-#                                                       lazy='dynamic'), foreign_keys=listing_id)
+    charge_id = Column(String, nullable=False)
+    transaction_id = Column(String, nullable=True)
+    paid = Column(Boolean, default=False)
+    refunded = Column(Boolean, default=False)
+    payment_sum = Column(Numeric, nullable=True)
+    application_fee_sum = Column(Numeric, nullable=True)
+    transaction_status = Column(String, default="failed")
+
+    buyer_id = Column(Integer, ForeignKey('users.id'), nullable=True, index=True)
+    buyer = relationship('User', backref=backref('user_charges', order_by=id, cascade="all,delete", lazy='dynamic'),
+                         foreign_keys=buyer_id)
+
+    listing_id = Column(Integer, ForeignKey('listings.id'), nullable=True, index=True)
+    listing = relationship('Listing', backref=backref('listing_charges', order_by=id, cascade="all,delete",
+                                                      lazy='dynamic'), foreign_keys=listing_id)

@@ -1193,7 +1193,7 @@ class ListingLikeHandler(ApiHandler):
             listing_likes.append(self.user)
         # else delete this user like
         else:
-            listing_likes.remove
+            listing_likes.remove(self.user)
         self.session.commit()
         return self.success()
 

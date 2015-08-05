@@ -987,35 +987,6 @@ Response Success:
         ]
     }
     
-
-
-**Buy item (create stripe charge)**
-
-    Url: 'listings/buy'
-    Method: 'POST'
-
-
-Data:
-
-    {
-        "stripe_card_id": STRIPE CARD ID,
-        "listing_id": LISTING ID
-    }
-
-Response Success:
-    
-    {
-        'status': 0
-    }
-    
-Response Failure:
-
-    {
-        'status': 1,
-        'message': '',          — Error message text
-        'title': ''          — Error message title 
-    }
-    
     
     
 **Get city by post code**
@@ -1351,6 +1322,80 @@ Response Failure:
     Url: 'user/cards?card_id=CARD_TO_DELETE_ID'
     Method: 'DELETE'
 
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }
+    
+--------------------------
+### My orders
+
+ORDER_INFO_DICT
+
+    "id": USER ORDER ID,
+    "status": ORDER STATUS,
+    "listing": {
+        "id": LISTING ID,
+        "title": LISTING TITLE,
+        "image": LINK TO LISTING PHOTO,
+        "retail_price": RETAIL PRICE,
+        "selling_price": SELLING PRICE,
+        },
+
+ORDER STATUSES
+    
+    Active = 0
+    Received = 1
+    HasAnIssue = 2
+
+**Get all bank cards**
+
+    Url: 'user/orders'
+    Method: 'GET'
+
+
+
+Response:
+    
+    {
+        'status': 0,
+        'orders': [
+            {
+                ORDER_INFO_DICT
+            },
+            {
+                ...
+            },
+            {
+                ORDER_INFO_DICT
+            }
+        ]
+    }
+    
+    
+    
+**Buy item (create stripe charge)**
+
+    Url: 'user/orders'
+    Method: 'POST'
+
+
+Data:
+
+    {
+        "stripe_card_id": STRIPE CARD ID,
+        "listing_id": LISTING ID
+    }
 
 Response Success:
     

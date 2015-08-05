@@ -19,7 +19,7 @@ from utility.user_utility import update_user_last_activity, check_user_suspensio
 __author__ = 'ne_luboff'
 
 
-@route('orders')
+@route('user/orders')
 class OrdersHandler(ApiHandler):
     allowed_methods = ('POST', 'PUT', 'GET')
 

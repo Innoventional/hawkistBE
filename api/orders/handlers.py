@@ -1,14 +1,14 @@
 import datetime
 from tornado import ioloop
 from api.items.models import Listing, ListingStatus
-from api.orders.models import UserOrders, OrderStatus
+from api.orders.models import UserOrders, OrderStatus, IssueStatus
 from api.payments.models import StripeCharges, ChargesStatus
 from base import ApiHandler, die, logger
 from environment import env
 from helpers import route
 from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID
 from ui_messages.errors.orders_errors import UPDATE_ORDER_NO_ID, UPDATE_ORDER_NO_STATUS, UPDATE_ORDER_NO_REASON, \
-    UPDATE_ORDER_NO_ORDER, UPDATE_ORDER_ORDER_NOT_ACTIVE, UPDATE_ORDER_INVALID_STATUS
+    UPDATE_ORDER_NO_ORDER, UPDATE_ORDER_ORDER_NOT_ACTIVE, UPDATE_ORDER_INVALID_STATUS, UPDATE_ODER_INVALID_ISSUE_REASON
 from ui_messages.errors.payment_errors import CREATE_CHARGE_NO_CARD_ID, CREATE_CHARGE_NO_LISTING_ID, \
     CREATE_CHARGE_BUY_YOUR_OWN_LISTING, CREATE_CHARGE_BUY_RESERVED_LISTING, CREATE_CHARGE_BUY_SOLD_LISTING, \
     CREATE_CHARGE_NO_STRIPE_ACCOUNT, UPDATE_CARD_INVALID_ID
@@ -193,7 +193,7 @@ class OrdersHandler(ApiHandler):
 
         # check does user select decline order reason
         if str(new_status) == str(OrderStatus.HasAnIssue):
-            if not issue_reason:
+            if len(str(issue_reason)) == 0:
                 return self.make_error(UPDATE_ORDER_NO_REASON)
 
         # check does this order exists
@@ -215,9 +215,15 @@ class OrdersHandler(ApiHandler):
             order.listing.user.app_wallet += order.charge.payment_sum_without_application_fee
             self.session.commit()
         elif str(new_status) == str(OrderStatus.HasAnIssue):
+            # validate issue reason
+            if str(issue_reason) not in ['0', '1', '2']:
+                return self.make_error(UPDATE_ODER_INVALID_ISSUE_REASON)
             # mark this order with has issue flag
             order.order_status = OrderStatus.HasAnIssue
             order.charge.system_status = ChargesStatus.Frozen
+            order.issue_reason = issue_reason
+            order.issue_status = IssueStatus.New
+            self.session.commit()
         else:
             return self.make_error(UPDATE_ORDER_INVALID_STATUS)
         return self.success()

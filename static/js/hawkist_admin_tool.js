@@ -855,3 +855,67 @@ delete_listing = function(listing_id, completion)
     });
     return false;
 };
+
+// ORDERS
+$('.btn_order_investigating').click(function(){
+    id = $(this).parent().parent().data('id');
+    $.ajax({
+        url: '/api/admin/listings/issues',
+        type: 'PUT',
+        data: {
+            'id': id,
+            'action': 1
+        },
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            if (status == 0 ) {
+                location.reload();
+            } else {
+                alert(message);
+            }
+        }
+    });
+});
+
+$('.btn_order_canceled').click(function(){
+    id = $(this).parent().parent().data('id');
+    $.ajax({
+        url: '/api/admin/listings/issues',
+        type: 'PUT',
+        data: {
+            'id': id,
+            'action': 2
+        },
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            if (status == 0 ) {
+                location.reload();
+            } else {
+                alert(message);
+            }
+        }
+    });
+});
+
+$('.btn_order_resolved').click(function(){
+    id = $(this).parent().parent().data('id');
+    $.ajax({
+        url: '/api/admin/listings/issues',
+        type: 'PUT',
+        data: {
+            'id': id,
+            'action': 4
+        },
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            if (status == 0 ) {
+                location.reload();
+            } else {
+                alert(message);
+            }
+        }
+    });
+});

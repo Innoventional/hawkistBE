@@ -20,7 +20,6 @@ class AdminBlockedUsersHandler(AdminBaseHandler):
             return HttpRedirect('/api/admin/login')
 
         logger.debug(self.user)
-
         # first get all info from blocked user table
         sql_request = """SELECT user_blacklist.user_id as blocker_id,
                          user_blacklist.blocked_user_id as blocked_id,

@@ -258,6 +258,9 @@ class AdminUsersHandler(AdminBaseHandler):
         user = self.session.query(User).filter(User.id == user_id).first()
         if not user:
             return self.make_error('Something wrong. Try again later')
+        # first delete this user mentions
+        for u in user.comment_mentions:
+            user.comment_mentions.remove(u)
         self.session.delete(user)
         self.session.commit()
         return self.success()

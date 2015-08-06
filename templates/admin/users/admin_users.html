@@ -9,7 +9,16 @@
 {% block content %}
     <div class="tag_navigation_div">
         <a href="#" id="current_link">All</a>
-        <a href="users/blocked">Blocked</a>
+        <!--<a href="users/blocked">Blocked</a>-->
+
+        <a href="users/blocked">Blocked
+        {% for u in users %}
+            {% if u.blocked_me %}
+                <i class="glyphicon glyphicon-exclamation-sign red-color" title="Someone was blocked or reported"></i>
+            {% break %}
+            {% end %}
+        {% end %}
+        </a>
         <!--<a href="users/reported">Reported</a>-->
     </div>
     <div id='PleaseWaitSuspension' style="display: none">

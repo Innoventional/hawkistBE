@@ -1,0 +1,57 @@
+import logging
+from api.admin.handlers.login import AdminBaseHandler
+from api.items.models import Listing
+from api.orders.models import UserOrders, OrderStatus, IssueStatus
+from base import HttpRedirect, paginate
+from helpers import route
+from ui_messages.errors.admin_errors.admin_listings_errors import ADMIN_TRY_DELETE_LISTING_WHICH_DOES_NOT_EXISTS
+
+__author__ = 'ne_luboff'
+
+logger = logging.getLogger(__name__)
+
+
+@route('admin/listings/issues')
+class AdminIssuedListingsHandler(AdminBaseHandler):
+    allowed_methods = ('GET', 'PUT')
+
+    def read(self):
+        if not self.user:
+            return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
+
+        orders = self.session.query(UserOrders).filter(UserOrders.order_status == OrderStatus.HasAnIssue).order_by(UserOrders.issue_status)
+
+        page = self.get_arg('p', int, 1)
+        page_size = self.get_arg('page_size', int, 100)
+        paginator, listings = paginate(orders, page, page_size)
+
+        return self.render_string('admin/listings/admin_issued_listings.html', orders=orders, paginator=paginator,
+                                  menu_tab_active='tab_listings', IssueStatus=IssueStatus)
+
+    def update(self):
+        if not self.user:
+            return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
+
+        order_id = self.get_arg('id')
+        action = self.get_arg('action')
+        order = self.session.query(UserOrders).filter(UserOrders.id == order_id).first()
+
+        if not order:
+            logger.debug('UPDATE ORDER')
+            logger.debug(order_id)
+            return self.make_error('Something wrong')
+
+        if str(action) == str(IssueStatus.Investigating):
+            order.issue_status = IssueStatus.Investigating
+        elif str(action) == str(IssueStatus.Cancelled):
+            order.issue_status = IssueStatus.Cancelled
+            # TODO money to buyer
+        elif str(action) == str(IssueStatus.Resolved):
+            order.issue_status = IssueStatus.Resolved
+            # TODO money to seller
+        self.session.commit()
+        return self.success()

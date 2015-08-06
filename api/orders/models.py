@@ -34,11 +34,17 @@ class IssueStatus(Enum):
     RefundIssued - automatically appears then money refunded;
     Resolved - send money to seller.
     """
-    Active = 0
+    New = 0
     Investigating = 1
     Cancelled = 2
     RefundIssued = 3
     Resolved = 4
+
+    @classmethod
+    def tostring(cls, val):
+        for k, v in vars(cls).iteritems():
+            if v == val:
+                return k
 
 
 class UserOrders(Base):
@@ -68,7 +74,7 @@ class UserOrders(Base):
 
     # if this listing has an issue
     issue_reason = Column(SmallInteger, nullable=True)
-    issue_status = Column(SmallInteger, nullable=True, default=IssueStatus.Active)
+    issue_status = Column(SmallInteger, nullable=True, default=IssueStatus.New)
 
     @property
     def response(self):

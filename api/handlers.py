@@ -16,7 +16,8 @@ try:
     from admin.handlers.metatags.subcategories import *
     from admin.handlers.metatags.colours import *
     from admin.handlers.metatags.conditions import *
-    from admin.handlers.listings import *
+    from admin.handlers.listings.listings import *
+    from admin.handlers.listings.issued_listings import *
     from followers.handlers import *
     from comments.handlers import *
     from offers.handlers import *
@@ -29,7 +30,7 @@ __author__ = 'ne_luboff'
 
 @route('test')
 class Test(OpenApiHandler):
-    allowed_methods = ('GET')
+    allowed_methods = ('GET', )
 
     def read(self):
         return {

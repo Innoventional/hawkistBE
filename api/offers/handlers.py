@@ -14,6 +14,7 @@ from ui_messages.errors.offers_errors.offers_errors import GET_OFFERS_NO_LISTING
     CREATE_OFFER_OFFERED_PRICE_MUST_BE_LESS_THAN_RETAIL
 from ui_messages.errors.users_errors.blocked_users_error import GET_BLOCKED_USER
 from ui_messages.errors.users_errors.suspended_users_errors import GET_SUSPENDED_USER
+from ui_messages.messages.custom_error_titles import CREATE_OFFER_PRICE_TO_HIGH_TITLE
 from ui_messages.messages.offers_messages import OFFER_NEW, OFFER_ACCEPTED, OFFER_DECLINED
 from utility.items import calculate_discount_value
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
@@ -86,8 +87,8 @@ class ItemOffersHandler(ApiHandler):
 
         # check is retail price more than new price
         if float(new_price) >= float(listing.retail_price):
-            return self.make_error(CREATE_OFFER_OFFERED_PRICE_MUST_BE_LESS_THAN_RETAIL
-                                   % "%.02f" % float(listing.retail_price))
+            return self.make_error(message=CREATE_OFFER_OFFERED_PRICE_MUST_BE_LESS_THAN_RETAIL
+                                   % "%.02f" % float(listing.retail_price), title=CREATE_OFFER_PRICE_TO_HIGH_TITLE)
 
         # create an offer
         offer = Offer()

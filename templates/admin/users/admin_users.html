@@ -69,6 +69,10 @@
                         <!--check current user status and can he do anything-->
                         {% if current_user.user_type < user.user_type or current_user == user %}
                         <td>
+                            <a class="btn btn_edit_user silver-color" href="#" title="Edit user"
+                               data-toggle="modal" data-target="#edit_user_modal">
+                                <i class="glyphicon glyphicon-pencil"></i>
+                            </a>
                             {% if current_user != user %}
                                 {% if user.system_status == 0 %}
                                     <a  class="btn btn_suspend_user red-color op-06" title="Suspend user" href="#">
@@ -87,10 +91,7 @@
                                     <i class="glyphicon glyphicon-trash"></i>
                                 </a>
                             {% end %}
-                            <a class="btn btn_edit_user silver-color" href="#" title="Edit user"
-                               data-toggle="modal" data-target="#edit_user_modal">
-                                <i class="glyphicon glyphicon-pencil"></i>
-                            </a>
+
                         </td>
                         {% else %}
                             <td>You can't modify {{ UserType.tostring(user.user_type) }} users</td>

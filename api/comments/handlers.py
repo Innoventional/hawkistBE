@@ -121,7 +121,6 @@ class ItemCommentsHandler(ApiHandler):
                 # first try get user by username
                 user_to_mention = self.session.query(User).filter(func.lower(User.username) == mentioned_user_username.lower()).first()
                 if user_to_mention:
-                    print user_to_mention.comment_mentions
                     # add new mention if this user don't mention in this comment already
                     if comment not in user_to_mention.comment_mentions:
                         user_to_mention.comment_mentions.append(comment)

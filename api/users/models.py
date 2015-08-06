@@ -98,8 +98,8 @@ class User(Base):
                             primaryjoin=id == user_reportlist.c.user_id,
                             secondaryjoin=id == user_reportlist.c.reported_user_id)
 
-    comment_mentions = relationship('Comment', secondary=comment_mentioned_users, backref='mentions',
-                                    collection_class=list)
+    comment_mentions = relationship('Comment', secondary=comment_mentioned_users,
+                                    backref=backref('mentions', order_by=id, cascade="all,delete", lazy='dynamic'))
 
     stripe_customer_id = Column(Integer, ForeignKey('stripe_customers.id'), nullable=True)
     stripe_customer = relationship('StripeCustomer', backref=backref('user_stripe_account', order_by=id,

@@ -261,6 +261,10 @@ class AdminUsersHandler(AdminBaseHandler):
         # first delete this user mentions
         for u in user.comment_mentions:
             user.comment_mentions.remove(u)
+            self.session.commit()
+        for u in user.comment_mentions:
+            user.comment_mentions.remove(u)
+            self.session.commit()
         self.session.delete(user)
         self.session.commit()
         return self.success()

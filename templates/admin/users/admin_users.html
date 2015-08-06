@@ -69,30 +69,28 @@
                         <!--check current user status and can he do anything-->
                         {% if current_user.user_type < user.user_type or current_user == user %}
                         <td>
-                            {% if user.system_status == 0 %}
-                            <a  class="btn btn_suspend_user red-color op-06" title="Suspend user" href="#">
-                                <i class="glyphicon glyphicon-user red-hoover"></i></a>
-                               {% else %}
-                            <a  class="btn btn_activate_user green-color op-06" title="Activate user" href="#">
-                                <i class="glyphicon glyphicon-user green-hoover"></i></a>
+                            {% if current_user != user %}
+                                {% if user.system_status == 0 %}
+                                    <a  class="btn btn_suspend_user red-color op-06" title="Suspend user" href="#">
+                                        <i class="glyphicon glyphicon-user red-hoover"></i></a>
+                                {% else %}
+                                    <a  class="btn btn_activate_user green-color op-06" title="Activate user" href="#">
+                                        <i class="glyphicon glyphicon-user green-hoover"></i></a>
                                 {% end %}
-                            <a class="btn btn_change_user_type" href="#" title="Change user access permissions"
-                               data-toggle="modal" data-target="#edit_user_type_modal" >
-                                <i class="glyphicon glyphicon-lock"></i>
-                            </a>
+
+                                <a class="btn btn_change_user_type" href="#" title="Change user access permissions"
+                                   data-toggle="modal" data-target="#edit_user_type_modal" >
+                                    <i class="glyphicon glyphicon-lock"></i>
+                                </a>
+
+                                <a class="btn btn_delete_user red-color" href="#" title="Delete user">
+                                    <i class="glyphicon glyphicon-trash"></i>
+                                </a>
+                            {% end %}
                             <a class="btn btn_edit_user silver-color" href="#" title="Edit user"
                                data-toggle="modal" data-target="#edit_user_modal">
                                 <i class="glyphicon glyphicon-pencil"></i>
                             </a>
-                            {% if current_user == user %}
-                                <a class="btn " href="#" title="Cannot delete yourself" style="color: inherit">
-                                    <i class="glyphicon glyphicon-trash"></i>
-                                </a>
-                            {% else %}
-                            <a class="btn btn_delete_user red-color" href="#" title="Delete user">
-                                <i class="glyphicon glyphicon-trash"></i>
-                            </a>
-                            {% end %}
                         </td>
                         {% else %}
                             <td>You can't modify {{ UserType.tostring(user.user_type) }} users</td>

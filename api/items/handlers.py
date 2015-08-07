@@ -62,7 +62,7 @@ class PostCodeHandler(ApiHandler):
             post_code = self.request_object['post_code']
 
         if not post_code:
-            return self.make_error(message='You must select a post code in order to create a listing.', status=6,
+            return self.make_error(message='You must select a post code in order to create a listing.',
                                    title=CREATE_LISTING_EMPTY_FIELDS_TITLE % 'post code')
 
         # request to own google api script
@@ -475,7 +475,7 @@ class ListingHandler(ApiHandler):
 
             if empty_field_error:
                 empty_fields = ', '.join(empty_field_error)
-                return self.make_error(message=UPDATE_LISTING_EMPTY_FIELDS % empty_fields, status=6,
+                return self.make_error(message=UPDATE_LISTING_EMPTY_FIELDS % empty_fields,
                                        title=CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields.capitalize())
 
             if len(photos) > 4:
@@ -690,7 +690,7 @@ class ListingHandler(ApiHandler):
 
             if empty_field_error:
                 empty_fields = ', '.join(empty_field_error)
-                return self.make_error(message=CREATE_LISTING_EMPTY_FIELDS % empty_fields, status=6,
+                return self.make_error(message=CREATE_LISTING_EMPTY_FIELDS % empty_fields,
                                        title=CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields.capitalize())
 
             # first check all tags

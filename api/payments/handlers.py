@@ -39,7 +39,7 @@ class CardHandler(ApiHandler):
 
         card_response = []
         if not self.user.stripe_customer:
-            return self.make_error(CREATE_CHARGE_NO_STRIPE_ACCOUNT)
+            return self.make_error(CREATE_CHARGE_NO_STRIPE_ACCOUNT, status=2)
         # select all users cards
         cards = self.user.stripe_customer
         # retrieve stripe acc

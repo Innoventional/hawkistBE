@@ -1416,11 +1416,6 @@ STATUS CODES FOR CUSTOM ERROR TITLE
     
     Status code | Error message title
     ---------------------------------
-        2       | Invalid Number Format
-        3       | User Not Found
-        4       | Wrong Pin
-        5       | Cannot Sign In
-        6       | (field_name) Missing
-        7       | Incorrect Post Code
-        8       | Post Code Not Found
+        2       | No bank card
+        403     | Access denied
     

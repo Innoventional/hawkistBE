@@ -1,4 +1,6 @@
 import logging
+import datetime
+from sqlalchemy import or_
 from api.admin.handlers.login import AdminBaseHandler
 from api.items.models import Listing
 from api.orders.models import UserOrders, OrderStatus, IssueStatus
@@ -21,14 +23,36 @@ class AdminIssuedListingsHandler(AdminBaseHandler):
 
         logger.debug(self.user)
 
+        issue_status = self.get_arg('status')
+
         orders = self.session.query(UserOrders).filter(UserOrders.order_status == OrderStatus.HasAnIssue).order_by(UserOrders.issue_status)
 
-        page = self.get_arg('p', int, 1)
-        page_size = self.get_arg('page_size', int, 100)
-        paginator, listings = paginate(orders, page, page_size)
+        if issue_status == 'investigating':
+            orders = orders.filter(UserOrders.issue_status == IssueStatus.Investigating).order_by(UserOrders.updated_at)
+            return self.render_string('admin/listings/issued/admin_investigating_issued_listings.html', orders=orders,
+                                      menu_tab_active='tab_listings', IssueStatus=IssueStatus, issue_type=issue_status)
+        elif issue_status == 'canceled':
+            orders = orders.filter(or_(UserOrders.issue_status == IssueStatus.Cancelled,
+                                       UserOrders.issue_status == IssueStatus.RefundIssued)).order_by(UserOrders.updated_at)
+            return self.render_string('admin/listings/issued/admin_canceled_issued_listings.html', orders=orders,
+                                      menu_tab_active='tab_listings', IssueStatus=IssueStatus, issue_type=issue_status)
+        elif issue_status == 'resolved':
+            orders = orders.filter(UserOrders.issue_status == IssueStatus.Resolved).order_by(UserOrders.updated_at)
+            return self.render_string('admin/listings/issued/admin_resolved_issued_listings.html', orders=orders,
+                                      menu_tab_active='tab_listings', IssueStatus=IssueStatus, issue_type=issue_status)
+        else:
+            orders = orders.filter(UserOrders.issue_status == IssueStatus.New).order_by(UserOrders.updated_at)
+            return self.render_string('admin/listings/issued/admin_new_issued_listings.html', orders=orders,
+                                      menu_tab_active='tab_listings', IssueStatus=IssueStatus, issue_type=issue_status)
 
-        return self.render_string('admin/listings/admin_issued_listings.html', orders=orders, paginator=paginator,
-                                  menu_tab_active='tab_listings', IssueStatus=IssueStatus)
+
+        # page = self.get_arg('p', int, 1)
+        # page_size = self.get_arg('page_size', int, 100)
+        # paginator, listings = paginate(orders, page, page_size)
+
+        # return self.render_string('admin/listings/issued/admin_new_issued_listings.html', orders=orders, paginator=paginator,
+        return self.render_string('admin/listings/issued/admin_new_issued_listings.html', orders=orders,
+                                  menu_tab_active='tab_listings', IssueStatus=IssueStatus, issue_type=issue_status)
 
     def update(self):
         if not self.user:
@@ -53,5 +77,6 @@ class AdminIssuedListingsHandler(AdminBaseHandler):
         elif str(action) == str(IssueStatus.Resolved):
             order.issue_status = IssueStatus.Resolved
             # TODO money to seller
+        order.updated_at = datetime.datetime.utcnow()
         self.session.commit()
         return self.success()

@@ -870,7 +870,7 @@ $('.btn_order_investigating').click(function(){
             var status = data['status'];
             var message = data['message'];
             if (status == 0 ) {
-                location.reload();
+                location.replace("?status=investigating");
             } else {
                 alert(message);
             }
@@ -891,7 +891,7 @@ $('.btn_order_canceled').click(function(){
             var status = data['status'];
             var message = data['message'];
             if (status == 0 ) {
-                location.reload();
+                location.replace("?status=canceled");
             } else {
                 alert(message);
             }
@@ -912,7 +912,7 @@ $('.btn_order_resolved').click(function(){
             var status = data['status'];
             var message = data['message'];
             if (status == 0 ) {
-                location.reload();
+                location.replace("?status=resolved");
             } else {
                 alert(message);
             }

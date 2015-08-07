@@ -1,0 +1,64 @@
+{% extends '../../base.html' %}
+
+{% block title %}Listings List{% end %}
+
+{% block content %}
+    <div class="tag_navigation_div">
+        <a href="../listings" >All</a>
+        <a href="#" id="current_link">Has an issue</a>
+    </div>
+    <div>&nbsp</div>
+    <div class="tag_navigation_div">
+        <button class="btn btn-default text-bold" disabled>New</button>
+        <button class="btn btn-primary" onclick="window.location = '?status=investigating'">Investigating</button>
+        <button class="btn btn-danger" onclick="window.location = '?status=canceled'">Canceled</button>
+        <button class="btn btn-success" onclick="window.location = '?status=resolved'">Resolved</button>
+    </div>
+    <div>&nbsp</div>
+
+    {% if orders.count() == 0 %}
+        No new issues
+    {% else %}
+    <div class="row-offcanvas">
+        <table class="table table-hover">
+            <thead>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Buyer id</th>
+                <th>Buyer username</th>
+                <th>Issue reason</th>
+                <th>Issue status</th>
+                <th>Created</th>
+                <th>Action</th>
+            </thead>
+            <tbody>
+                {% for o in orders %}
+                    <tr data-id="{{ o.id }}">
+                        <td>{{ o.listing.id }}</td>
+                        <td>{{ o.listing.title }}</td>
+                        <td>{{ o.user.id }}</td>
+                        <td>{{ o.user.username }}</td>
+                        <td>
+                            {% if o.issue_reason == 0 %}
+                                Item Has Not Arrived
+                            {% elif o.issue_reason == 1 %}
+                                Item Is Not As Described
+                            {% elif o.issue_reason == 2 %}
+                                Item Is Broken Or Not Usable
+                            {% end %}
+                        </td>
+                        <td>{{ IssueStatus.tostring(o.issue_status) }}</td>
+                        <td>{{ o.created_at.strftime("%Y-%m-%d %H:%M")}}</td>
+
+                        <td>
+                            <a class="btn btn_order_investigating" href="#" title="Start investigating this issue">
+                                <i class="glyphicon glyphicon-play"></i>
+                            </a>
+                        </td>
+                     </tr>
+                {% end %}
+            </tbody>
+        </table>
+    </div>
+    {% end %}
+{% end %}

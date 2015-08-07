@@ -1,4 +1,4 @@
-{% extends '../base.html' %}
+{% extends '../../base.html' %}
 
 {% block title %}Listings List{% end %}
 
@@ -7,6 +7,18 @@
         <a href="../listings" >All</a>
         <a href="#" id="current_link">Has an issue</a>
     </div>
+    <div>&nbsp</div>
+    <div class="tag_navigation_div">
+        <button class="btn btn-default" onclick="window.location = '?status=new'">New</button>
+        <button class="btn btn-primary" onclick="window.location = '?status=investigating'">Investigating</button>
+        <button class="btn btn-danger" onclick="window.location = '?status=canceled'">Canceled</button>
+        <button class="btn btn-success text-bold" disabled>Resolved</button>
+    </div>
+    <div>&nbsp</div>
+
+    {% if orders.count() == 0 %}
+        No resolved issues
+    {% else %}
     <div class="row-offcanvas">
         <table class="table table-hover">
             <thead>
@@ -16,7 +28,8 @@
                 <th>Buyer username</th>
                 <th>Issue reason</th>
                 <th>Issue status</th>
-                <th>Action</th>
+                <th>Created</th>
+                <th>Last Action</th>
             </thead>
             <tbody>
                 {% for o in orders %}
@@ -35,25 +48,14 @@
                             {% end %}
                         </td>
                         <td>{{ IssueStatus.tostring(o.issue_status) }}</td>
+                        <td>{{ o.created_at.strftime("%Y-%m-%d %H:%M")}}</td>
+                        <td>{{ o.updated_at.strftime("%Y-%m-%d %H:%M")}}</td>
 
-                        <td>
-                            {% if o.issue_status == 0 %}
-                            <a class="btn btn_order_investigating" href="#" title="Start investigating this issue">
-                                <i class="glyphicon glyphicon-play"></i>
-                            </a>
-                            {% elif o.issue_status == 1 %}
-                                <a class="btn btn_order_resolved green-color" href="#" title="Resolve issue">
-                                    <i class="glyphicon glyphicon-ok"></i>
-                                </a>
-                                <a class="btn btn_order_canceled  red-color" href="#" title="Cancel this issue">
-                                    <i class="glyphicon glyphicon-remove"></i>
-                                </a>
-                            {% else %}
-                            {% end %}
-                        </td>
+                        <td></td>
                      </tr>
                 {% end %}
             </tbody>
         </table>
     </div>
+    {% end %}
 {% end %}

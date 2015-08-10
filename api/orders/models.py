@@ -54,10 +54,6 @@ class UserOrders(Base):
     created_at = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
 
-    # reference to user
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
-    user = relationship('User', backref=backref('user_orders', order_by=id, cascade="all,delete", lazy='dynamic'),
-                        foreign_keys=user_id)
 
     # reference to bought listing
     listing_id = Column(Integer, ForeignKey('listings.id'), nullable=True)
@@ -76,6 +72,10 @@ class UserOrders(Base):
     issue_reason = Column(SmallInteger, nullable=True)
     issue_status = Column(SmallInteger, nullable=True, default=IssueStatus.New)
 
+    # reference to user
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
+    user = relationship('User', backref=backref('user_orders', order_by=order_status, cascade="all,delete", lazy='dynamic'),
+                        foreign_keys=user_id)
     @property
     def response(self):
         return {

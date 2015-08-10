@@ -29,7 +29,7 @@
                         <td>{{ b.blocked_username }}</td>
                         <td>{{ b.blocker_id }}</td>
                         <td>{{ b.blocker_username }}</td>
-                        <td>{{ b.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                        <td>{{ (b.created_at + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M") }}</td>
                         <td>
                             <a class="btn btn_delete_blocked_flag red-color" href="#" title="Delete flag">
                                 <i class="glyphicon glyphicon-trash"></i>

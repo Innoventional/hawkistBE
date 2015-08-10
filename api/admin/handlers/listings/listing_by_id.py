@@ -1,4 +1,5 @@
 import logging
+import datetime
 from sqlalchemy import and_
 from api.admin.handlers.login import AdminBaseHandler
 from api.items.models import Listing
@@ -29,7 +30,7 @@ class AdminListingByIdHandler(AdminBaseHandler):
             pass
 
         return self.render_string('admin/listings/admin_listing_by_id.html', listing=listing,
-                                  menu_tab_active='tab_listings')
+                                  menu_tab_active='tab_listings', timedelta=datetime.timedelta)
 
     def remove(self):
         if not self.user:

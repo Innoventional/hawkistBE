@@ -30,20 +30,24 @@ class AdminIssuedListingsHandler(AdminBaseHandler):
         if issue_status == 'investigating':
             orders = orders.filter(UserOrders.issue_status == IssueStatus.Investigating).order_by(UserOrders.updated_at)
             return self.render_string('admin/listings/issued/admin_investigating_issued_listings.html', orders=orders,
-                                      menu_tab_active='tab_listings', IssueStatus=IssueStatus, issue_type=issue_status)
+                                      menu_tab_active='tab_listings', IssueStatus=IssueStatus, issue_type=issue_status,
+                                      timedelta=datetime.timedelta)
         elif issue_status == 'canceled':
             orders = orders.filter(or_(UserOrders.issue_status == IssueStatus.Cancelled,
                                        UserOrders.issue_status == IssueStatus.RefundIssued)).order_by(UserOrders.updated_at)
             return self.render_string('admin/listings/issued/admin_canceled_issued_listings.html', orders=orders,
-                                      menu_tab_active='tab_listings', IssueStatus=IssueStatus, issue_type=issue_status)
+                                      menu_tab_active='tab_listings', IssueStatus=IssueStatus, issue_type=issue_status,
+                                      timedelta=datetime.timedelta)
         elif issue_status == 'resolved':
             orders = orders.filter(UserOrders.issue_status == IssueStatus.Resolved).order_by(UserOrders.updated_at)
             return self.render_string('admin/listings/issued/admin_resolved_issued_listings.html', orders=orders,
-                                      menu_tab_active='tab_listings', IssueStatus=IssueStatus, issue_type=issue_status)
+                                      menu_tab_active='tab_listings', IssueStatus=IssueStatus, issue_type=issue_status,
+                                      timedelta=datetime.timedelta)
         else:
             orders = orders.filter(UserOrders.issue_status == IssueStatus.New).order_by(UserOrders.updated_at)
             return self.render_string('admin/listings/issued/admin_new_issued_listings.html', orders=orders,
-                                      menu_tab_active='tab_listings', IssueStatus=IssueStatus, issue_type=issue_status)
+                                      menu_tab_active='tab_listings', IssueStatus=IssueStatus, issue_type=issue_status,
+                                      timedelta=datetime.timedelta)
 
     def update(self):
         if not self.user:

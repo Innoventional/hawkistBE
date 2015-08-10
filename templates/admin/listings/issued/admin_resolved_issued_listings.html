@@ -48,10 +48,8 @@
                             {% end %}
                         </td>
                         <td>{{ IssueStatus.tostring(o.issue_status) }}</td>
-                        <td>{{ o.created_at.strftime("%Y-%m-%d %H:%M")}}</td>
-                        <td>{{ o.updated_at.strftime("%Y-%m-%d %H:%M")}}</td>
-
-                        <td></td>
+                        <td>{{ (o.created_at + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M")}}</td>
+                        <td>{{ (o.updated_at + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M")}}</td>
                      </tr>
                 {% end %}
             </tbody>

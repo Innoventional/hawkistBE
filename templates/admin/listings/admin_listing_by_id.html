@@ -113,11 +113,11 @@
                     </tr>
                     <tr>
                         <th>Created</th>
-                        <td>{{ listing.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                        <td>{{ (listing.created_at + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M")}}</td>
                     </tr>
                     <tr>
                         <th>Updated</th>
-                        <td>{{ listing.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                        <td>{{ (listing.updated_at + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M")}}</td>
                     </tr>
                 </tbody>
             </table>

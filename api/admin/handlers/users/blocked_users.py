@@ -1,4 +1,5 @@
 import logging
+import datetime
 from api.admin.handlers.login import AdminBaseHandler
 from api.users.models import User
 from base import HttpRedirect
@@ -36,7 +37,8 @@ class AdminBlockedUsersHandler(AdminBaseHandler):
             blocked_users_count = b.ca
 
         return self.render_string('admin/users/admin_blocked_users.html', blocked_users=blocked_users,
-                                  blocked_users_count=blocked_users_count, menu_tab_active='tab_users')
+                                  blocked_users_count=blocked_users_count, menu_tab_active='tab_users',
+                                  timedelta=datetime.timedelta)
 
     def remove(self):
         if not self.user:

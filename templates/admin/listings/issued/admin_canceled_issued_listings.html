@@ -35,7 +35,6 @@
                 {% for o in orders %}
                     <tr class='clickable-row' data-id="{{ o.id }}" data-href='{{o.listing.id}}'>
                         <td>{{ o.listing.id }}</td>
-                        <!--<td>{{ o.listing.id }}</td>-->
                         <td>{{ o.listing.title }}</td>
                         <td>{{ o.user.id }}</td>
                         <td>{{ o.user.username }}</td>
@@ -49,8 +48,8 @@
                             {% end %}
                         </td>
                         <td>{{ IssueStatus.tostring(o.issue_status) }}</td>
-                        <td>{{ o.created_at.strftime("%Y-%m-%d %H:%M")}}</td>
-                        <td>{{ o.updated_at.strftime("%Y-%m-%d %H:%M")}}</td>
+                        <td>{{ (o.created_at + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M")}}</td>
+                        <td>{{ (o.updated_at + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M")}}</td>
                      </tr>
                 {% end %}
             </tbody>

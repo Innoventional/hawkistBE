@@ -45,15 +45,6 @@ class AdminIssuedListingsHandler(AdminBaseHandler):
             return self.render_string('admin/listings/issued/admin_new_issued_listings.html', orders=orders,
                                       menu_tab_active='tab_listings', IssueStatus=IssueStatus, issue_type=issue_status)
 
-
-        # page = self.get_arg('p', int, 1)
-        # page_size = self.get_arg('page_size', int, 100)
-        # paginator, listings = paginate(orders, page, page_size)
-
-        # return self.render_string('admin/listings/issued/admin_new_issued_listings.html', orders=orders, paginator=paginator,
-        return self.render_string('admin/listings/issued/admin_new_issued_listings.html', orders=orders,
-                                  menu_tab_active='tab_listings', IssueStatus=IssueStatus, issue_type=issue_status)
-
     def update(self):
         if not self.user:
             return HttpRedirect('/api/admin/login')
@@ -74,9 +65,13 @@ class AdminIssuedListingsHandler(AdminBaseHandler):
         elif str(action) == str(IssueStatus.Cancelled):
             order.issue_status = IssueStatus.Cancelled
             # TODO money to buyer
+            order.listing.user.app_wallet_pending -= order.charge.payment_sum_without_application_fee
+            order.user.app_wallet += order.charge.payment_sum_without_application_fee
         elif str(action) == str(IssueStatus.Resolved):
             order.issue_status = IssueStatus.Resolved
             # TODO money to seller
+            order.listing.user.app_wallet_pending -= order.charge.payment_sum_without_application_fee
+            order.listing.user.app_wallet += order.charge.payment_sum_without_application_fee
         order.updated_at = datetime.datetime.utcnow()
         self.session.commit()
         return self.success()

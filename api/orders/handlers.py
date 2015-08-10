@@ -1,5 +1,4 @@
 import datetime
-from tornado import ioloop
 from api.items.models import Listing, ListingStatus
 from api.orders.models import UserOrders, OrderStatus, IssueStatus
 from api.payments.models import StripeCharges, ChargesStatus
@@ -152,6 +151,13 @@ class OrdersHandler(ApiHandler):
             listing.user.app_wallet_pending += new_charge.payment_sum_without_application_fee
         if not listing.user.app_wallet:
             listing.user.app_wallet = 0
+
+        # also validate buyer wallet
+        if not self.user.app_wallet:
+            self.user.app_wallet = 0
+        if not self.user.app_wallet_pending:
+            self.user.app_wallet = 0
+
         self.session.commit()
 
         return self.success()
@@ -210,10 +216,12 @@ class OrdersHandler(ApiHandler):
             order.order_status = OrderStatus.Received
             order.listing.status = ListingStatus.Sold
             order.charge.system_status = ChargesStatus.Finished
+
             # get money from pending balance to available
             order.listing.user.app_wallet_pending -= order.charge.payment_sum_without_application_fee
             order.listing.user.app_wallet += order.charge.payment_sum_without_application_fee
             self.session.commit()
+
         elif str(new_status) == str(OrderStatus.HasAnIssue):
             # validate issue reason
             if str(issue_reason) not in ['0', '1', '2']:

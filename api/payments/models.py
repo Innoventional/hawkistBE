@@ -98,8 +98,3 @@ class StripeCharges(Base):
         # send sms
         from utility.twilio_api import send_sms
         print send_sms("380993351739", 'test timeout %s' % datetime.datetime.utcnow())
-
-    def automatic_transfer(self):
-        # send money to seller app wallet
-        # self.listing.user.stripe_customer.stripe_app_wallet
-        pass

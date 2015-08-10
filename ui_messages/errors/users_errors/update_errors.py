@@ -7,6 +7,7 @@ UPDATE_USER_INFO_NO_USERNAME = 'Username is required'
 UPDATE_USER_INFO_NO_EMAIL = 'Email is required'
 
 UPDATE_USER_INFO_USERNAME_ALREADY_USED = "Sorry, username %s already exists. Please choose another."
+UPDATE_USER_INFO_EMAIL_ALREADY_USED = "Sorry, email address %s already used by another user."
 
 # email confirmation
 INVALID_CONFIRM_EMAIL_LINK = 'Invalid confirmation link. Try again later.'

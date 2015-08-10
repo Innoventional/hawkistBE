@@ -17,7 +17,7 @@ from utility.facebook_api import get_facebook_user
 from utility.format_verification import username_verification, email_verification
 from utility.image.processor import make_thumbnail
 from utility.send_email import email_confirmation_sending, send_email
-from utility.user_utility import update_user_last_activity, check_user_suspension_status
+from utility.user_utility import update_user_last_activity, check_user_suspension_status, check_email_uniqueness
 
 __author__ = 'ne_luboff'
 
@@ -150,6 +150,9 @@ class UserHandler(ApiHandler):
                 return self.make_error(email_error)
 
             if self.user.email != email:
+                email_uniqueness_error = check_email_uniqueness(self, email)
+                if email_uniqueness_error:
+                    return self.make_error(email_uniqueness_error)
                 self.user.email = email
                 self.user.email_status = False
                 # send email confirmation

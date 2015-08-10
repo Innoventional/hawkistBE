@@ -15,7 +15,7 @@ from utility.facebook_api import get_facebook_user, get_facebook_photo
 from utility.format_verification import phone_verification, sms_limit_check, phone_reformat
 from utility.send_email import email_confirmation_sending
 from utility.twilio_api import send_sms
-from utility.user_utility import update_user_last_activity, check_user_suspension_status
+from utility.user_utility import update_user_last_activity, check_user_suspension_status, check_email_uniqueness
 
 __author__ = 'ne_luboff'
 
@@ -115,6 +115,13 @@ class UserLoginHandler(ApiHandler):
 
             if not user:
                 logger.debug('Create new user (fb registration)')
+
+                # first check email
+                facebook_email = facebook_data.get('email', None)
+                email_uniqueness_error = check_email_uniqueness(self, facebook_email)
+                if email_uniqueness_error:
+                    return self.make_error(email_uniqueness_error)
+
                 user = User()
                 user.created_at = datetime.datetime.utcnow()
                 user.facebook_id = facebook_id
@@ -136,13 +143,15 @@ class UserLoginHandler(ApiHandler):
                     logger.debug(fb_avatar_error)
 
                 # getting email
-                facebook_email = facebook_data.get('email', None)
-                if facebook_email:
-                    user.email = facebook_email
-                    # self.session.commit()
-                    email_confirmation_sending(self, user, facebook_email)
-                else:
-                    logger.debug('No email address in fb response')
+                # facebook_email = facebook_data.get('email', None)
+                # if facebook_email:
+                #     user.email = facebook_email
+                #     email_confirmation_sending(self, user, facebook_email)
+                # else:
+                #     logger.debug('No email address in fb response')
+
+                user.email = facebook_email
+                email_confirmation_sending(self, user, facebook_email)
 
                 facebook_name = facebook_data.get('username', None)
                 if facebook_name:

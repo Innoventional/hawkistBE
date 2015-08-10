@@ -23,6 +23,7 @@ from ui_messages.messages.sms import UPDATE_USER_PHONE_NUMBER_SMS
 from utility.format_verification import username_verification, email_verification, phone_verification, phone_reformat
 from utility.send_email import send_email, email_confirmation_sending
 from utility.twilio_api import send_sms
+from utility.user_utility import check_email_uniqueness
 
 __author__ = 'ne_luboff'
 
@@ -182,6 +183,10 @@ class AdminUsersHandler(AdminBaseHandler):
                 email_error = email_verification(email)
                 if email_error:
                     return self.make_error(email_error)
+
+                email_uniqueness_error = check_email_uniqueness(self, email)
+                if email_uniqueness_error:
+                    return self.make_error(email_uniqueness_error)
 
                 # send message to old email address
                 if user.email:

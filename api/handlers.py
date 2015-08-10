@@ -18,6 +18,7 @@ try:
     from admin.handlers.metatags.conditions import *
     from admin.handlers.listings.listings import *
     from admin.handlers.listings.issued_listings import *
+    from admin.handlers.listings.listing_by_id import *
     from followers.handlers import *
     from comments.handlers import *
     from offers.handlers import *

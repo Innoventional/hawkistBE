@@ -1357,32 +1357,13 @@ ORDER STATUSES
     Active = 0
     Received = 1
     HasAnIssue = 2
-
-**Get all bank cards**
-
-    Url: 'user/orders'
-    Method: 'GET'
-
-
-
-Response:
     
-    {
-        'status': 0,
-        'orders': [
-            {
-                ORDER_INFO_DICT
-            },
-            {
-                ...
-            },
-            {
-                ORDER_INFO_DICT
-            }
-        ]
-    }
+ORDER ISSUE REASONS
     
-    
+    ItemHasNotArrived = 0
+    ItemIsNotAsDescribed = 1
+    ItemIsBrokenOrNotUsable = 2
+
     
 **Buy item (create stripe charge)**
 
@@ -1395,6 +1376,63 @@ Data:
     {
         "stripe_card_id": STRIPE CARD ID,
         "listing_id": LISTING ID
+    }
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }   
+    
+    
+**Order received**
+
+    Url: 'user/orders'
+    Method: 'PUT'
+
+
+Data:
+
+    {
+        "order_id": USER ORDER ID,
+        "new_status": 1
+    }
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }
+       
+    
+**Orders has in issue**
+
+    Url: 'user/orders'
+    Method: 'PUT'
+
+
+Data:
+
+    {
+        "order_id": USER ORDER ID,
+        "new_status": 2,
+        "issue_reason": ISSUE REASON ID
     }
 
 Response Success:

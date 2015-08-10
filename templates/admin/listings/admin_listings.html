@@ -1,6 +1,6 @@
 {% extends '../base.html' %}
 
-{% block title %}Listings List{% end %}
+{% block title %} Listings List{% end %}
 
 {% block js %}
     <script type="text/javascript">
@@ -56,7 +56,7 @@
                         </td>
                         <td class="break-text">{{ l.title }}</td>
                         <td class="break-text listing-description">{{ l.description }}</td>
-                        <td>{{ l.retail_price }} / {{ l.selling_price }}</td>
+                        <td>{{ "%.02f" % float(l.retail_price) }} / {{ "%.02f" % float(l.selling_price) }}</td>
                         <!--<td>{{ l.retail_price }}</td>-->
                         <!--<td>{{ l.selling_price }}</td>-->
                         <td>{{ l.platform.title }} > {{ l.category.title }} > {{ l.subcategory.title }}</td>

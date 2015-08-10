@@ -8,8 +8,8 @@ from helpers import route
 from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID
 from ui_messages.errors.payment_errors import ADD_CARD_EMPTY_FIELDS, ADD_CARD_NO_STRIPE_TOKEN, UPDATE_CARD_EMPTY_FIELDS, \
     BANK_CARD_ALREADY_USED, UPDATE_CARD_NO_ID, UPDATE_CARD_INVALID_ID, DELETE_CARD_NO_CARD_ID, CREATE_CHARGE_NO_CARD_ID, \
-    CREATE_CHARGE_NO_STRIPE_ACCOUNT, CREATE_CHARGE_NO_LISTING_ID, CREATE_CHARGE_BUY_YOUR_OWN_LISTING, \
-    CREATE_CHARGE_BUY_RESERVED_LISTING, CREATE_CHARGE_BUY_SOLD_LISTING
+    CREATE_CHARGE_NO_LISTING_ID, CREATE_CHARGE_BUY_YOUR_OWN_LISTING, \
+    CREATE_CHARGE_BUY_RESERVED_LISTING, CREATE_CHARGE_BUY_SOLD_LISTING, CREATE_CHARGE_NO_STRIPE_ACCOUNT
 from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE
 from utility.stripe_api import stripe_create_customer, stripe_retrieve_customer, stripe_retrieve_card_info, \
     stripe_retrieve_card, stripe_update_card_info, stripe_add_new_card, stripe_delete_card, stripe_create_charges
@@ -38,19 +38,16 @@ class CardHandler(ApiHandler):
             return suspension_error
 
         card_response = []
-        if not self.user.stripe_customer:
-            return self.make_error(CREATE_CHARGE_NO_STRIPE_ACCOUNT, status=2)
-        # select all users cards
-        cards = self.user.stripe_customer
-        # retrieve stripe acc
-        customer_response = stripe_retrieve_customer(cards.stripe_customer_id)
-        # get info for every card
-        customer_cards = customer_response['sources']['data']
-        if customer_cards:
-            for customer_card in customer_cards:
-                card_response.append(stripe_retrieve_card_info(customer_card))
-        if customer_cards.count() == 0:
-            return self.make_error(CREATE_CHARGE_NO_STRIPE_ACCOUNT, status=2)
+        if self.user.stripe_customer:
+            # select all users cards
+            cards = self.user.stripe_customer
+            # retrieve stripe acc
+            customer_response = stripe_retrieve_customer(cards.stripe_customer_id)
+            # get info for every card
+            customer_cards = customer_response['sources']['data']
+            if customer_cards:
+                for customer_card in customer_cards:
+                    card_response.append(stripe_retrieve_card_info(customer_card))
         return self.success({
             'cards': card_response
         })

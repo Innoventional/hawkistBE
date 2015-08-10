@@ -80,12 +80,13 @@ class UserOrders(Base):
     def response(self):
         return {
             'id': self.id,
-            'listing': {
-                'id': self.listing.id,
-                'title': self.listing.title,
-                'image': self.listing.listing_photos[0].image_url,
-                'retail_price': "%.02f" % float(self.listing.retail_price),
-                'selling_price': "%.02f" % float(self.listing.selling_price),
-            },
+            # 'listing': {
+            #     'id': self.listing.id,
+            #     'title': self.listing.title,
+            #     'image': self.listing.listing_photos[0].image_url,
+            #     'retail_price': "%.02f" % float(self.listing.retail_price),
+            #     'selling_price': "%.02f" % float(self.listing.selling_price),
+            # },
+            'listing': self.listing.response(self.user_id),
             'status': self.order_status
         }

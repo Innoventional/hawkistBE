@@ -34,7 +34,7 @@ class OrdersHandler(ApiHandler):
             logger.debug(suspension_error)
             return suspension_error
 
-        orders = self.user.user_orders
+        orders = self.user.user_orders.order_by(UserOrders.order_status)
 
         # search in orders. search by title and platform name. search for every word in searching query
         searching_query = self.get_arg("q")

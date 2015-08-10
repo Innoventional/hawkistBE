@@ -23,14 +23,20 @@ class AdminBlockedUsersHandler(AdminBaseHandler):
         # first get all info from blocked user table
         sql_request = """SELECT user_blacklist.user_id as blocker_id,
                          user_blacklist.blocked_user_id as blocked_id,
+                         user_blacklist.created_at as created_at,
                          (SELECT users.username FROM users where users.id = user_blacklist.user_id) as blocker_username,
                          (SELECT users.username FROM users where users.id = user_blacklist.blocked_user_id) as blocked_username
                          FROM user_blacklist INNER JOIN users
                          ON user_blacklist.user_id=users.id;"""
         blocked_users = self.session.execute(sql_request)
 
+        blocked_users_count = 0
+        blocked_users_count_query = self.session.execute("""SELECT count(*) as ca FROM user_blacklist;""")
+        for b in blocked_users_count_query:
+            blocked_users_count = b.ca
+
         return self.render_string('admin/users/admin_blocked_users.html', blocked_users=blocked_users,
-                                  menu_tab_active='tab_users')
+                                  blocked_users_count=blocked_users_count, menu_tab_active='tab_users')
 
     def remove(self):
         if not self.user:

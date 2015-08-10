@@ -160,3 +160,9 @@
 .text-bold {
     font-weight: bold;
 }
+
+.fixed-first-col tbody tr th{
+    table-layout: fixed;
+    width: 200px;
+    vertical-align: middle;
+}

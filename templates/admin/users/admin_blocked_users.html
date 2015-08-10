@@ -8,6 +8,9 @@
         <a href="#" id="current_link">Blocked</a>
         <!--<a href="users/reported">Reported</a>-->
     </div>
+    {% if str(blocked_users_count) == '0' %}
+        No blocked users
+    {% else %}
     <div class="row-offcanvas">
         <table class="table table-hover">
             <thead>
@@ -15,6 +18,7 @@
                 <th>Blocked User Username</th>
                 <th>User Who Block ID</th>
                 <th>User Who Block Username</th>
+                <th>Time</th>
                 <th>Action</th>
             </thead>
             <tbody>
@@ -25,6 +29,7 @@
                         <td>{{ b.blocked_username }}</td>
                         <td>{{ b.blocker_id }}</td>
                         <td>{{ b.blocker_username }}</td>
+                        <td>{{ b.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
                         <td>
                             <a class="btn btn_delete_blocked_flag red-color" href="#" title="Delete flag">
                                 <i class="glyphicon glyphicon-trash"></i>
@@ -35,4 +40,5 @@
             </tbody>
         </table>
     </div>
+    {% end %}
 {% end %}

@@ -1,0 +1,128 @@
+{% extends '../base.html' %}
+
+{% block title %}
+    {% if listing %}
+        {{ listing.title }}
+    {% else %}
+        Error
+    {% end %}
+{% end %}
+
+{% block js %}
+    <script type="text/javascript">
+        $("#thumbnailList1 a img").MyThumbnail({
+            thumbWidth:128,
+            thumbHeight:128,
+            backgroundColor:"#ccc",
+            imageDivClass:"myPic"
+        });
+    </script>
+{% end %}
+
+{% block content %}
+    {% if listing %}
+        <div class="row-offcanvas">
+            <table class="table table-hover fixed-first-col">
+                <thead>
+                    <th colspan="2">Listing info</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Id</th>
+                        <td>{{ listing.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Owner</th>
+                        <td>{{ listing.user.username }}</td>
+                    </tr>
+                    <tr>
+                        <th>Photos</th>
+                        <td align="center" id="thumbnailList1">
+                            {% if listing.listing_photos.count > 0 %}
+                                {% for p in listing.listing_photos %}
+                                    <a href="{{ p.image_url }}" target="_blank">
+                                        <img src="{{ p.image_url }}">
+                                    </a>
+                                {% end %}
+                            {% end %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Title</th>
+                        <td>{{ listing.title }}</td>
+                    </tr>
+                    <tr>
+                        <th>Description</th>
+                        <td>{{ listing.description }}</td>
+                    </tr>
+                    <tr>
+                        <th>Platform</th>
+                        <td>{{ listing.platform.title }}</td>
+                    </tr>
+                    <tr>
+                        <th>Category</th>
+                        <td>{{ listing.category.title }}</td>
+                    </tr>
+                    <tr>
+                        <th>Subcategory</th>
+                        <td>{{ listing.subcategory.title }}</td>
+                    </tr>
+                    <tr>
+                        <th>Colour</th>
+                        <td>{{ listing.color.title }}</td>
+                    </tr>
+                    <tr>
+                        <th>Condition</th>
+                        <td>{{ listing.condition.title }}</td>
+                    </tr>
+                    <tr>
+                        <th>Retail price</th>
+                        <td>{{ "£%.02f" % float(listing.retail_price) }}</td>
+                    </tr>
+                    <tr>
+                        <th>Selling price</th>
+                        <td>{{ "£%.02f" % float(listing.selling_price) }}</td>
+                    </tr>
+                    <tr>
+                        <th>Discount value</th>
+                        <td>{{ listing.discount }}%</td>
+                    </tr>
+                    <tr>
+                        <th>Shipping price</th>
+                        <td>{{ "£%.02f" % float(listing.shipping_price) }}</td>
+                    </tr>
+                    <tr>
+                        <th>Collection only</th>
+                        <td>{{ listing.collection_only }}</td>
+                    </tr>
+                    <tr>
+                        <th>Location</th>
+                        <td>{{ listing.city }}</td>
+                    </tr>
+                    <tr>
+                        <th>Total comments count</th>
+                        <td>{{ listing.listing_comments.count() }}</td>
+                    </tr>
+                    <tr>
+                        <th>Total likes count</th>
+                        <td>{{ len(listing.likes) }}</td>
+                    </tr>
+                    <tr>
+                        <th>Total views count</th>
+                        <td>{{ len(listing.views) }}</td>
+                    </tr>
+                    <tr>
+                        <th>Created</th>
+                        <td>{{ listing.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                    </tr>
+                    <tr>
+                        <th>Updated</th>
+                        <td>{{ listing.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        Listing with this id does not exists
+    {% end %}
+{% end %}

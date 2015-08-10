@@ -33,7 +33,7 @@
             </thead>
             <tbody>
                 {% for o in orders %}
-                    <tr class='clickable-row' data-id="{{ o.id }}" data-href='google.com'>
+                    <tr class='clickable-row' data-id="{{ o.id }}" data-href='{{o.listing.id}}'>
                         <td>{{ o.listing.id }}</td>
                         <!--<td>{{ o.listing.id }}</td>-->
                         <td>{{ o.listing.title }}</td>

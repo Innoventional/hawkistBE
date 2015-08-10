@@ -58,7 +58,7 @@ PURCHASE_ITEM_BUYER_TITLE = '%s'
 PURCHASE_ITEM_BUYER_TEXT = u"%s,\n" \
                            u"You recently purchased %s for £%s from %s. This email is confirmation that we have taken" \
                            u"payment for the item.\n" \
-                           u"In order to contact the seller, please use their email address which is %s." \
+                           u"In order to contact the seller, please use their email address which is %s.\n" \
                            u"Please note that you have 7 days to confirm receipt of the item to us or indicate any " \
                            u"issues with it before we release your funds to the seller." \
                            u"For more information about returns or refunds, please visit our FAQs on " \
@@ -69,17 +69,17 @@ PURCHASE_ITEM_BUYER_TEXT = u"%s,\n" \
 
 PURCHASE_ITEM_SELLER_TITLE = 'Sold: %s'
 PURCHASE_ITEM_SELLER_TEXT = "%s,\n" \
-                            "Your item %s has been sold to %s for £%s. The next step is for you to arrange delivery or " \
-                            "collection of the item. The buyer can be contacted via email on %s.\n" \
-                            "His delivery address is BUYER_DELIVERY_ADDRESS_NEXT_SPRINT." \
-                            "Please note that you now have 7 days to arrange for delivery or collection of the item " \
-                            "before we can release your funds. The faster %s gets the item, the faster " \
-                            "you get the funds.\n" \
-                            "For more information about receiving funds after a purchase, please visit our FAQs on " \
-                            "https://hawkist.zendesk.com.\n" \
-                            "If you have any questions, you can contact Hawkist support on info@hawkist.com.\n" \
-                            "Thanks for your business!\n" \
-                            "Hawkist"
+                            u"Your item %s has been sold to %s for £%s. The next step is for you to arrange delivery or " \
+                            u"collection of the item. The buyer can be contacted via email on %s.\n" \
+                            u"His delivery address is BUYER_DELIVERY_ADDRESS_NEXT_SPRINT." \
+                            u"Please note that you now have 7 days to arrange for delivery or collection of the item " \
+                            u"before we can release your funds. The faster %s gets the item, the faster " \
+                            u"you get the funds.\n" \
+                            u"For more information about receiving funds after a purchase, please visit our FAQs on " \
+                            u"https://hawkist.zendesk.com.\n" \
+                            u"If you have any questions, you can contact Hawkist support on info@hawkist.com.\n" \
+                            u"Thanks for your business!\n" \
+                            u"Hawkist"
 
 LISTING_WITH_ISSUE_SELLER_TITLE = 'Has issue: %s'
 LISTING_WITH_ISSUE_SELLER_TEXT = '%s,\n' \
@@ -95,15 +95,15 @@ LISTING_WITH_ISSUE_SELLER_TEXT = '%s,\n' \
 
 LISTING_RECEIVED_SELLER_TITLE = 'Received: %s'
 LISTING_RECEIVED_SELLER_TEXT = "%s,\n" \
-                               "Your item %s has been marked received by %s. We have now released the funds for this " \
-                               "order into your Hawkist wallet.\n" \
-                               "Please note that Hawkist charges a fee for successful transactions so you will " \
-                               "be receiving £%s.\n" \
-                               "For more information about our charges, please visit our FAQs on " \
-                               "https://hawkist.zendesk.com.\n" \
-                               "If you have any questions, you can contact Hawkist support on info@hawkist.com.\n" \
-                               "Thanks for your business!\n" \
-                               "Hawkist"
+                               u"Your item %s has been marked received by %s. We have now released the funds for this " \
+                               u"order into your Hawkist wallet.\n" \
+                               u"Please note that Hawkist charges a fee for successful transactions so you will " \
+                               u"be receiving £%s.\n" \
+                               u"For more information about our charges, please visit our FAQs on " \
+                               u"https://hawkist.zendesk.com.\n" \
+                               u"If you have any questions, you can contact Hawkist support on info@hawkist.com.\n" \
+                               u"Thanks for your business!\n" \
+                               u"Hawkist"
 
 
 LISTING_WITH_ISSUE_INVESTIGATION_OPENED_TITLE = 'Investigation Opened: %s'
@@ -123,15 +123,15 @@ LISTING_WITH_ISSUE_INVESTIGATION_OPENED_TEXT = "%s,\n" \
 
 
 FUNDS_RECEIVED_SELLER_TITLE = 'Funds Received: %s'
-FUNDS_RECEIVED_SELLER_TEXT = "%s,\n" \
-                             "We have now released the funds for your item %s into your Hawkist wallet.\n" \
-                             "Please note that Hawkist charges a fee for successful transactions so you will be " \
-                             "receiving £%s.\n" \
-                             "For more information about our charges, please visit our FAQs on " \
-                             "https://hawkist.zendesk.com.\n" \
-                             "If you have any questions, you can contact Hawkist support on info@hawkist.com.\n" \
-                             "Thanks for your business!\n" \
-                             "Hawkist"
+FUNDS_RECEIVED_SELLER_TEXT = u"%s,\n" \
+                             u"We have now released the funds for your item %s into your Hawkist wallet.\n" \
+                             u"Please note that Hawkist charges a fee for successful transactions so you will be " \
+                             u"receiving £%s.\n" \
+                             u"For more information about our charges, please visit our FAQs on " \
+                             u"https://hawkist.zendesk.com.\n" \
+                             u"If you have any questions, you can contact Hawkist support on info@hawkist.com.\n" \
+                             u"Thanks for your business!\n" \
+                             u"Hawkist"
 
 TRANSACTION_CANCELED_TITLE = 'Cancelled: %s'
 TRANSACTION_CANCELED_TEXT = '%s,\n' \
@@ -145,14 +145,14 @@ TRANSACTION_CANCELED_TEXT = '%s,\n' \
                             'Hawkist'
 
 REFUND_ISSUES_BUYER_TITLE = 'Refund: %s'
-REFUND_ISSUES_BUYER_TEXT = "%s,\n" \
-                           "A refund has been issued for your recent purchase of %s. We have credited your Hawkist " \
-                           "wallet with £%s.\n" \
-                           "For more information about cancellations and refunds, please visit our FAQs on " \
-                           "https://hawkist.zendesk.com.\n" \
-                           "If you have any questions, you can contact Hawkist support on info@hawkist.com.\n" \
-                           "Thanks for your business!\n" \
-                           "Hawkist"
+REFUND_ISSUES_BUYER_TEXT = u"%s,\n" \
+                           u"A refund has been issued for your recent purchase of %s. We have credited your Hawkist " \
+                           u"wallet with £%s.\n" \
+                           u"For more information about cancellations and refunds, please visit our FAQs on " \
+                           u"https://hawkist.zendesk.com.\n" \
+                           u"If you have any questions, you can contact Hawkist support on info@hawkist.com.\n" \
+                           u"Thanks for your business!\n" \
+                           u"Hawkist"
 
 INVESTIGATION_RESOLVED_TITLE = 'Resolved: %s'
 INVESTIGATION_RESOLVED_TEXT = '%s,\n' \

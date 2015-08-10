@@ -26,6 +26,11 @@ def send_email(text=None, subject=None, recipient=None, filename=None, recipient
     if from_email is None:
         from_email = env['mail']['from']
 
+    text = text.encode('utf-8')
+    subject = subject.encode('utf-8')
+    from_email = from_email.encode('utf-8')
+    recipient = recipient.encode('utf-8')
+
     msg['Subject'] = subject
     msg['From'] = from_email
     msg['To'] = recipient

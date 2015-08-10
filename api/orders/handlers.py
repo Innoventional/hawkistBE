@@ -185,8 +185,8 @@ class OrdersHandler(ApiHandler):
         purchase_confirmation_sending_seller(self, listing)
 
         # start timer
-        new_charge.automatic_money_release_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(env['stripe_refund_timer']),
-                                                                                       new_charge.automatic_money_release)
+        # new_charge.automatic_money_release_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(env['stripe_refund_timer']),
+        #                                                                                new_charge.automatic_money_release)
 
         return self.success()
 
@@ -268,9 +268,9 @@ class OrdersHandler(ApiHandler):
             return self.make_error(UPDATE_ORDER_INVALID_STATUS)
 
         # remove timer
-        if order.charge.automatic_money_release_timer:
-            tornado.ioloop.IOLoop.current().remove_timeout(order.automatic_money_release_timer)
-            order.automatic_money_release_timer = None
+        # if order.charge.automatic_money_release_timer:
+        #     tornado.ioloop.IOLoop.current().remove_timeout(order.automatic_money_release_timer)
+        #     order.automatic_money_release_timer = None
 
         return self.success()
 

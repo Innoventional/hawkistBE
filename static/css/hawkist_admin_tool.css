@@ -166,3 +166,7 @@
     width: 200px;
     vertical-align: middle;
 }
+
+.hoover-cursor {
+    cursor: pointer;
+}

@@ -35,8 +35,7 @@
             <tbody>
                 {% for o in orders %}
                     <tr data-id="{{ o.id }}">
-                        <td  data-href='{{o.listing.id }}'
-                             onclick="window.open($(this).data('href'), '_blank')">
+                        <td  data-href='{{o.listing.id }}' class="clickable-row hoover-cursor">
                             {{ o.listing.id }}
                         </td>
                         <td>{{ o.listing.title }}</td>

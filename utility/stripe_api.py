@@ -483,10 +483,19 @@ def stripe_test(amount=None, customer=None, destination=None, card=None):
         }
 
 
+def stripe_create_recipient():
+    r = stripe.Recipient.create(
+        name="John Doe",
+        type="individual"
+    )
+    return r
+
+
 # test stripe customer
 if __name__ == '__main__':
     print 'In utility/stripe_api'
-    print stripe_refund('ch_16W6vIArfhEk5XzXKfbubPkP')
+    # print stripe_refund('ch_16W6vIArfhEk5XzXKfbubPkP')
+    print stripe_create_recipient()
     # print stripe_create_charges(customer_id='cus_6hj6xWiBBKO1rH', card_id='card_16UJeRArfhEk5XzXwbkhgiT4', amount=1200,
     #                             description='ne_luboff test charge')
     # print stripe_create_transfer(destination_card_id='cus_6jDv0u0vdbtIPH', source_transaction='cus_6jDv0u0vdbtIPH', amount=1000,

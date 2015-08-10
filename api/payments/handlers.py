@@ -49,6 +49,8 @@ class CardHandler(ApiHandler):
         if customer_cards:
             for customer_card in customer_cards:
                 card_response.append(stripe_retrieve_card_info(customer_card))
+        if customer_cards.count() == 0:
+            return self.make_error(CREATE_CHARGE_NO_STRIPE_ACCOUNT, status=2)
         return self.success({
             'cards': card_response
         })

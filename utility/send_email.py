@@ -4,7 +4,12 @@ import smtplib
 from email.mime.text import MIMEText
 from environment import env
 from helpers import encrypt_password
-from ui_messages.messages.email import CONFIRM_EMAIL_LETTER_SUBJECT, CONFIRM_EMAIL_LETTER_TEXT
+from ui_messages.messages.email import CONFIRM_EMAIL_LETTER_SUBJECT, CONFIRM_EMAIL_LETTER_TEXT, \
+    PURCHASE_ITEM_BUYER_TITLE, PURCHASE_ITEM_BUYER_TEXT, PURCHASE_ITEM_SELLER_TITLE, PURCHASE_ITEM_SELLER_TEXT, \
+    LISTING_WITH_ISSUE_SELLER_TEXT, LISTING_WITH_ISSUE_SELLER_TITLE, LISTING_WITH_ISSUE_INVESTIGATION_OPENED_TITLE, \
+    LISTING_WITH_ISSUE_INVESTIGATION_OPENED_TEXT, LISTING_RECEIVED_SELLER_TITLE, LISTING_RECEIVED_SELLER_TEXT, \
+    FUNDS_RECEIVED_SELLER_TITLE, FUNDS_RECEIVED_SELLER_TEXT, TRANSACTION_CANCELED_TITLE, TRANSACTION_CANCELED_TEXT, \
+    REFUND_ISSUES_BUYER_TEXT, REFUND_ISSUES_BUYER_TITLE, INVESTIGATION_RESOLVED_TITLE, INVESTIGATION_RESOLVED_TEXT
 
 __author__ = 'ne_luboff'
 
@@ -57,4 +62,63 @@ def email_confirmation_sending(self, user, email):
 
     text = CONFIRM_EMAIL_LETTER_TEXT % (user.username, env['server_address'], email_salt)
     subject = CONFIRM_EMAIL_LETTER_SUBJECT
+    send_email(text, subject=subject, recipient=email)
+
+
+def purchase_confirmation_sending_buyer(self, listing):
+    text = PURCHASE_ITEM_BUYER_TEXT % (self.user.username, listing.title, "%.02f" % float(listing.selling_price),
+                                       listing.user.username, listing.user.email)
+    subject = PURCHASE_ITEM_BUYER_TITLE % listing.title
+    send_email(text, subject=subject, recipient=self.user.email)
+
+
+def purchase_confirmation_sending_seller(self, listing):
+    text = PURCHASE_ITEM_SELLER_TEXT % (listing.user.username, listing.title, self.user.username,
+                                        "%.02f" % float(listing.selling_price), self.user.email, self.user.username)
+    subject = PURCHASE_ITEM_SELLER_TITLE % listing.title
+    send_email(text, subject=subject, recipient=listing.user.email)
+
+
+def listing_with_issue_seller(self, listing):
+    text = LISTING_WITH_ISSUE_SELLER_TEXT % (listing.user.username, listing.title, self.user.username)
+    subject = LISTING_WITH_ISSUE_SELLER_TITLE % listing.title
+    send_email(text, subject=subject, recipient=listing.user.email)
+
+
+def listing_received_seller(self, order):
+    text = LISTING_RECEIVED_SELLER_TEXT % (order.listing.user.username, order.listing.title,  self.user.username,
+                                           order.charge.payment_sum_without_application_fee)
+    subject = LISTING_RECEIVED_SELLER_TITLE % order.listing.title
+    send_email(text, subject=subject, recipient=order.listing.user.email)
+
+
+def listing_with_issue_investigation_opened_buyer(order):
+    text = LISTING_WITH_ISSUE_INVESTIGATION_OPENED_TEXT % (order.user.username, order.listing.title)
+    subject = LISTING_WITH_ISSUE_INVESTIGATION_OPENED_TITLE % order.listing.title
+    send_email(text, subject=subject, recipient=order.user.email)
+
+
+def funds_received_seller(self):
+    text = FUNDS_RECEIVED_SELLER_TEXT % (self.listing.user.username, self.listing.title,
+                                         self.payment_sum_without_application_fee)
+    subject = FUNDS_RECEIVED_SELLER_TITLE % self.listing.title
+    send_email(text, subject=subject, recipient=self.listing.user.email)
+
+
+def refunds_issues_buyer(self):
+    text = REFUND_ISSUES_BUYER_TEXT % (self.user.username, self.listing.title,
+                                       self.payment_sum)
+    subject = REFUND_ISSUES_BUYER_TITLE % self.listing.title
+    send_email(text, subject=subject, recipient=self.user.email)
+
+
+def transaction_canceled(email, username, title):
+    text = TRANSACTION_CANCELED_TEXT % (username, title)
+    subject = TRANSACTION_CANCELED_TITLE % title
+    send_email(text, subject=subject, recipient=email)
+
+
+def investigation_resolved(email, username, title):
+    text = INVESTIGATION_RESOLVED_TEXT % (username, title)
+    subject = INVESTIGATION_RESOLVED_TITLE % title
     send_email(text, subject=subject, recipient=email)

@@ -1,7 +1,9 @@
+# -*- coding: utf-8 -*-
 import datetime
 from sqlalchemy import Column, DateTime, Integer, ForeignKey, String, Numeric, SmallInteger, Enum, Boolean
 from sqlalchemy.orm import relationship, backref
 from orm import Base
+from utility.send_email import funds_received_seller
 
 __author__ = 'ne_luboff'
 
@@ -92,9 +94,5 @@ class StripeCharges(Base):
     listing = relationship('Listing', backref=backref('listing_charges', order_by=id, cascade="all,delete",
                                                       lazy='dynamic'), foreign_keys=listing_id)
 
-    def test_timeout_function(self):
-        # change status to freeze
-        self.system_status = ChargesStatus.Frozen
-        # send sms
-        from utility.twilio_api import send_sms
-        print send_sms("380993351739", 'test timeout %s' % datetime.datetime.utcnow())
+    def automatic_money_release(self):
+        funds_received_seller(self)

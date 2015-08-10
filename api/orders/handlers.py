@@ -1,4 +1,5 @@
 import datetime
+import tornado
 from api.items.models import Listing, ListingStatus
 from api.orders.models import UserOrders, OrderStatus, IssueStatus
 from api.payments.models import StripeCharges, ChargesStatus
@@ -12,8 +13,11 @@ from ui_messages.errors.payment_errors import CREATE_CHARGE_NO_CARD_ID, CREATE_C
     CREATE_CHARGE_BUY_YOUR_OWN_LISTING, CREATE_CHARGE_BUY_RESERVED_LISTING, CREATE_CHARGE_BUY_SOLD_LISTING, \
     CREATE_CHARGE_NO_STRIPE_ACCOUNT, UPDATE_CARD_INVALID_ID
 from utility.payment import check_pending_payments
+from utility.send_email import purchase_confirmation_sending_buyer, purchase_confirmation_sending_seller, \
+    listing_with_issue_seller, listing_received_seller
 from utility.stripe_api import stripe_retrieve_customer, stripe_create_charges
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
+from tornado import ioloop
 
 __author__ = 'ne_luboff'
 
@@ -174,6 +178,16 @@ class OrdersHandler(ApiHandler):
 
         self.session.commit()
 
+        # send email to buyer
+        purchase_confirmation_sending_buyer(self, listing)
+
+        # send email to seller
+        purchase_confirmation_sending_seller(self, listing)
+
+        # start timer
+        new_charge.automatic_money_release_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(env['stripe_refund_timer']),
+                                                                                       new_charge.automatic_money_release)
+
         return self.success()
 
     def update(self):
@@ -235,6 +249,8 @@ class OrdersHandler(ApiHandler):
             order.listing.user.app_wallet_pending -= order.charge.payment_sum_without_application_fee
             order.listing.user.app_wallet += order.charge.payment_sum_without_application_fee
             self.session.commit()
+            # send notification to seller
+            listing_received_seller(self, order)
 
         elif str(new_status) == str(OrderStatus.HasAnIssue):
             # validate issue reason
@@ -246,8 +262,16 @@ class OrdersHandler(ApiHandler):
             order.issue_reason = issue_reason
             order.issue_status = IssueStatus.New
             self.session.commit()
+            # send notification to listing owner
+            listing_with_issue_seller(self, order.listing)
         else:
             return self.make_error(UPDATE_ORDER_INVALID_STATUS)
+
+        # remove timer
+        if order.charge.automatic_money_release_timer:
+            tornado.ioloop.IOLoop.current().remove_timeout(order.automatic_money_release_timer)
+            order.automatic_money_release_timer = None
+
         return self.success()
 
 

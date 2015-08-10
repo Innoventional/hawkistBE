@@ -76,6 +76,7 @@ class UserOrders(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
     user = relationship('User', backref=backref('user_orders', order_by=order_status, cascade="all,delete", lazy='dynamic'),
                         foreign_keys=user_id)
+
     @property
     def response(self):
         return {

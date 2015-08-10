@@ -7,6 +7,8 @@ from api.orders.models import UserOrders, OrderStatus, IssueStatus
 from base import HttpRedirect, paginate
 from helpers import route
 from ui_messages.errors.admin_errors.admin_listings_errors import ADMIN_TRY_DELETE_LISTING_WHICH_DOES_NOT_EXISTS
+from utility.send_email import listing_with_issue_investigation_opened_buyer, transaction_canceled, refunds_issues_buyer, \
+    investigation_resolved
 
 __author__ = 'ne_luboff'
 
@@ -66,18 +68,30 @@ class AdminIssuedListingsHandler(AdminBaseHandler):
 
         if str(action) == str(IssueStatus.Investigating):
             order.issue_status = IssueStatus.Investigating
+            listing_with_issue_investigation_opened_buyer(order)
         elif str(action) == str(IssueStatus.Cancelled):
             order.issue_status = IssueStatus.Cancelled
             # TODO money to buyer
             order.listing.user.app_wallet_pending -= order.charge.payment_sum_without_application_fee
-            order.user.app_wallet += order.charge.payment_sum_without_application_fee
+            order.user.app_wallet += order.charge.payment_sum
             order.listing.status = ListingStatus.Active
+            # send email to seller
+            transaction_canceled(order.listing.user.email, order.listing.user.username, order.listing.title)
+            # send email to buyer
+            transaction_canceled(order.user.email, order.user.username, order.listing.title)
+            refunds_issues_buyer(order)
+
+            #
+            investigation_resolved(order.listing.user.email, order.listing.user.username, order.listing.title)
+            investigation_resolved(order.user.email, order.user.username, order.listing.title)
         elif str(action) == str(IssueStatus.Resolved):
             order.issue_status = IssueStatus.Resolved
             # TODO money to seller
             order.listing.user.app_wallet_pending -= order.charge.payment_sum_without_application_fee
             order.listing.user.app_wallet += order.charge.payment_sum_without_application_fee
             order.listing.status = ListingStatus.Sold
+            investigation_resolved(order.listing.user.email, order.listing.user.username, order.listing.title)
+            investigation_resolved(order.user.email, order.user.username, order.listing.title)
         order.updated_at = datetime.datetime.utcnow()
         self.session.commit()
         return self.success()

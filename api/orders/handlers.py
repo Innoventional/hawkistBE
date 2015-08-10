@@ -34,8 +34,20 @@ class OrdersHandler(ApiHandler):
             logger.debug(suspension_error)
             return suspension_error
 
+        orders = self.user.user_orders
+
+        # search in orders. search by title and platform name. search for every word in searching query
+        searching_query = self.get_arg("q")
+        if searching_query:
+            searching_query_dict = searching_query.lower().split(' ')
+            suitable_orders = set()
+            for o in orders:
+                for q in searching_query_dict:
+                    if q in o.listing.title.lower() or q in o.listing.platform.title.lower():
+                        suitable_orders.add(o.id)
+            orders = orders.filter(UserOrders.id.in_(list(suitable_orders)))
         return self.success(
-            {'orders': [o.response for o in self.user.user_orders]}
+            {'orders': [o.response for o in orders]}
         )
 
     def create(self):

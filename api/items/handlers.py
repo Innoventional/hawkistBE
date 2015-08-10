@@ -102,7 +102,6 @@ class CheckSellingAbilityHandler(ApiHandler):
         return self.success()
 
 
-# TODO for listing edition
 @route('listings')
 class ListingHandler(ApiHandler):
     allowed_methods = ('GET', 'POST', 'DELETE', )

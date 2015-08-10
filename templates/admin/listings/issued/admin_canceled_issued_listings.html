@@ -33,8 +33,9 @@
             </thead>
             <tbody>
                 {% for o in orders %}
-                    <tr data-id="{{ o.id }}">
+                    <tr class='clickable-row' data-id="{{ o.id }}" data-href='google.com'>
                         <td>{{ o.listing.id }}</td>
+                        <!--<td>{{ o.listing.id }}</td>-->
                         <td>{{ o.listing.title }}</td>
                         <td>{{ o.user.id }}</td>
                         <td>{{ o.user.username }}</td>

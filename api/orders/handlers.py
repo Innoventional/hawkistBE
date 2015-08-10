@@ -158,6 +158,8 @@ class OrdersHandler(ApiHandler):
         if not self.user.app_wallet_pending:
             self.user.app_wallet = 0
 
+        listing.status = ListingStatus.Reserved
+
         self.session.commit()
 
         return self.success()

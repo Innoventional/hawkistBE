@@ -2,7 +2,7 @@ import logging
 import datetime
 from sqlalchemy import or_
 from api.admin.handlers.login import AdminBaseHandler
-from api.items.models import Listing
+from api.items.models import Listing, ListingStatus
 from api.orders.models import UserOrders, OrderStatus, IssueStatus
 from base import HttpRedirect, paginate
 from helpers import route
@@ -67,11 +67,13 @@ class AdminIssuedListingsHandler(AdminBaseHandler):
             # TODO money to buyer
             order.listing.user.app_wallet_pending -= order.charge.payment_sum_without_application_fee
             order.user.app_wallet += order.charge.payment_sum_without_application_fee
+            order.listing.status = ListingStatus.Active
         elif str(action) == str(IssueStatus.Resolved):
             order.issue_status = IssueStatus.Resolved
             # TODO money to seller
             order.listing.user.app_wallet_pending -= order.charge.payment_sum_without_application_fee
             order.listing.user.app_wallet += order.charge.payment_sum_without_application_fee
+            order.listing.status = ListingStatus.Sold
         order.updated_at = datetime.datetime.utcnow()
         self.session.commit()
         return self.success()

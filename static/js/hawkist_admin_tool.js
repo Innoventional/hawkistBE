@@ -919,3 +919,9 @@ $('.btn_order_resolved').click(function(){
         }
     });
 });
+
+$(".clickable-row").click(function() {
+    window.open($(this).data("href"), '_blank').focus();
+    //win = window.open($(this).data("href"), '_blank');
+    //win.focus();
+});

@@ -11,12 +11,10 @@
         <div id="header" class="clearfix">
             <div class="container clearfix">
                 <a id="logo" href="http://www.hawkist.com" title="Hawkist" alt="Hawkist"
-                   class="four columns wow bounceInLeft animated" data-wow-delay="0.2s"
-                   style="visibility: visible; -webkit-animation-delay: 0.2s;">
-                    <img src="http://www.hawkist.com/wp-content/themes/hawkist/images/logo.png" alt="Hawkist" />
+                   class="four columns wow bounceInLeft animated hawkist_wow" data-wow-delay="0.2s">
+                    <img src="{{ static_url('images/logo_green.png') }}" alt="Hawkist" />
                 </a>
-                <nav class="clearfix ten columns wow bounceInRight animated" data-wow-delay="0.2s"
-                     style="visibility: visible; -webkit-animation-delay: 0.2s;">
+                <nav class="clearfix ten columns wow bounceInRight animated hawkist_wow" data-wow-delay="0.2s">
                     <div class="menu-inner-pages-container">
                         <ul id="menu-inner-pages" class="">
                             <li id="menu-item-1341" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1341">
@@ -40,23 +38,30 @@
                 </nav>
             </div>
         </div>
-
-        <!--<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">-->
-            <!--<div class="container">-->
-                <!--<div class="navbar-header">-->
-                    <!--<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">-->
-                        <!--<span class="sr-only">Toggle navigation</span>-->
-                        <!--<span class="icon-bar"></span>-->
-                        <!--<span class="icon-bar"></span>-->
-                        <!--<span class="icon-bar"></span>-->
-                    <!--</button>-->
-                    <!--<a class="navbar-brand" href="#">Hawkist</a>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<div class="clear"></div>-->
-        <!--</div>-->
         <div class="container">
-            {% block content %}{% end %}
+            <div id="content_inner" class="container sixteen columns wow bounceInUp animated hawkist_wow"
+                 data-wow-delay="0.2s">
+                <div>
+                    <div id="pm1">
+                        <h1><b><i>{% block message_title %} {% end %}</i></b></h1>
+                        <p>{% block message_body %} {% end %}</p>
+                    </div>
+                    <div id="pm2">
+                        <img class="alignright" src="{{ static_url('images/pic.jpg') }}"
+                             alt="pic" width="405" height="253" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="footerbg">
+            <footer>
+                <div class="container sixteen columns">
+                    <div id="f1" class="ten columns">
+                        &copy; 2015 Hawkist All rights reserved.<br />
+                        <a href="http://www.hawkist.com/privacy-policy">Privacy Policy</a> | <a href="http://www.hawkist.com/terms-conditions">Terms & Conditions</a>
+                    </div>
+                </div>
+            </footer>
         </div>
     </body>
 </html>

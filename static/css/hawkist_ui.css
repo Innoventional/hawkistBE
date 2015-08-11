@@ -3833,3 +3833,7 @@ Copyright (c) 2015 Daniel Eden
       height: 0;
     }
 
+.hawkist_wow {
+    visibility: visible;
+    -webkit-animation-delay: 0.2s;
+}

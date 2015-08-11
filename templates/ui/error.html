@@ -2,7 +2,10 @@
 
 {% block title %}Error{% end %}
 
+{% block message_title %}
+    <div class="text-danger">Confirmation error!</div>
+{% end %}
 
-{% block content %}
-    <div class="alert alert-danger" role="alert">{{ message }}</div>
+{% block message_body %}
+    Invalid confirmation link.
 {% end %}

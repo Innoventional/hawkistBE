@@ -4,23 +4,57 @@
         <title>{% block title %}{% end %}</title>
         <link rel="stylesheet" href="{{ static_url('css/bootstrap.min.css') }}">
         <link rel="stylesheet" href="{{ static_url('css/style.css') }}">
+        <link rel="stylesheet" href="{{ static_url('css/hawkist_ui.css') }}">
         <link rel="shortcut icon" href="{{ static_url('images/favicon.png') }}">
     </head>
     <body>
-        <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="#">Hawkist</a>
-                </div>
+        <div id="header" class="clearfix">
+            <div class="container clearfix">
+                <a id="logo" href="http://www.hawkist.com" title="Hawkist" alt="Hawkist"
+                   class="four columns wow bounceInLeft animated" data-wow-delay="0.2s"
+                   style="visibility: visible; -webkit-animation-delay: 0.2s;">
+                    <img src="http://www.hawkist.com/wp-content/themes/hawkist/images/logo.png" alt="Hawkist" />
+                </a>
+                <nav class="clearfix ten columns wow bounceInRight animated" data-wow-delay="0.2s"
+                     style="visibility: visible; -webkit-animation-delay: 0.2s;">
+                    <div class="menu-inner-pages-container">
+                        <ul id="menu-inner-pages" class="">
+                            <li id="menu-item-1341" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1341">
+                                <a href="http://www.hawkist.com/jobs/">Jobs</a>
+                            </li>
+                            <li id="menu-item-1314" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1314">
+                                <a href="http://www.hawkist.com/blog/">
+                                    Blog
+                                </a>
+                            </li>
+                            <li id="menu-item-1340" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-1326 current_page_item menu-item-1340">
+                                <a href="http://www.hawkist.com/about/">
+                                    About
+                                </a>
+                            </li>
+                            <li id="menu-item-1315" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1315">
+                                <a href="http://www.hawkist.com/">Home</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
             </div>
-            <div class="clear"></div>
         </div>
+
+        <!--<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">-->
+            <!--<div class="container">-->
+                <!--<div class="navbar-header">-->
+                    <!--<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">-->
+                        <!--<span class="sr-only">Toggle navigation</span>-->
+                        <!--<span class="icon-bar"></span>-->
+                        <!--<span class="icon-bar"></span>-->
+                        <!--<span class="icon-bar"></span>-->
+                    <!--</button>-->
+                    <!--<a class="navbar-brand" href="#">Hawkist</a>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="clear"></div>-->
+        <!--</div>-->
         <div class="container">
             {% block content %}{% end %}
         </div>

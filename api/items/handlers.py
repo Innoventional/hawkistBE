@@ -857,6 +857,15 @@ class ListingHandler(ApiHandler):
         if listing.status == ListingStatus.Sold:
             return self.make_error(DELETE_SOLD_LISTING)
 
+        # must delete all mentions
+        # select all comments with this listing
+        comments = listing.listing_comments
+        for c in comments:
+            # select all mentions
+            comment_mentions = c.user_mentions
+            for m in comment_mentions:
+                comment_mentions.remove(m)
+                self.session.commit()
         self.session.delete(listing)
         self.session.commit()
         return self.success()

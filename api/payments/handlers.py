@@ -175,9 +175,6 @@ class CardHandler(ApiHandler):
         if not address_line1:
             empty_field_error.append('address line 1')
 
-        if not address_line2:
-            empty_field_error.append('address line 2')
-
         if not city:
             empty_field_error.append('city')
 

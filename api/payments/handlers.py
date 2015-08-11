@@ -204,8 +204,11 @@ class CardHandler(ApiHandler):
         stripe_card = stripe_retrieve_card(stripe_customer, stripe_card_id)
 
         # update card
-        stripe_update_card_info(stripe_card, name=name, exp_month=exp_month, exp_year=exp_year,
-                                address_line1=address_line1, address_line2=address_line2, city=city, postcode=postcode)
+        stripe_update_error = stripe_update_card_info(stripe_card, name=name, exp_month=exp_month, exp_year=exp_year,
+                                                      address_line1=address_line1, address_line2=address_line2,
+                                                      city=city, postcode=postcode)
+        if stripe_update_error:
+            return self.make_error(stripe_update_error)
         self.user.stripe_customer.updated_at = datetime.datetime.utcnow()
         self.session.commit()
         return self.success()

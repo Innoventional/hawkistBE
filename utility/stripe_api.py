@@ -3,6 +3,8 @@ import stripe
 # from environment import env
 # from ui_messages.errors.utility_errors.stripe_api_errors import STRIPE_INVALID_TOKEN, STRIPE_TOKEN_ALREADY_USED, \
 #     STRIPE_BAD_CONNECTION
+from ui_messages.errors.utility_errors.stripe_api_errors import STRIPE_INVALID_CARD_EXP_YEAR
+from ui_messages.messages.custom_error_titles import STRIPE_INVALID_CARD_EXP_YEAR_TITLE
 
 __author__ = 'ne_luboff'
 
@@ -215,38 +217,50 @@ def stripe_update_card_info(card, name=None, address_line1=None, address_line2=N
     """
     Function for card info updating.
     """
-    need_commit = False
+    error = None
+    try:
+        need_commit = False
 
-    if card.name != name:
-        card.name = name
-        need_commit = True
+        if card.name != name:
+            card.name = name
+            need_commit = True
 
-    if card.address_line1 != address_line1:
-        card.address_line1 = address_line1
-        need_commit = True
+        if card.address_line1 != address_line1:
+            card.address_line1 = address_line1
+            need_commit = True
 
-    if card.address_line2 != address_line2:
-        card.address_line2 = address_line2
-        need_commit = True
+        if card.address_line2 != address_line2:
+            card.address_line2 = address_line2
+            need_commit = True
 
-    if card.address_zip != postcode:
-        card.address_zip = postcode
-        need_commit = True
+        if card.address_zip != postcode:
+            card.address_zip = postcode
+            need_commit = True
 
-    if card.address_city != city:
-        card.address_city = city
-        need_commit = True
+        if card.address_city != city:
+            card.address_city = city
+            need_commit = True
 
-    if card.exp_month != exp_month:
-        card.exp_month = exp_month
-        need_commit = True
+        if card.exp_month != exp_month:
+            card.exp_month = exp_month
+            need_commit = True
 
-    if card.exp_year != exp_year:
-        card.exp_year = exp_year
-        need_commit = True
+        if card.exp_year != exp_year:
+            card.exp_year = exp_year
+            need_commit = True
 
-    if need_commit:
-        card.save()
+        if need_commit:
+            card.save()
+    except stripe.error.CardError, e:
+        if "Your card's expiration year is invalid." in str(e):
+            error = {
+                'message': STRIPE_INVALID_CARD_EXP_YEAR,
+                'title': STRIPE_INVALID_CARD_EXP_YEAR_TITLE
+            }
+        else:
+            error = str(e)
+    finally:
+        return error
 
 
 def stripe_delete_card(card):

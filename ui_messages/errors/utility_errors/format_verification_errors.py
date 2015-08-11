@@ -16,4 +16,4 @@ EMAIL_VERIFICATION_INVALID_FORMAT = 'Email addresses must be formatted as email@
 Username verification
 """
 USERNAME_VERIFICATION_TOO_LONG_USERNAME = 'Usernames cannot be longer than 50 characters.'
-USERNAME_VERIFICATION_INVALID_FORMAT = 'Usernames cannot contain special characters, only letters and numbers.'
+USERNAME_VERIFICATION_INVALID_FORMAT = 'Usernames can only contain letters (a-z) and numbers (0-9). No spaces please.'

@@ -288,6 +288,19 @@ class AdminUsersHandler(AdminBaseHandler):
             for m in comment_mentions:
                 comment_mentions.remove(m)
                 self.session.commit()
+            self.session.delete(c)
+            self.session.commit()
+
+        comments = user.user_comments
+        for c in comments:
+            # select all mentions
+            comment_mentions = c.user_mentions
+            for m in comment_mentions:
+                comment_mentions.remove(m)
+                self.session.commit()
+            self.session.delete(c)
+            self.session.commit()
+
         self.session.delete(user)
         self.session.commit()
         return self.success()

@@ -1344,13 +1344,7 @@ ORDER_INFO_DICT
 
     "id": USER ORDER ID,
     "status": ORDER STATUS,
-    "listing": {
-        "id": LISTING ID,
-        "title": LISTING TITLE,
-        "image": LINK TO LISTING PHOTO,
-        "retail_price": RETAIL PRICE,
-        "selling_price": SELLING PRICE,
-        },
+    "listing": LISTING_INFO_DICT
 
 ORDER STATUSES
     
@@ -1364,6 +1358,54 @@ ORDER ISSUE REASONS
     ItemIsNotAsDescribed = 1
     ItemIsBrokenOrNotUsable = 2
 
+    
+**Get my orders list**
+
+    Url: 'user/orders'
+    Method: 'GET'
+
+
+Response :
+    
+    {
+        'status': 0,
+        'orders': [
+            {
+                ORDER_INFO_DICT
+            },
+            {
+                ...
+            },
+            {
+                ORDER_INFO_DICT
+            }
+        ]
+    }
+    
+    
+**Search in orders (by listing title and platform name)**
+
+    Url: 'user/orders?q=SEARCHING_QUERY'
+    Method: 'GET'
+
+
+Response :
+    
+    {
+        'status': 0,
+        'orders': [
+            {
+                ORDER_INFO_DICT
+            },
+            {
+                ...
+            },
+            {
+                ORDER_INFO_DICT
+            }
+        ]
+    }
+    
     
 **Buy item (create stripe charge)**
 

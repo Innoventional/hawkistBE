@@ -217,7 +217,7 @@ class UserEmailVerificationHandler(OpenApiHandler):
         self.session.commit()
 
         # send message about success
-        text = CONFIRM_SUCCESS_EMAIL_LETTER_TEXT % user.username.encode('utf-8')
+        text = CONFIRM_SUCCESS_EMAIL_LETTER_TEXT % user.username
         subject = CONFIRM_SUCCESS_EMAIL_LETTER_SUBJECT
         send_email(text, subject=subject, recipient=user.email)
         return self.render_string('ui/welcome.html', menu_tab_active='')

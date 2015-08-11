@@ -6,7 +6,6 @@ from ui_messages.errors.utility_errors.format_verification_errors import PHONE_V
     PHONE_VERIFICATION_TOO_SHORT_NUMBER, PHONE_VERIFICATION_TOO_LONG_NUMBER, EMAIL_VERIFICATION_INVALID_FORMAT, \
     USERNAME_VERIFICATION_TOO_LONG_USERNAME, USERNAME_VERIFICATION_INVALID_FORMAT
 from ui_messages.errors.utility_errors.twilio_api_errors import TWILIO_RICH_SMS_LIMIT
-from ui_messages.messages.custom_error_titles import USERNAME_VERIFICATION_INVALID_FORMAT_TITLE
 
 __author__ = 'ne_luboff'
 
@@ -50,10 +49,7 @@ def username_verification(username):
     if len(username) > 50:
         return USERNAME_VERIFICATION_TOO_LONG_USERNAME
     if not re.match('^\w[\w.-]+$', username.decode('utf-8'), re.U):
-        return {
-            'message': USERNAME_VERIFICATION_INVALID_FORMAT,
-            'title': USERNAME_VERIFICATION_INVALID_FORMAT_TITLE
-        }
+        return USERNAME_VERIFICATION_INVALID_FORMAT
     return False
 
 

@@ -5,7 +5,9 @@ from base import ApiHandler, die
 from helpers import route
 from ui_messages.errors.payment_errors import ADD_CARD_NO_STRIPE_TOKEN, UPDATE_CARD_EMPTY_FIELDS, UPDATE_CARD_NO_ID, \
     UPDATE_CARD_INVALID_ID, DELETE_CARD_NO_CARD_ID, CREATE_CHARGE_NO_STRIPE_ACCOUNT
-from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE
+from ui_messages.errors.utility_errors.stripe_api_errors import STRIPE_INVALID_CARD_EXP_YEAR
+from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE, \
+    STRIPE_INVALID_CARD_EXP_YEAR_TITLE
 from utility.stripe_api import stripe_create_customer, stripe_retrieve_customer, stripe_retrieve_card_info, \
     stripe_retrieve_card, stripe_update_card_info, stripe_add_new_card, stripe_delete_card
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
@@ -208,6 +210,8 @@ class CardHandler(ApiHandler):
                                                       address_line1=address_line1, address_line2=address_line2,
                                                       city=city, postcode=postcode)
         if stripe_update_error:
+            if STRIPE_INVALID_CARD_EXP_YEAR in stripe_update_error:
+                return self.make_error(message=stripe_update_error, title=STRIPE_INVALID_CARD_EXP_YEAR_TITLE)
             return self.make_error(stripe_update_error)
         self.user.stripe_customer.updated_at = datetime.datetime.utcnow()
         self.session.commit()

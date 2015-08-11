@@ -11,6 +11,7 @@ from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID, UPDAT
     UPDATE_USER_LINK_FB_NO_TOKEN, UPDATE_USER_FB_ALREADY_USED, UPDATE_USER_TAGS_TAG_DOES_NOT_EXISTS, \
     UPDATE_USER_TAGS_TAG_ALREADY_ADDED, UPDATE_USER_TAGS_NO_TAG_ID, UPDATE_USER_TAGS_NO_TAG_TYPE, \
     UPDATE_USER_TAGS_INVALID_TAG_ID, UPDATE_USER_TAGS_INVALID_TAG_TYPE, UPDATE_USER_TAGS_NO_EXISTING_USER_TAG
+from ui_messages.messages.custom_error_titles import USERNAME_VERIFICATION_INVALID_FORMAT_TITLE
 from ui_messages.messages.email import CONFIRM_SUCCESS_EMAIL_LETTER_SUBJECT, CONFIRM_SUCCESS_EMAIL_LETTER_TEXT
 from utility.amazon import upload_file
 from utility.facebook_api import get_facebook_user
@@ -129,7 +130,7 @@ class UserHandler(ApiHandler):
             # first validate username
             username_error = username_verification(username)
             if username_error:
-                return self.make_error(username_error)
+                return self.make_error(message=username_error, title=USERNAME_VERIFICATION_INVALID_FORMAT_TITLE)
 
             already_used = self.session.query(User).filter(and_(User.id != self.user.id,
                                                                 func.lower(User.username) == username.lower())).first()

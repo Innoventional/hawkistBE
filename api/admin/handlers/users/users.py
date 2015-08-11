@@ -13,7 +13,8 @@ from ui_messages.errors.admin_errors.admin_users_errors import ADMIN_UPDATE_USER
 from ui_messages.errors.users_errors.update_errors import UPDATE_USER_INFO_USERNAME_ALREADY_USED, \
     UPDATE_USER_PHONE_ALREADY_USED
 from ui_messages.messages.admin_tool import ADMIN_USERTYPE_CHANGED_SUCCESS
-from ui_messages.messages.custom_error_titles import PHONE_VERIFICATION_INVALID_FORMAT_TITLE
+from ui_messages.messages.custom_error_titles import PHONE_VERIFICATION_INVALID_FORMAT_TITLE, \
+    USERNAME_VERIFICATION_INVALID_FORMAT_TITLE
 from ui_messages.messages.email import ADMIN_BACK_USER_TO_STANDARD_USERTYPE_LETTER_TEXT, ADMIN_CHANGE_USERTYPE_LETTER_TEXT, \
     ADMIN_CHANGE_USERTYPE_LETTER_SUBJECT, ADMIN_PHONE_NUMBER_CHANGED_LETTER_TEXT, \
     ADMIN_PHONE_NUMBER_CHANGED_LETTER_SUBJECT, ADMIN_ACCOUNT_SUSPENDED_TEXT, ADMIN_ACCOUNT_SUSPENDED_SUBJECT, \
@@ -166,7 +167,7 @@ class AdminUsersHandler(AdminBaseHandler):
                 username = str(username.encode('utf-8'))
                 username_error = username_verification(username)
                 if username_error:
-                    return self.make_error(username_error)
+                    return self.make_error(message=username_error, title=USERNAME_VERIFICATION_INVALID_FORMAT_TITLE)
 
                 # check is username available
                 already_used = self.session.query(User).filter(and_(User.id != user.id,

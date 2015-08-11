@@ -4,7 +4,6 @@ import stripe
 # from ui_messages.errors.utility_errors.stripe_api_errors import STRIPE_INVALID_TOKEN, STRIPE_TOKEN_ALREADY_USED, \
 #     STRIPE_BAD_CONNECTION
 from ui_messages.errors.utility_errors.stripe_api_errors import STRIPE_INVALID_CARD_EXP_YEAR
-from ui_messages.messages.custom_error_titles import STRIPE_INVALID_CARD_EXP_YEAR_TITLE
 
 __author__ = 'ne_luboff'
 
@@ -253,10 +252,7 @@ def stripe_update_card_info(card, name=None, address_line1=None, address_line2=N
             card.save()
     except stripe.error.CardError, e:
         if "Your card's expiration year is invalid." in str(e):
-            error = {
-                'message': STRIPE_INVALID_CARD_EXP_YEAR,
-                'title': STRIPE_INVALID_CARD_EXP_YEAR_TITLE
-            }
+            error = STRIPE_INVALID_CARD_EXP_YEAR
         else:
             error = str(e)
     finally:

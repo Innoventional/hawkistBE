@@ -9,7 +9,8 @@ from helpers import route
 from ui_messages.errors.users_errors.login_errors import SIGN_UP_EMPTY_AUTHORIZATION_DATA, \
     LOG_IN_EMPTY_AUTHORIZATION_DATA, LOG_IN_USER_NOT_FOUND, LOG_IN_INCORRECT_PIN
 from ui_messages.messages.custom_error_titles import PHONE_VERIFICATION_INVALID_FORMAT_TITLE, \
-    LOG_IN_EMPTY_AUTHORIZATION_DATA_TITLE, LOG_IN_USER_NOT_FOUND_TITLE, LOG_IN_INCORRECT_PIN_TITLE
+    LOG_IN_EMPTY_AUTHORIZATION_DATA_TITLE, LOG_IN_USER_NOT_FOUND_TITLE, LOG_IN_INCORRECT_PIN_TITLE, \
+    UPDATE_USER_INFO_EMAIL_ALREADY_USED_TITLE
 from ui_messages.messages.sms import SIGN_UP_WELCOME_SMS, REQUEST_NEW_PIN_SMS
 from utility.facebook_api import get_facebook_user, get_facebook_photo
 from utility.format_verification import phone_verification, sms_limit_check, phone_reformat
@@ -120,7 +121,8 @@ class UserLoginHandler(ApiHandler):
                 facebook_email = facebook_data.get('email', None)
                 email_uniqueness_error = check_email_uniqueness(self, facebook_email)
                 if email_uniqueness_error:
-                    return self.make_error(email_uniqueness_error)
+                    return self.make_error(message=email_uniqueness_error,
+                                           title=UPDATE_USER_INFO_EMAIL_ALREADY_USED_TITLE)
 
                 user = User()
                 user.created_at = datetime.datetime.utcnow()

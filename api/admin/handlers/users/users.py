@@ -14,7 +14,8 @@ from ui_messages.errors.users_errors.update_errors import UPDATE_USER_INFO_USERN
     UPDATE_USER_PHONE_ALREADY_USED
 from ui_messages.messages.admin_tool import ADMIN_USERTYPE_CHANGED_SUCCESS
 from ui_messages.messages.custom_error_titles import PHONE_VERIFICATION_INVALID_FORMAT_TITLE, \
-    USERNAME_VERIFICATION_INVALID_FORMAT_TITLE
+    USERNAME_VERIFICATION_INVALID_FORMAT_TITLE, UPDATE_USER_INFO_USERNAME_ALREADY_USED_TITLE, \
+    UPDATE_USER_INFO_EMAIL_ALREADY_USED_TITLE
 from ui_messages.messages.email import ADMIN_BACK_USER_TO_STANDARD_USERTYPE_LETTER_TEXT, ADMIN_CHANGE_USERTYPE_LETTER_TEXT, \
     ADMIN_CHANGE_USERTYPE_LETTER_SUBJECT, ADMIN_PHONE_NUMBER_CHANGED_LETTER_TEXT, \
     ADMIN_PHONE_NUMBER_CHANGED_LETTER_SUBJECT, ADMIN_ACCOUNT_SUSPENDED_TEXT, ADMIN_ACCOUNT_SUSPENDED_SUBJECT, \
@@ -173,7 +174,8 @@ class AdminUsersHandler(AdminBaseHandler):
                 already_used = self.session.query(User).filter(and_(User.id != user.id,
                                                                     func.lower(User.username) == username.lower())).first()
                 if already_used:
-                    return self.make_error(UPDATE_USER_INFO_USERNAME_ALREADY_USED % username)
+                    return self.make_error(message=UPDATE_USER_INFO_USERNAME_ALREADY_USED % username,
+                                           title=UPDATE_USER_INFO_USERNAME_ALREADY_USED_TITLE)
                 user.username = username
                 need_commit = True
 
@@ -183,11 +185,13 @@ class AdminUsersHandler(AdminBaseHandler):
                 # validate email
                 email_error = email_verification(email)
                 if email_error:
-                    return self.make_error(email_error)
+                    return self.make_error(message=email_error,
+                                           title=USERNAME_VERIFICATION_INVALID_FORMAT_TITLE)
 
                 email_uniqueness_error = check_email_uniqueness(self, email)
                 if email_uniqueness_error:
-                    return self.make_error(email_uniqueness_error)
+                    return self.make_error(message=email_uniqueness_error,
+                                           title=UPDATE_USER_INFO_EMAIL_ALREADY_USED_TITLE)
 
                 # send message to old email address
                 if user.email:

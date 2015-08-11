@@ -6,12 +6,14 @@ from api.users.models import User, UserMetaTag, UserMetaTagType
 from base import ApiHandler, die, USER_ID, OpenApiHandler
 from helpers import route
 from ui_messages.errors.users_errors.blocked_users_error import GET_BLOCKED_USER
-from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID, UPDATE_USER_INFO_NO_USERNAME, \
-    UPDATE_USER_INFO_NO_EMAIL, UPDATE_USER_INFO_USERNAME_ALREADY_USED, INVALID_CONFIRM_EMAIL_LINK, \
-    UPDATE_USER_LINK_FB_NO_TOKEN, UPDATE_USER_FB_ALREADY_USED, UPDATE_USER_TAGS_TAG_DOES_NOT_EXISTS, \
-    UPDATE_USER_TAGS_TAG_ALREADY_ADDED, UPDATE_USER_TAGS_NO_TAG_ID, UPDATE_USER_TAGS_NO_TAG_TYPE, \
-    UPDATE_USER_TAGS_INVALID_TAG_ID, UPDATE_USER_TAGS_INVALID_TAG_TYPE, UPDATE_USER_TAGS_NO_EXISTING_USER_TAG
-from ui_messages.messages.custom_error_titles import USERNAME_VERIFICATION_INVALID_FORMAT_TITLE
+from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID,UPDATE_USER_INFO_USERNAME_ALREADY_USED,\
+    INVALID_CONFIRM_EMAIL_LINK, UPDATE_USER_LINK_FB_NO_TOKEN, UPDATE_USER_FB_ALREADY_USED, \
+    UPDATE_USER_TAGS_TAG_DOES_NOT_EXISTS, UPDATE_USER_TAGS_TAG_ALREADY_ADDED, UPDATE_USER_TAGS_NO_TAG_ID, \
+    UPDATE_USER_TAGS_NO_TAG_TYPE, UPDATE_USER_TAGS_INVALID_TAG_ID, UPDATE_USER_TAGS_INVALID_TAG_TYPE, \
+    UPDATE_USER_TAGS_NO_EXISTING_USER_TAG, UPDATE_USER_INFO_MISSING_USERNAME_OR_EMAIL
+from ui_messages.messages.custom_error_titles import USERNAME_VERIFICATION_INVALID_FORMAT_TITLE, \
+    CREATE_LISTING_EMPTY_FIELDS_TITLE, UPDATE_USER_INFO_USERNAME_ALREADY_USED_TITLE, \
+    UPDATE_USER_INFO_EMAIL_ALREADY_USED_TITLE
 from ui_messages.messages.email import CONFIRM_SUCCESS_EMAIL_LETTER_SUBJECT, CONFIRM_SUCCESS_EMAIL_LETTER_TEXT
 from utility.amazon import upload_file
 from utility.facebook_api import get_facebook_user
@@ -116,11 +118,18 @@ class UserHandler(ApiHandler):
         logger.debug('email %s' % email)
         logger.debug('about_me %s' % about_me)
 
+        # check email and username
+        no_email_username_error = []
         if not username:
-            return self.make_error(UPDATE_USER_INFO_NO_USERNAME)
+            no_email_username_error.append('username')
 
         if not email:
-            return self.make_error(UPDATE_USER_INFO_NO_EMAIL)
+            no_email_username_error.append('email')
+
+        if no_email_username_error:
+            empty_fields = ', '.join(no_email_username_error)
+            return self.make_error(message=UPDATE_USER_INFO_MISSING_USERNAME_OR_EMAIL % empty_fields,
+                                   title=CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields.capitalize())
 
         need_commit = False
 
@@ -135,7 +144,8 @@ class UserHandler(ApiHandler):
             already_used = self.session.query(User).filter(and_(User.id != self.user.id,
                                                                 func.lower(User.username) == username.lower())).first()
             if already_used:
-                return self.make_error(UPDATE_USER_INFO_USERNAME_ALREADY_USED % username)
+                return self.make_error(message=UPDATE_USER_INFO_USERNAME_ALREADY_USED % username,
+                                       title=UPDATE_USER_INFO_USERNAME_ALREADY_USED_TITLE)
 
             # save username in case if usernames not the same
             if self.user.username != username:
@@ -148,12 +158,13 @@ class UserHandler(ApiHandler):
             # first validate email
             email_error = email_verification(email)
             if email_error:
-                return self.make_error(email_error)
+                return self.make_error(message=email_error, title=USERNAME_VERIFICATION_INVALID_FORMAT_TITLE)
 
             if self.user.email != email:
                 email_uniqueness_error = check_email_uniqueness(self, email)
                 if email_uniqueness_error:
-                    return self.make_error(email_uniqueness_error)
+                    return self.make_error(message=email_uniqueness_error,
+                                           title=UPDATE_USER_INFO_EMAIL_ALREADY_USED_TITLE)
                 self.user.email = email
                 self.user.email_status = False
                 # send email confirmation

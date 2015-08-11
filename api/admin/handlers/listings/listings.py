@@ -6,7 +6,7 @@ from api.orders.models import UserOrders, OrderStatus, IssueStatus
 from base import HttpRedirect, paginate
 from helpers import route
 from ui_messages.errors.admin_errors.admin_listings_errors import ADMIN_TRY_DELETE_LISTING_WHICH_DOES_NOT_EXISTS
-from ui_messages.errors.items_errors.items_errors import DELETE_SOLD_LISTING
+from ui_messages.errors.items_errors.items_errors import DELETE_SOLD_LISTING, DELETE_RESERVED_LISTING
 
 __author__ = 'ne_luboff'
 
@@ -48,8 +48,21 @@ class AdminListingsHandler(AdminBaseHandler):
         if not listing:
             return self.make_error(ADMIN_TRY_DELETE_LISTING_WHICH_DOES_NOT_EXISTS % listing_id)
 
+        if listing.status == ListingStatus.Reserved:
+            return self.make_error(DELETE_RESERVED_LISTING)
+
         if listing.status == ListingStatus.Sold:
             return self.make_error(DELETE_SOLD_LISTING)
+
+        # must delete all mentions
+        # select all comments with this listing
+        comments = listing.listing_comments
+        for c in comments:
+            # select all mentions
+            comment_mentions = c.user_mentions
+            for m in comment_mentions:
+                comment_mentions.remove(m)
+                self.session.commit()
 
         self.session.delete(listing)
         self.session.commit()

@@ -269,12 +269,25 @@ class AdminUsersHandler(AdminBaseHandler):
         if not user:
             return self.make_error('Something wrong. Try again later')
         # first delete this user mentions
-        for u in user.comment_mentions:
-            user.comment_mentions.remove(u)
+        mentions = user.comment_mentions
+        for m in mentions:
+            mentions.remove(m)
             self.session.commit()
-        for u in user.comment_mentions:
-            user.comment_mentions.remove(u)
-            self.session.commit()
+        # for u in user.comment_mentions:
+        #     user.comment_mentions.remove(u)
+            # self.session.commit()
+        # for u in user.comment_mentions:
+        #     user.comment_mentions.remove(u)
+            # self.session.commit()
+
+        # also must delete all comments from this user with mentions
+        comments = user.user_comments
+        for c in comments:
+            # select all mentions
+            comment_mentions = c.user_mentions
+            for m in comment_mentions:
+                comment_mentions.remove(m)
+                self.session.commit()
         self.session.delete(user)
         self.session.commit()
         return self.success()

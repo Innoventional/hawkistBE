@@ -105,10 +105,10 @@ def listing_with_issue_investigation_opened_buyer(order):
 
 
 def funds_received_seller(self):
-    text = FUNDS_RECEIVED_SELLER_TEXT % (self.listing.user.username, self.listing.title,
-                                         self.order.payment_sum_without_application_fee)
-    subject = FUNDS_RECEIVED_SELLER_TITLE % self.listing.title
-    send_email(text, subject=subject, recipient=self.listing.user.email)
+    text = FUNDS_RECEIVED_SELLER_TEXT % (self.listing_user_username, self.listing_title,
+                                         self.order_payment_sum_without_application_fee)
+    subject = FUNDS_RECEIVED_SELLER_TITLE % self.listing_title
+    send_email(text, subject=subject, recipient=self.listing_user_email)
 
 
 def refunds_issues_buyer(self):

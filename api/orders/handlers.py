@@ -185,6 +185,10 @@ class OrdersHandler(ApiHandler):
         purchase_confirmation_sending_seller(self, listing)
 
         # start 3-days warning timer
+        new_order.email_user_email = new_order.user.email
+        new_order.email_user_username = new_order.user.username
+        new_order.email_listing_title = new_order.listing.title
+
         new_order.warning_3_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=120),
                                                                              new_order.warning_3_5_days)
 
@@ -193,6 +197,9 @@ class OrdersHandler(ApiHandler):
                                                                              new_order.warning_3_5_days)
 
         # start timer money release
+        new_order.listing_user_username = new_order.listing.user.username
+        new_order.listing_title = new_order.listing.title
+        new_order.order_payment_sum_without_application_fee = new_order.order.payment_sum_without_application_fee
         new_order.automatic_money_release_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=300),
                                                                                       new_order.automatic_money_release)
 
@@ -301,13 +308,11 @@ class TEstTimerHandler(ApiHandler):
         if self.user is None:
             die(401)
 
-        print check_pending_payments(self)
-
         # get charge
-        # charge = self.session.query(StripeCharges).get(1)
-        #
-        # logger.debug('Set timeout')
-        # charge.sellerTimeout = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=300),
-        #                                                            charge.test_timeout_function)
-        # self.session.commit()
+        charge = self.session.query(UserOrders).get(8)
+        charge.email_user_email = charge.user.email
+        charge.email_user_username = charge.user.username
+        charge.email_listing_title = charge.listing.title
+        charge.sellerTimeout = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=10),
+                                                                   charge.warning_3_5_days)
         return self.success()

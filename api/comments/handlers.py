@@ -151,7 +151,6 @@ class ItemCommentsPeopleHandler(ApiHandler):
         qs = []
 
         if q:
-            print q
             qs = self.session.query(User).filter(User.username.ilike(u'{0}%'.format(q))).order_by(User.id)
 
         response = {

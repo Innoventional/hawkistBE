@@ -165,4 +165,11 @@ INVESTIGATION_RESOLVED_TEXT = '%s,\n' \
                               'Thanks for your business!\n' \
                               'Hawkist'
 
+HAS_ITEM_RECEIVED_TITLE = 'Has received: %s'
+HAS_ITEM_RECEIVED_TEXT = '%s,\n' \
+                         'Do we send an email to a buyer if he does not confirm receipt of an item within 7 days and ' \
+                         'funds are automatically released to the seller?\n' \
+                         'Thanks for your business!\n' \
+                         'Hawkist'
+
 

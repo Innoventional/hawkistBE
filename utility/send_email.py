@@ -9,7 +9,8 @@ from ui_messages.messages.email import CONFIRM_EMAIL_LETTER_SUBJECT, CONFIRM_EMA
     LISTING_WITH_ISSUE_SELLER_TEXT, LISTING_WITH_ISSUE_SELLER_TITLE, LISTING_WITH_ISSUE_INVESTIGATION_OPENED_TITLE, \
     LISTING_WITH_ISSUE_INVESTIGATION_OPENED_TEXT, LISTING_RECEIVED_SELLER_TITLE, LISTING_RECEIVED_SELLER_TEXT, \
     FUNDS_RECEIVED_SELLER_TITLE, FUNDS_RECEIVED_SELLER_TEXT, TRANSACTION_CANCELED_TITLE, TRANSACTION_CANCELED_TEXT, \
-    REFUND_ISSUES_BUYER_TEXT, REFUND_ISSUES_BUYER_TITLE, INVESTIGATION_RESOLVED_TITLE, INVESTIGATION_RESOLVED_TEXT
+    REFUND_ISSUES_BUYER_TEXT, REFUND_ISSUES_BUYER_TITLE, INVESTIGATION_RESOLVED_TITLE, INVESTIGATION_RESOLVED_TEXT, \
+    HAS_ITEM_RECEIVED_TITLE, HAS_ITEM_RECEIVED_TEXT
 
 __author__ = 'ne_luboff'
 
@@ -105,7 +106,7 @@ def listing_with_issue_investigation_opened_buyer(order):
 
 def funds_received_seller(self):
     text = FUNDS_RECEIVED_SELLER_TEXT % (self.listing.user.username, self.listing.title,
-                                         self.payment_sum_without_application_fee)
+                                         self.order.payment_sum_without_application_fee)
     subject = FUNDS_RECEIVED_SELLER_TITLE % self.listing.title
     send_email(text, subject=subject, recipient=self.listing.user.email)
 
@@ -126,4 +127,10 @@ def transaction_canceled(email, username, title):
 def investigation_resolved(email, username, title):
     text = INVESTIGATION_RESOLVED_TEXT % (username, title)
     subject = INVESTIGATION_RESOLVED_TITLE % title
+    send_email(text, subject=subject, recipient=email)
+
+
+def send_warning_3_5_days_email(email, username, title):
+    text = HAS_ITEM_RECEIVED_TEXT % username
+    subject = HAS_ITEM_RECEIVED_TITLE % title
     send_email(text, subject=subject, recipient=email)

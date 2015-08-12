@@ -2,6 +2,7 @@ import datetime
 from sqlalchemy import Column, Integer, DateTime, ForeignKey, SmallInteger, Enum
 from sqlalchemy.orm import relationship, backref
 from orm import Base
+from utility.send_email import send_warning_3_5_days_email, funds_received_seller
 
 __author__ = 'ne_luboff'
 
@@ -91,3 +92,9 @@ class UserOrders(Base):
             'listing': self.listing.response(self.user_id),
             'status': self.order_status
         }
+
+    def warning_3_5_days(self):
+        send_warning_3_5_days_email(self.user.email, self.user.username, self.listing.title)
+
+    def automatic_money_release(self):
+        funds_received_seller(self)

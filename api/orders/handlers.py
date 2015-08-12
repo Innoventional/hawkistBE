@@ -184,9 +184,17 @@ class OrdersHandler(ApiHandler):
         # send email to seller
         purchase_confirmation_sending_seller(self, listing)
 
-        # start timer
-        # new_charge.automatic_money_release_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(env['stripe_refund_timer']),
-        #                                                                                new_charge.automatic_money_release)
+        # start 3-days warning timer
+        new_order.warning_3_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=120),
+                                                                             new_order.warning_3_5_days)
+
+        # start 5-days warning timer
+        new_order.warning_5_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=180),
+                                                                             new_order.warning_3_5_days)
+
+        # start timer money release
+        new_order.automatic_money_release_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=300),
+                                                                                      new_order.automatic_money_release)
 
         return self.success()
 
@@ -267,10 +275,20 @@ class OrdersHandler(ApiHandler):
         else:
             return self.make_error(UPDATE_ORDER_INVALID_STATUS)
 
-        # remove timer
-        # if order.charge.automatic_money_release_timer:
-        #     tornado.ioloop.IOLoop.current().remove_timeout(order.automatic_money_release_timer)
-        #     order.automatic_money_release_timer = None
+        # remove timer 3 days warning
+        if order.charge.warning_3_days_timer:
+            tornado.ioloop.IOLoop.current().remove_timeout(order.warning_3_days_timer)
+            order.warning_3_days_timer = None
+
+        # remove timer 5 days warning
+        if order.charge.warning_5_days_timer:
+            tornado.ioloop.IOLoop.current().remove_timeout(order.warning_5_days_timer)
+            order.warning_5_days_timer = None
+
+        # remove timer money release
+        if order.charge.automatic_money_release_timer:
+            tornado.ioloop.IOLoop.current().remove_timeout(order.automatic_money_release_timer)
+            order.automatic_money_release_timer = None
 
         return self.success()
 

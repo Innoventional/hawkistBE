@@ -94,5 +94,5 @@ class StripeCharges(Base):
     listing = relationship('Listing', backref=backref('listing_charges', order_by=id, cascade="all,delete",
                                                       lazy='dynamic'), foreign_keys=listing_id)
 
-    def automatic_money_release(self):
-        funds_received_seller(self)
+    # def automatic_money_release(self):
+    #     funds_received_seller(self)

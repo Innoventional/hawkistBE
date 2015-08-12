@@ -199,7 +199,7 @@ class OrdersHandler(ApiHandler):
         # start timer money release
         new_order.listing_user_username = new_order.listing.user.username
         new_order.listing_title = new_order.listing.title
-        new_order.order_payment_sum_without_application_fee = new_order.order.payment_sum_without_application_fee
+        new_order.order_payment_sum_without_application_fee = new_order.charge.payment_sum_without_application_fee
         new_order.automatic_money_release_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=300),
                                                                                       new_order.automatic_money_release)
 

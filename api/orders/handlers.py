@@ -189,18 +189,19 @@ class OrdersHandler(ApiHandler):
         new_order.email_user_username = new_order.user.username
         new_order.email_listing_title = new_order.listing.title
 
-        new_order.warning_3_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=120),
+        new_order.warning_3_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=30),
                                                                              new_order.warning_3_5_days)
 
         # start 5-days warning timer
-        new_order.warning_5_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=180),
+        new_order.warning_5_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=60),
                                                                              new_order.warning_3_5_days)
 
         # start timer money release
         new_order.listing_user_username = new_order.listing.user.username
         new_order.listing_title = new_order.listing.title
         new_order.order_payment_sum_without_application_fee = new_order.charge.payment_sum_without_application_fee
-        new_order.automatic_money_release_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=300),
+        new_order.listing_user_email = new_order.listing.user.email
+        new_order.automatic_money_release_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=90),
                                                                                       new_order.automatic_money_release)
 
         return self.success()

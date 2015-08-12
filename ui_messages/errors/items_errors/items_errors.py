@@ -9,7 +9,7 @@ GET_LISTING_BY_USER_INVALID_ID = 'No user with id %s'
 CREATE_LISTING_USER_HAVENT_FB = "Sorry, but you cannot sell on Hawkist until you have connected a Facebook account."
 CREATE_LISTING_USER_DONT_CONFIRM_EMAIL = "Sorry, but you cannot sell on Hawkist until you have confirmed an email " \
                                          "address."
-CREATE_LISTING_EMPTY_FIELDS = 'You must select a %s in order to create a listing.'
+CREATE_LISTING_EMPTY_FIELDS = 'You must select the %s in order to create a listing.'
 
 # check is this instance exist
 INVALID_PLATFORM_ID = 'No platform with id %s'
@@ -38,7 +38,7 @@ DELETE_SOLD_LISTING = 'You cannot delete sold listing'
 # update listing
 UPDATE_LISTING_UNDEFINED_LISTING_ID = 'No listing to update id'
 UPDATE_LISTING_LISTING_SOLD = 'You cannot update sold listing'
-UPDATE_LISTING_EMPTY_FIELDS = 'You must select a %s in order to update a listing.'
+UPDATE_LISTING_EMPTY_FIELDS = 'You must select the %s in order to update a listing.'
 UPDATE_LISTING_SELLING_PRICE_MUST_BE_LESS_THAN_RETAIL = u'Selling price must be less than £%s'
 
 # Listing likes

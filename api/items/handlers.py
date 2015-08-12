@@ -473,9 +473,18 @@ class ListingHandler(ApiHandler):
                     break
 
             if empty_field_error:
-                empty_fields = ', '.join(empty_field_error)
+                if len(empty_field_error) == 2:
+                    empty_fields = ' and '.join(empty_field_error)
+                    empty_fields_title = ' & '.join(empty_field_error)
+                else:
+                    empty_fields = ', '.join(empty_field_error)
+                    last_coma_index = empty_fields.rfind(',')
+                    empty_fields = empty_fields[:last_coma_index] + \
+                                   empty_fields[last_coma_index:].replace(', ', ' and ')
+                    empty_fields_title = empty_fields[:last_coma_index] + \
+                                         empty_fields[last_coma_index:].replace(' and ', ' & ')
                 return self.make_error(message=UPDATE_LISTING_EMPTY_FIELDS % empty_fields,
-                                       title=CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields.capitalize())
+                                       title=CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields_title.capitalize())
 
             if len(photos) > 4:
                 return self.make_error(CREATE_LISTING_TOO_MANY_PHOTOS)
@@ -688,9 +697,18 @@ class ListingHandler(ApiHandler):
                     empty_field_error.append('post code')
 
             if empty_field_error:
-                empty_fields = ', '.join(empty_field_error)
+                if len(empty_field_error) == 2:
+                    empty_fields = ' and '.join(empty_field_error)
+                    empty_fields_title = ' & '.join(empty_field_error)
+                else:
+                    empty_fields = ', '.join(empty_field_error)
+                    last_coma_index = empty_fields.rfind(',')
+                    empty_fields = empty_fields[:last_coma_index] + \
+                                   empty_fields[last_coma_index:].replace(', ', ' and ')
+                    empty_fields_title = empty_fields[:last_coma_index] + \
+                                         empty_fields[last_coma_index:].replace(' and ', ' & ')
                 return self.make_error(message=CREATE_LISTING_EMPTY_FIELDS % empty_fields,
-                                       title=CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields.capitalize())
+                                       title=CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields_title.capitalize())
 
             # first check all tags
             # check platforms

@@ -116,7 +116,6 @@ class Listing(Base):
         return listing_comment_count
 
     def response(self, user_id):
-        print self.likes
         return {
             'id': self.id,
             'user_id': self.user_id,

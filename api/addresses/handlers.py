@@ -14,6 +14,7 @@ __author__ = 'ne_luboff'
 
 logger = logging.getLogger(__name__)
 
+
 @route('user/addresses')
 class AddressHandler(ApiHandler):
     allowed_methods = ('GET', 'POST', 'DELETE', 'PUT')

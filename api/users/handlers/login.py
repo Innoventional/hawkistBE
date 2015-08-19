@@ -152,13 +152,15 @@ class UserLoginHandler(ApiHandler):
                 # else:
                 #     logger.debug('No email address in fb response')
 
-                user.email = facebook_email
-                email_confirmation_sending(self, user, facebook_email)
 
                 facebook_name = facebook_data.get('username', None)
                 if facebook_name:
                     # replaced all whitespaces with underscore symbol
                     user.username = facebook_name.replace(" ", "_")
+
+                user.email = facebook_email
+                email_confirmation_sending(self, user, facebook_email)
+
                 self.session.commit()
             # else:
                 # if user.email and user.username:

@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, Integer, DateTime, ForeignKey, SmallInteger, Enum
+from sqlalchemy import Column, Integer, DateTime, ForeignKey, SmallInteger, Enum, Boolean
 from sqlalchemy.orm import relationship, backref
 from orm import Base
 from utility.send_email import send_warning_3_5_days_email, funds_received_seller
@@ -75,8 +75,10 @@ class UserOrders(Base):
 
     # reference to user
     user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
-    user = relationship('User', backref=backref('user_orders', order_by=order_status, cascade="all,delete", lazy='dynamic'),
-                        foreign_keys=user_id)
+    user = relationship('User', backref=backref('user_orders', order_by=order_status, cascade="all,delete",
+                                                lazy='dynamic'), foreign_keys=user_id)
+
+    # available_feedback = Column(Boolean, nullable=False, default=False)
 
     @property
     def response(self):

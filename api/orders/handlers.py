@@ -264,7 +264,7 @@ class OrdersHandler(ApiHandler):
             # get money from pending balance to available
             order.listing.user.app_wallet_pending -= order.charge.payment_sum_without_application_fee
             order.listing.user.app_wallet += order.charge.payment_sum_without_application_fee
-            self.session.commit()
+            # self.session.commit()
             # send notification to seller
             listing_received_seller(self, order)
 
@@ -277,7 +277,7 @@ class OrdersHandler(ApiHandler):
             order.charge.system_status = ChargesStatus.Frozen
             order.issue_reason = issue_reason
             order.issue_status = IssueStatus.New
-            self.session.commit()
+            # self.session.commit()
             # send notification to listing owner
             listing_with_issue_seller(self, order.listing)
         else:
@@ -301,6 +301,9 @@ class OrdersHandler(ApiHandler):
         except Exception, e:
             logger.debug(str(e))
 
+        order.available_feedback = True
+        order.updated_at = datetime.datetime.utcnow()
+        self.session.commit()
         return self.success()
 
 

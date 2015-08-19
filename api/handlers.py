@@ -28,6 +28,7 @@ try:
     from api.payments.handlers import *
     from orders.handlers import *
     from addresses.handlers import *
+    from feedbacks.handlers import *
 except ImportError:
     logger.debug(ImportError)
 

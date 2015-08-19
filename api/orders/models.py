@@ -78,7 +78,7 @@ class UserOrders(Base):
     user = relationship('User', backref=backref('user_orders', order_by=order_status, cascade="all,delete",
                                                 lazy='dynamic'), foreign_keys=user_id)
 
-    # available_feedback = Column(Boolean, nullable=False, default=False)
+    available_feedback = Column(Boolean, nullable=False, default=False)
 
     @property
     def response(self):
@@ -92,7 +92,8 @@ class UserOrders(Base):
             #     'selling_price': "%.02f" % float(self.listing.selling_price),
             # },
             'listing': self.listing.response(self.user_id),
-            'status': self.order_status
+            'status': self.order_status,
+            'available_feedback': self.available_feedback
         }
 
     def warning_3_5_days(self):

@@ -26,6 +26,7 @@ from api.users.reported_users.models import *
 from api.payments.models import *
 from api.orders.models import *
 from api.addresses.models import *
+from api.feedbacks.models import *
 
 # add your model's MetaData object here
 # for 'autogenerate' support

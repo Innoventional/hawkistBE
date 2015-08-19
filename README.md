@@ -1345,7 +1345,8 @@ ORDER_INFO_DICT
 
     "id": USER ORDER ID,
     "status": ORDER STATUS,
-    "listing": LISTING_INFO_DICT
+    "listing": LISTING_INFO_DICT,
+    "available_feedback": IS FEEDBACK AVAILABLE VALUE
 
 ORDER STATUSES
     
@@ -1621,6 +1622,77 @@ Response Failure:
     Url: 'user/addresses?address_id=ADDRESS_TO_DELETE_ID'
     Method: 'DELETE'
 
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }   
+    
+    
+--------------------------
+### Feedbacks
+
+FEEDBACK_INFO_DICT
+
+    "id": FEEDBACK ID,
+    "text": FEEDBACK TEXT,
+    "type": FEEDBACK_TYPE,
+    "created_at": FEEDBACK CREATED TIME,
+    "user": {
+        "id": USER WHO LEAVE FEEDBACK ID,
+        "username": USER USERNAME,
+        "avatar": USER AVATAR
+    }
+    
+FeedbackType
+
+    Positive = 0
+    Negative = 1
+    Neutral = 2
+    
+    
+**Get user feedbacks**
+
+    Url: 'user/feedbacks/USER_ID'
+    Method: 'GET'
+
+
+Response :
+    
+    {
+        'status': 0,
+        "feedbacks": {
+            "positive": [],
+            "neutral": [],
+            "negative": [{
+                FEEDBACK_INFO_DICT
+            }]
+        }
+    }
+    
+    
+**Add new feedback**
+
+    Url: 'user/feedbacks/USER_ID'
+    Method: 'POST'
+
+
+Data:
+
+    {
+        "order_id": ORDER TO CREATE FEEDBACK ID,
+        "text": FEEDBACK TEXT,
+        "type": FEEDBACK TYPE
+    }
 
 Response Success:
     

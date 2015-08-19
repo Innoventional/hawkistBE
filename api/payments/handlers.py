@@ -45,8 +45,17 @@ class CardHandler(ApiHandler):
             if customer_cards:
                 for customer_card in customer_cards:
                     card_response.append(stripe_retrieve_card_info(customer_card))
+
+        # check is already balance
+        if not self.user.app_wallet:
+            self.user.app_wallet = 0
+            if not self.user.app_wallet_pending:
+                self.user.app_wallet_pending = 0
+            self.session.commit()
+
         return self.success({
-            'cards': card_response
+            'cards': card_response,
+            'balance': "%.02f" % float(self.user.app_wallet)
         })
 
     def create(self):
@@ -284,7 +293,7 @@ class WalletHandler(ApiHandler):
         return self.success(
             {
                 'balance': {
-                    'active': "%.02f" % float(self.user.app_wallet),
+                    'available': "%.02f" % float(self.user.app_wallet),
                     'pending': "%.02f" % float(self.user.app_wallet_pending)
                 }
             }

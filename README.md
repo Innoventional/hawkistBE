@@ -1249,7 +1249,8 @@ Response:
             {
                 CARD_INFO_DICT
             }
-        ]
+        ],
+        'balance': 12.75
     }
 
     
@@ -1490,6 +1491,151 @@ Response Failure:
         'message': '',          — Error message text
         'title': ''          — Error message title 
     }
+    
+--------------------------
+### Addresses
+
+ADDRESS_INFO_DICT
+
+    "id": USER ADDRESS ID,
+    "address_line1": ADDRESS LINE 1,
+    "address_line2": ADDRESS LINE 2,
+    "city": CITY,
+    "postcode": POSTCODE
+    
+    
+**Get my addresses list**
+
+    Url: 'user/addresses'
+    Method: 'GET'
+
+
+Response :
+    
+    {
+        'status': 0,
+        'addresses': [
+            {
+                ADDRESS_INFO_DICT
+            },
+            {
+                ...
+            },
+            {
+                ADDRESS_INFO_DICT
+            }
+        ]
+    }
+    
+    
+**Add new address**
+
+    Url: 'user/addresses'
+    Method: 'POST'
+
+
+Data:
+
+    {
+        "address_line1": ADDRESS LINE 1,            - required
+        "address_line2": ADDRESS LINE 2,           
+        "city": CITY,                               - required           
+        "postcode": POSTCODE                        - required           
+    }
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }   
+    
+
+**Get recently added card address info**
+
+    Url: 'user/addresses'
+    Method: 'PUT'
+
+
+Response Success:
+    
+    {
+        'status': 0,
+        'addresses': {
+            "address_line1": ADDRESS LINE 1,
+            "address_line2": ADDRESS LINE 2,
+            "city": CITY,
+            "postcode": POSTCODE
+        }
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }   
+       
+    
+**Update address**
+
+    Url: 'user/addresses'
+    Method: 'POST'
+
+
+Data:
+
+    {
+        "id": ADDRESS ID,                           - required
+        "address_line1": ADDRESS LINE 1,            - required
+        "address_line2": ADDRESS LINE 2,           
+        "city": CITY,                               - required           
+        "postcode": POSTCODE                        - required           
+    }
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }   
+    
+
+**Delete address**
+
+    Url: 'user/addresses?address_id=ADDRESS_TO_DELETE_ID'
+    Method: 'DELETE'
+
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }   
+
 
 STATUS CODES FOR CUSTOM ERROR TITLE
 -----------------------------------

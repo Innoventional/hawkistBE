@@ -1,5 +1,7 @@
 import logging
 
+__author__ = 'ne_luboff'
+
 logger = logging.getLogger(__name__)
 
 try:
@@ -25,9 +27,9 @@ try:
     from users.blocked_users.handlers import *
     from api.payments.handlers import *
     from orders.handlers import *
+    from addresses.handlers import *
 except ImportError:
     logger.debug(ImportError)
-__author__ = 'ne_luboff'
 
 @route('test')
 class Test(OpenApiHandler):
@@ -38,5 +40,3 @@ class Test(OpenApiHandler):
             'info': "Hawkist API server",
             'server_date': datetime.datetime.now().isoformat()
         }
-
-

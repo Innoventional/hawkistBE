@@ -109,7 +109,6 @@ class User(Base):
     app_wallet = Column(Numeric, nullable=False, default=0)
     app_wallet_pending = Column(Numeric, nullable=False, default=0)
 
-
     def __repr__(self):
         return '<User %s (%s)>' % (self.id, self.username)
 

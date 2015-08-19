@@ -283,20 +283,23 @@ class OrdersHandler(ApiHandler):
         else:
             return self.make_error(UPDATE_ORDER_INVALID_STATUS)
 
-        # remove timer 3 days warning
-        if order.charge.warning_3_days_timer:
-            tornado.ioloop.IOLoop.current().remove_timeout(order.warning_3_days_timer)
-            order.warning_3_days_timer = None
+        try:
+            # remove timer 3 days warning
+            if order.charge.warning_3_days_timer:
+                tornado.ioloop.IOLoop.current().remove_timeout(order.warning_3_days_timer)
+                order.warning_3_days_timer = None
 
-        # remove timer 5 days warning
-        if order.charge.warning_5_days_timer:
-            tornado.ioloop.IOLoop.current().remove_timeout(order.warning_5_days_timer)
-            order.warning_5_days_timer = None
+            # remove timer 5 days warning
+            if order.charge.warning_5_days_timer:
+                tornado.ioloop.IOLoop.current().remove_timeout(order.warning_5_days_timer)
+                order.warning_5_days_timer = None
 
-        # remove timer money release
-        if order.charge.automatic_money_release_timer:
-            tornado.ioloop.IOLoop.current().remove_timeout(order.automatic_money_release_timer)
-            order.automatic_money_release_timer = None
+            # remove timer money release
+            if order.charge.automatic_money_release_timer:
+                tornado.ioloop.IOLoop.current().remove_timeout(order.automatic_money_release_timer)
+                order.automatic_money_release_timer = None
+        except Exception, e:
+            logger.debug(str(e))
 
         return self.success()
 

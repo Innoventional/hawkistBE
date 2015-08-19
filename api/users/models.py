@@ -109,6 +109,8 @@ class User(Base):
     app_wallet = Column(Numeric, nullable=False, default=0)
     app_wallet_pending = Column(Numeric, nullable=False, default=0)
 
+    rating = Column(Integer, nullable=False, default=0)
+
     def __repr__(self):
         return '<User %s (%s)>' % (self.id, self.username)
 
@@ -167,8 +169,8 @@ class User(Base):
             'city': self.city,
             'last_activity': self.last_activity.strftime("%Y-%m-%dT%H:%M"),
             'number_of_sales': self.get_user_sales(),
-            'rating': 4,
-            'review': 17,
+            'rating': self.rating,
+            'review': self.feedbacks.count(),
             'response_time': 5,
         }
 
@@ -178,8 +180,8 @@ class User(Base):
             'id': self.id,
             'avatar': self.avatar,
             'username': self.username,
-            'rating': 4,
-            'review': 17,
+            'rating': self.rating,
+            'review': self.feedbacks.count(),
         }
 
 

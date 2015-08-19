@@ -5,7 +5,7 @@ from api.orders.models import UserOrders
 from api.users.models import User
 from base import ApiHandler, die
 from helpers import route
-from ui_messages.errors.feedback_errors import FEEDBACK_NO_ORDER_ID, FEEDBACK_AVAILABLE, FEEDBACK_NO_TEXT, \
+from ui_messages.errors.feedback_errors import FEEDBACK_NO_ORDER_ID, FEEDBACK_NOT_AVAILABLE, FEEDBACK_NO_TEXT, \
     FEEDBACK_NO_TYPE, FEEDBACK_INVALID_TYPE
 from ui_messages.errors.orders_errors import UPDATE_ORDER_NO_ORDER
 from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID
@@ -44,10 +44,6 @@ class FeedbackHandler(ApiHandler):
                 'negative': [f.response for f in user.feedbacks if f.type == FeedbackType.Negative]
             }
         })
-
-        # return self.success({
-        #     'feedbacks': [f.response for f in user.feedbacks]
-        # })
 
     def create(self, user_id):
 
@@ -90,7 +86,7 @@ class FeedbackHandler(ApiHandler):
             return self.make_error(UPDATE_ORDER_NO_ORDER % order_id)
 
         if not order.available_feedback:
-            return self.make_error(FEEDBACK_AVAILABLE)
+            return self.make_error(FEEDBACK_NOT_AVAILABLE)
 
         if not text:
             return self.make_error(FEEDBACK_NO_TEXT)
@@ -113,7 +109,29 @@ class FeedbackHandler(ApiHandler):
         self.session.add(new_feedback)
 
         order.available_feedback = False
+
+        # calculate user rating
+        # get all feedbacks
+        feedbacks = user.feedbacks
+        positive = 0
+        negative = 0
+        neutral = 0
+        for f in feedbacks:
+            if f.type == FeedbackType.Positive:
+                positive += 1
+            elif f.type == FeedbackType.Negative:
+                negative += 1
+            else:
+                neutral += 1
+
+        rating = int(round((positive + 0.5 * neutral - negative) / feedbacks.count()))
+
+        if rating < 1:
+            rating = 1
+
+        user.rating = rating
         self.session.commit()
+
         return self.success()
 
 

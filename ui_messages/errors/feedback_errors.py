@@ -2,7 +2,7 @@ __author__ = 'ne_luboff'
 
 FEEDBACK_NO_ORDER_ID = 'No order id'
 
-FEEDBACK_AVAILABLE = 'Feedback available'
+FEEDBACK_NOT_AVAILABLE = 'Feedback not available'
 
 FEEDBACK_NO_TEXT = 'You must input feedback text'
 

@@ -1,0 +1,91 @@
+{% extends '../base.html' %}
+
+{% block title %}Users List{% end %}
+
+{% block search %}
+    {% include '../search/search_block.html' %}
+{% end %}
+
+{% block js %}
+    <script src="{{ static_url('js/make_thumbnail.js') }}"></script>
+{% end %}
+
+{% block content %}
+    <div class="tag_navigation_div">
+        <a href="../users">All</a>
+        <a href="#" id="current_link">Suspended</a>
+        <a href="../users/blocked">Blocked
+        {% for u in users %}
+            {% if u.blocked_me %}
+                <i class="glyphicon glyphicon-exclamation-sign red-color" title="Someone was blocked or reported"></i>
+            {% break %}
+            {% end %}
+        {% end %}
+        </a>
+        <a href="../users/reported">Reported</a>
+    </div>
+    <div id='PleaseWaitSuspension' style="display: none">
+        <img src="{{ static_url('images/spinner.gif') }}"/>
+    </div>
+
+    {% include '../search/search_result_users.html' %}
+
+    {% if users.count() == 0 %}
+        No suspended users
+    {% else %}
+    <div class="row-offcanvas">
+        <table class="table table-hover">
+            <thead>
+                <th>ID</th>
+                <th>Avatar</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Facebook id</th>
+                <th>User type</th>
+                <th>Action</th>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr data-id="{{ user.id }}"
+                        data-username="{{ user.username }}"
+                        data-email="{{ user.email }}"
+                        data-phone="{{ user.phone }}"
+                        data-user_type="{{ user.user_type }}">
+                        <td>{{ user.id }}</td>
+                        <td align="center" id="thumbnailList1">
+                            {% if user.thumbnail %}
+                                <a href="{{ user.thumbnail }}" target="_blank"><img src="{{ user.thumbnail }}"></a>
+                            {% else %}
+                                <a href="#" title="This user hasn't avatar"><img src="{{ static_url('images/anonymous_user.png') }}"></a>
+                            {% end %}
+                        </td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email or '' }}</td>
+                        <td>{{ user.phone or '' }}</td>
+                        <td>{% if user.facebook_id %}
+                            <a class="underless-link" href="http://www.facebook.com/{{user.facebook_id}}" target="_blank">{{ user.facebook_id }}</a>
+                            {% else %}
+                            {% end %}
+                        </td>
+                        <td>{{ UserType.tostring(user.user_type) }}</td>
+                            {% if user.blocked_me %}
+                                <i class="glyphicon glyphicon-exclamation-sign red-color"
+                                   title="User was blocked or reported"></i></td>
+                            {% end %}
+                        <!--check current user status and can he do anything-->
+                        {% if current_user.user_type < user.user_type or current_user == user %}
+                        <td>
+                            <a  class="btn btn_activate_user green-color op-06" title="Activate user" href="#">
+                                <i class="glyphicon glyphicon-user green-hoover"></i></a>
+                        </td>
+                        {% else %}
+                            <td>You can't modify {{ UserType.tostring(user.user_type) }} users</td>
+                        {% end %}
+                     </tr>
+                {% end %}
+            </tbody>
+        </table>
+    </div>
+{% end %}
+{% end %}

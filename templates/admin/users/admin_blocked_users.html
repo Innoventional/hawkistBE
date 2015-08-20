@@ -5,11 +5,12 @@
 {% block content %}
     <div class="tag_navigation_div">
         <a href="../users" >All</a>
+        <a href="../users/suspended">Reported</a>
         <a href="#" id="current_link">Blocked</a>
-        <!--<a href="users/reported">Reported</a>-->
+        <a href="../users/reported">Reported</a>
     </div>
     {% if str(blocked_users_count) == '0' %}
-        No blocked users
+        <br/>No blocked users
     {% else %}
     <div class="row-offcanvas">
         <table class="table table-hover">

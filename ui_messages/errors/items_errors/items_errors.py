@@ -9,7 +9,7 @@ GET_LISTING_BY_USER_INVALID_ID = 'No user with id %s'
 CREATE_LISTING_USER_HAVENT_FB = "Sorry, but you cannot sell on Hawkist until you have connected a Facebook account."
 CREATE_LISTING_USER_DONT_CONFIRM_EMAIL = "Sorry, but you cannot sell on Hawkist until you have confirmed an email " \
                                          "address."
-CREATE_LISTING_EMPTY_FIELDS = 'You must select the %s in order to create a listing.'
+CREATE_LISTING_EMPTY_FIELDS = 'You must input the %s in order to create a listing.'
 
 # check is this instance exist
 INVALID_PLATFORM_ID = 'No platform with id %s'

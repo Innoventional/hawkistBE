@@ -1,0 +1,4 @@
+{% if type(q) != list and len(q) != 0 %}
+        Search by <span class="fs-20 cyan-color">{{ q }}</span> founded <span class="fs-20 cyan-color">{{ orders.count() }}</span> items
+        <div>&nbsp</div>
+{% end %}

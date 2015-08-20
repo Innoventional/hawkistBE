@@ -91,7 +91,7 @@ class FeedbackHandler(ApiHandler):
         if not text:
             return self.make_error(FEEDBACK_NO_TEXT)
 
-        if len(feedback_type) == 0:
+        if len(str(feedback_type)) == 0:
             return self.make_error(FEEDBACK_NO_TYPE)
 
         if str(feedback_type) not in ['0', '1', '2']:

@@ -860,7 +860,7 @@ delete_listing = function(listing_id, completion)
 $('.btn_order_investigating').click(function(){
     id = $(this).parent().parent().data('id');
     $.ajax({
-        url: '/api/admin/listings/issues',
+        url: '/api/admin/listings/issues/new',
         type: 'PUT',
         data: {
             'id': id,
@@ -870,7 +870,7 @@ $('.btn_order_investigating').click(function(){
             var status = data['status'];
             var message = data['message'];
             if (status == 0 ) {
-                location.replace("?status=investigating");
+                location.replace("investigating");
             } else {
                 alert(message);
             }
@@ -881,7 +881,7 @@ $('.btn_order_investigating').click(function(){
 $('.btn_order_canceled').click(function(){
     id = $(this).parent().parent().data('id');
     $.ajax({
-        url: '/api/admin/listings/issues',
+        url: '/api/admin/listings/issues/investigating',
         type: 'PUT',
         data: {
             'id': id,
@@ -891,7 +891,7 @@ $('.btn_order_canceled').click(function(){
             var status = data['status'];
             var message = data['message'];
             if (status == 0 ) {
-                location.replace("?status=canceled");
+                location.replace("canceled");
             } else {
                 alert(message);
             }
@@ -902,7 +902,7 @@ $('.btn_order_canceled').click(function(){
 $('.btn_order_resolved').click(function(){
     id = $(this).parent().parent().data('id');
     $.ajax({
-        url: '/api/admin/listings/issues',
+        url: '/api/admin/listings/issues/investigating',
         type: 'PUT',
         data: {
             'id': id,
@@ -912,7 +912,7 @@ $('.btn_order_resolved').click(function(){
             var status = data['status'];
             var message = data['message'];
             if (status == 0 ) {
-                location.replace("?status=resolved");
+                location.replace("resolved");
             } else {
                 alert(message);
             }

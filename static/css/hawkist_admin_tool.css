@@ -170,3 +170,11 @@
 .hoover-cursor {
     cursor: pointer;
 }
+
+.fs-20 {
+    font-size: 20px;
+}
+
+.cyan-color {
+    color: #428bca;
+}

@@ -44,6 +44,11 @@ class AdminUsersHandler(AdminBaseHandler):
 
         users = self.session.query(User).order_by(User.id)
 
+        q = self.get_argument('q')
+
+        if q:
+            users = users.filter(User.username.ilike(u'%{0}%'.format(q)))
+
         # pagination function
         # first get require page number
         # if not require page number set it to 1 and return first page
@@ -56,7 +61,7 @@ class AdminUsersHandler(AdminBaseHandler):
 
         return self.render_string('admin/users/admin_users.html', users=users, paginator=paginator,
                                   menu_tab_active='tab_users', SystemStatus=SystemStatus, UserType=UserType,
-                                  current_user=self.user)
+                                  current_user=self.user, q=q)
 
     def create(self):
         if not self.user:

@@ -1,4 +1,5 @@
 import datetime
+import re
 from sqlalchemy import Column, Integer, DateTime, ForeignKey, SmallInteger, Enum, Boolean
 from sqlalchemy.orm import relationship, backref
 from orm import Base
@@ -25,6 +26,12 @@ class IssueReason(Enum):
     ItemHasNotArrived = 0
     ItemIsNotAsDescribed = 1
     ItemIsBrokenOrNotUsable = 2
+
+    @classmethod
+    def tostring(cls, val):
+        for k, v in vars(cls).iteritems():
+            if v == val:
+                return ' '.join([a for a in re.split(r'([A-Z][a-z]*)', k) if a])
 
 
 class IssueStatus(Enum):

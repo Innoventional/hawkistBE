@@ -1,0 +1,47 @@
+{% extends '../base.html' %}
+
+{% block title %}Blocked Users List{% end %}
+
+{% block content %}
+    <div class="tag_navigation_div">
+        <a href="../users" >All</a>
+        <a href="../users/suspended">Suspended</a>
+        <a href="../users/blocked">Blocked</a>
+        <a href="#" id="current_link">Reported</a>
+    </div>
+    {% if str(reported_users_count) == '0' %}
+        <br/>No reported users
+    {% else %}
+    <div class="row-offcanvas">
+        <table class="table table-hover">
+            <thead>
+                <th>Reported User ID</th>
+                <th>Reported User Username</th>
+                <th>User Who Report ID</th>
+                <th>User Who Report Username</th>
+                <th>Reporting reason</th>
+                <th>Time</th>
+                <th>Action</th>
+            </thead>
+            <tbody>
+                {% for b in reported_users %}
+                    <tr data-reporter_id="{{ b.reporter_id }}"
+                        data-reported_id="{{ b.reported_id }}">
+                        <td>{{ b.reported_id }}</td>
+                        <td>{{ b.reported_username }}</td>
+                        <td>{{ b.reporter_id }}</td>
+                        <td>{{ b.reporter_username }}</td>
+                        <td>{{ UserReportingReasons.tostring(b.reason) }}</td>
+                        <td>{{ (b.created_at + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M") }}</td>
+                        <td>
+                            <!--<a class="btn btn_delete_blocked_flag red-color" href="#" title="Delete flag">-->
+                                <!--<i class="glyphicon glyphicon-trash"></i>-->
+                            <!--</a>-->
+                        </td>
+                     </tr>
+                {% end %}
+            </tbody>
+        </table>
+    </div>
+    {% end %}
+{% end %}

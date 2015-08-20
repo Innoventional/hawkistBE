@@ -2,6 +2,10 @@
 
 {% block title %}Users List{% end %}
 
+{% block search %}
+    {% include '../search/search_block.html' %}
+{% end %}
+
 {% block js %}
     <script src="{{ static_url('js/make_thumbnail.js') }}"></script>
 {% end %}
@@ -9,7 +13,14 @@
 {% block content %}
     <div class="tag_navigation_div">
         <a href="#" id="current_link">All</a>
-        <!--<a href="users/blocked">Blocked</a>-->
+        <a href="users/suspended">Suspended
+        {% for u in users %}
+            {% if u.system_status == 1 %}
+                <i class="glyphicon glyphicon-exclamation-sign red-color" title="Someone was suspended"></i>
+            {% break %}
+            {% end %}
+        {% end %}
+        </a>
 
         <a href="users/blocked">Blocked
         {% for u in users %}
@@ -19,8 +30,14 @@
             {% end %}
         {% end %}
         </a>
-        <!--<a href="users/reported">Reported</a>-->
+        <a href="users/reported">Reported</a>
     </div>
+
+    {% include '../search/search_result_users.html' %}
+
+    {% if users.count() == 0 %}
+        No users
+    {% else %}
     <div id='PleaseWaitSuspension' style="display: none">
         <img src="{{ static_url('images/spinner.gif') }}"/>
     </div>
@@ -101,6 +118,7 @@
             </tbody>
         </table>
     </div>
+    {% end %}
 
 <!-- Edit user permissions modal -->
     <div class="modal fade property" id="edit_user_type_modal" tabindex="-1" role="dialog" aria-labelledby="edit_user_type_modalLabel" aria-hidden="true">

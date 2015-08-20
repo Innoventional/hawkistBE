@@ -1,4 +1,5 @@
 import datetime
+import re
 from sqlalchemy import Table, Column, Integer, ForeignKey, DateTime, Enum
 from orm import Base
 
@@ -11,6 +12,12 @@ class UserReportingReasons(Enum):
     ImpersonationOrHateAccount = 2
     SellingFakeItems = 3
     UnderagedAccount = 4
+
+    @classmethod
+    def tostring(cls, val):
+        for k, v in vars(cls).iteritems():
+            if v == val:
+                return ' '.join([a for a in re.split(r'([A-Z][a-z]*)', k) if a])
 
 
 user_reportlist = Table("user_reportlist", Base.metadata,

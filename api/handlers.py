@@ -10,7 +10,9 @@ try:
     from items.handlers import *
     from tags.handler import *
     from admin.handlers.users.users import *
+    from admin.handlers.users.suspended_users import *
     from admin.handlers.users.blocked_users import *
+    from admin.handlers.users.reported_users import *
     from admin.handlers.login import *
     from admin.handlers.metatags.metatags import *
     from admin.handlers.metatags.platforms import *

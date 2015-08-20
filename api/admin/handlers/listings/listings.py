@@ -25,6 +25,11 @@ class AdminListingsHandler(AdminBaseHandler):
 
         listings = self.session.query(Listing).order_by(Listing.id)
 
+        q = self.get_argument('q')
+
+        if q:
+            listings = listings.filter(Listing.title.ilike(u'%{0}%'.format(q)))
+
         page = self.get_arg('p', int, 1)
         page_size = self.get_arg('page_size', int, 100)
         paginator, listings = paginate(listings, page, page_size)
@@ -34,7 +39,7 @@ class AdminListingsHandler(AdminBaseHandler):
                                                                         UserOrders.issue_status == IssueStatus.New)).count() != 0 else False
 
         return self.render_string('admin/listings/admin_listings.html', listings=listings, paginator=paginator,
-                                  menu_tab_active='tab_listings', new_issues=new_issues)
+                                  menu_tab_active='tab_listings', new_issues=new_issues, q=q)
 
     def remove(self):
         if not self.user:

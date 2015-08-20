@@ -1848,6 +1848,8 @@ Response :
 
 **Update bank account address**
 
+Note! if you want use recently added card address see -> Get recently added card address info
+
     Url: 'user/banking/address'
     Method: 'PUT'
 

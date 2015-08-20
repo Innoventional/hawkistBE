@@ -35,7 +35,7 @@ class Feedback(Base):
         return {
             'id': self.id,
             'text': self.text,
-            'created_at': self.created_at,
+            'created_at': self.created_at.strftime("%Y-%m-%dT%H:%M"),
             'user': {
                 'id': self.user.id,
                 'username': self.user.username,

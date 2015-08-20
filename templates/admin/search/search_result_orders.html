@@ -1,4 +1,9 @@
 {% if type(q) != list and len(q) != 0 %}
-        Search by <span class="fs-20 cyan-color">{{ q }}</span> founded <span class="fs-20 cyan-color">{{ orders.count() }}</span> items
+        {% if orders.count() == 0 %}
+                Your search - <span class="fs-20 cyan-color">{{ q }}</span> - did not match any order
+        {% else %}
+                Search for <span class="fs-20 cyan-color">{{ q }}</span><br/>
+                Results <span class="fs-20 cyan-color">{{ orders.count() }}</span>
+        {% end %}
         <div>&nbsp</div>
 {% end %}

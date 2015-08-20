@@ -185,8 +185,14 @@ class ListingHandler(ApiHandler):
             if user.system_status == SystemStatus.Suspended:
                 return self.make_error(TRY_TO_GET_SUSPENDED_USER_ITEMS % user.username.upper())
 
-            user_items = self.session.query(Listing).filter(and_(Listing.user_id == user_id,
-                                                                 Listing.status == ListingStatus.Active)).order_by(desc(Listing.id))
+            user_items = self.session.query(Listing).filter(Listing.user_id == user_id).order_by(desc(Listing.id))
+
+            if str(user_id) != str(self.user.id):
+                user_items = user_items.filter(Listing.status == ListingStatus.Active)
+
+            # user_items = self.session.query(Listing).filter(and_(Listing.user_id == user_id,
+            #                                                      Listing.status == ListingStatus.Active)).order_by(desc(Listing.id))
+
             # pagination
             page = self.get_arg('p', int, 1)
             page_size = self.get_arg('page_size', int, 100)

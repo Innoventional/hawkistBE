@@ -1706,8 +1706,175 @@ Response Failure:
         'status': 1,
         'message': '',          — Error message text
         'title': ''          — Error message title 
-    }   
+    }  
+     
+--------------------------
+### User Balance
 
+    
+**Get user balance**
+
+    Url: 'user/banking/wallet'
+    Method: 'GET'
+
+
+Response :
+    
+    {
+        "status": 0,
+        "balance": {
+            "available": "25.00",
+            "pending": "0.00"
+        }
+    }
+    
+**Get user info**
+
+    Url: 'user/banking/user_info'
+    Method: 'GET'
+
+
+Response :
+    
+    {
+        "status": 0,
+        "user_info": {
+            "first_name": USER FIRST NAME,
+            "last_name": USER LAST NAME,
+            "birth_date": USER BIRTH DATE,
+            "birth_month": USER BIRTH MONTH,
+            "birth_year": USER BIRTH YEAR
+        }
+    }
+    
+
+**Update user info**
+
+    Url: 'user/banking/user_info'
+    Method: 'PUT'
+
+
+Data:
+
+    {
+        "first_name": str,
+        "last_name": str,
+        "birth_date": str,
+        "birth_month": str,
+        "birth_year": str
+    }
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }  
+    
+**Get bank account info**
+
+    Url: 'user/banking/account'
+    Method: 'GET'
+
+
+Response :
+    
+    {
+        "status": 0,
+        "account": {
+            "holder_first_name": BANK ACCOUNT HOLDER FIRST NAME,
+            "holder_last_name": BANK ACCOUNT HOLDER LAST NAME,
+            "number": BANK ACCOUNT NUMBER,
+            "sort_code": BANK ACCOUNT SORT CODE
+        }
+    }
+    
+
+**Update bank account info**
+
+    Url: 'user/banking/account'
+    Method: 'PUT'
+
+
+Data:
+
+    {
+        "holder_first_name": str,
+        "holder_last_name": str,
+        "number": str,
+        "sort_code": str
+    }
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }  
+       
+       
+**Get bank account address**
+
+    Url: 'user/banking/address'
+    Method: 'GET'
+
+
+Response :
+    
+    {
+        "status": 0,
+        "address": {
+            "address_line1": ADDRESS LINE 1,
+            "address_line2": ADDRESS LINE 2 OR NULL,
+            "city": CITY,
+            "post_code": POST CODE
+        }
+    }
+    
+
+**Update bank account address**
+
+    Url: 'user/banking/address'
+    Method: 'PUT'
+
+
+Data:
+
+    {
+        "address_line1": str,
+        "address_line2": str,
+        "city": str,
+        "post_code": str
+    }
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    } 
+     
 
 STATUS CODES FOR CUSTOM ERROR TITLE
 -----------------------------------

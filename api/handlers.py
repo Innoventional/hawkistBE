@@ -31,6 +31,7 @@ try:
     from orders.handlers import *
     from addresses.handlers import *
     from feedbacks.handlers import *
+    from bank_accounts.handlers import *
 except ImportError:
     logger.debug(ImportError)
 

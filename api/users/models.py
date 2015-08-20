@@ -111,6 +111,25 @@ class User(Base):
 
     rating = Column(Integer, nullable=False, default=0)
 
+    # banking info
+    first_name = Column(String, nullable=True, default='')
+    last_name = Column(String, nullable=True, default='')
+    birth_date = Column(String, nullable=True, default='')
+    birth_month = Column(String, nullable=True, default='')
+    birth_year = Column(String, nullable=True, default='')
+
+    # bank account
+    bank_account_first_name = Column(String, nullable=True)
+    bank_account_last_name = Column(String, nullable=True)
+    bank_account_number = Column(String, nullable=True)
+    bank_account_sort_code = Column(String, nullable=True)
+
+    # bank address
+    bank_account_address_line1 = Column(String, nullable=True)
+    bank_account_address_line2 = Column(String, nullable=True)
+    bank_account_city = Column(String, nullable=True)
+    bank_account_post_code = Column(String, nullable=True)
+
     def __repr__(self):
         return '<User %s (%s)>' % (self.id, self.username)
 
@@ -182,6 +201,34 @@ class User(Base):
             'username': self.username,
             'rating': self.rating,
             'review': self.feedbacks.count(),
+        }
+
+    @property
+    def banking_user_info(self):
+        return {
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'birth_date': self.birth_date,
+            'birth_month': self.birth_month,
+            'birth_year': self.birth_year,
+        }
+
+    @property
+    def banking_account(self):
+        return {
+            'first_name': self.bank_account_first_name,
+            'last_name': self.bank_account_last_name,
+            'number': self.bank_account_number,
+            'sort_code': self.bank_account_sort_code,
+        }
+
+    @property
+    def banking_address(self):
+        return {
+            'address_line1': self.bank_account_address_line1,
+            'address_line2': self.bank_account_address_line2,
+            'city': self.bank_account_city,
+            'post_code': self.bank_account_post_code,
         }
 
 

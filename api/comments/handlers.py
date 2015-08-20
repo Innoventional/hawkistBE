@@ -1,6 +1,6 @@
 import logging
 import datetime
-from sqlalchemy import func
+from sqlalchemy import func, and_
 from api.comments.models import Comment
 from api.items.models import Listing
 from api.users.models import SystemStatus, User
@@ -151,7 +151,8 @@ class ItemCommentsPeopleHandler(ApiHandler):
         qs = []
 
         if q:
-            qs = self.session.query(User).filter(User.username.ilike(u'{0}%'.format(q))).order_by(User.id)
+            qs = self.session.query(User).filter(and_(User.username.ilike(u'{0}%'.format(q)),
+                                                      User.system_status == SystemStatus.Active)).order_by(User.id)
 
         response = {
             'status': 0,

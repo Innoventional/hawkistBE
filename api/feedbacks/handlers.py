@@ -1,7 +1,7 @@
 import logging
 import datetime
 from api.feedbacks.models import Feedback, FeedbackType
-from api.orders.models import UserOrders
+from api.orders.models import UserOrders, SortingStatus
 from api.users.models import User
 from base import ApiHandler, die
 from helpers import route
@@ -109,6 +109,7 @@ class FeedbackHandler(ApiHandler):
         self.session.add(new_feedback)
 
         order.available_feedback = False
+        order.sorting_status = SortingStatus.Close
 
         # calculate user rating
         # get all feedbacks

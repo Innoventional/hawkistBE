@@ -1,7 +1,7 @@
 import datetime
 import tornado
 from api.items.models import Listing, ListingStatus
-from api.orders.models import UserOrders, OrderStatus, IssueStatus
+from api.orders.models import UserOrders, OrderStatus, IssueStatus, SortingStatus
 from api.payments.models import StripeCharges, ChargesStatus
 from base import ApiHandler, die, logger
 from environment import env
@@ -12,7 +12,6 @@ from ui_messages.errors.orders_errors import UPDATE_ORDER_NO_ID, UPDATE_ORDER_NO
 from ui_messages.errors.payment_errors import CREATE_CHARGE_NO_CARD_ID, CREATE_CHARGE_NO_LISTING_ID, \
     CREATE_CHARGE_BUY_YOUR_OWN_LISTING, CREATE_CHARGE_BUY_RESERVED_LISTING, CREATE_CHARGE_BUY_SOLD_LISTING, \
     CREATE_CHARGE_NO_STRIPE_ACCOUNT, UPDATE_CARD_INVALID_ID
-from utility.payment import check_pending_payments
 from utility.send_email import purchase_confirmation_sending_buyer, purchase_confirmation_sending_seller, \
     listing_with_issue_seller, listing_received_seller
 from utility.stripe_api import stripe_retrieve_customer, stripe_create_charges
@@ -176,6 +175,8 @@ class OrdersHandler(ApiHandler):
 
         listing.status = ListingStatus.Reserved
 
+        new_order.sorting_status = SortingStatus.Open
+
         self.session.commit()
 
         # send email to buyer
@@ -184,25 +185,27 @@ class OrdersHandler(ApiHandler):
         # send email to seller
         purchase_confirmation_sending_seller(self, listing)
 
-        # start 3-days warning timer
-        new_order.email_user_email = new_order.user.email
-        new_order.email_user_username = new_order.user.username
-        new_order.email_listing_title = new_order.listing.title
-
-        new_order.warning_3_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(days=3),
-                                                                             new_order.warning_3_5_days)
-
-        # start 5-days warning timer
-        new_order.warning_5_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(days=5),
-                                                                             new_order.warning_3_5_days)
-
-        # start timer money release
-        new_order.listing_user_username = new_order.listing.user.username
-        new_order.listing_title = new_order.listing.title
-        new_order.order_payment_sum_without_application_fee = new_order.charge.payment_sum_without_application_fee
-        new_order.listing_user_email = new_order.listing.user.email
-        new_order.automatic_money_release_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(days=7),
-                                                                                      new_order.automatic_money_release)
+        # # start 3-days warning timer
+        # new_order.email_user_email = new_order.user.email
+        # new_order.email_user_username = new_order.user.username
+        # new_order.email_listing_title = new_order.listing.title
+        #
+        # # new_order.warning_3_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(days=4),
+        # new_order.warning_3_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=30),
+        #                                                                      new_order.warning_3_5_days)
+        #
+        # # start 5-days warning timer
+        # # new_order.warning_5_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(days=6),
+        # new_order.warning_5_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=90),
+        #                                                                      new_order.warning_3_5_days)
+        #
+        # # start timer money release
+        # new_order.listing_user_username = new_order.listing.user.username
+        # new_order.listing_title = new_order.listing.title
+        # new_order.order_payment_sum_without_application_fee = new_order.charge.payment_sum_without_application_fee
+        # new_order.listing_user_email = new_order.listing.user.email
+        # new_order.automatic_money_release_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(days=7),
+        #                                                                               new_order.automatic_money_release)
 
         return self.success()
 
@@ -283,43 +286,26 @@ class OrdersHandler(ApiHandler):
         else:
             return self.make_error(UPDATE_ORDER_INVALID_STATUS)
 
-        try:
-            # remove timer 3 days warning
-            if order.charge.warning_3_days_timer:
-                tornado.ioloop.IOLoop.current().remove_timeout(order.warning_3_days_timer)
-                order.warning_3_days_timer = None
-
-            # remove timer 5 days warning
-            if order.charge.warning_5_days_timer:
-                tornado.ioloop.IOLoop.current().remove_timeout(order.warning_5_days_timer)
-                order.warning_5_days_timer = None
-
-            # remove timer money release
-            if order.charge.automatic_money_release_timer:
-                tornado.ioloop.IOLoop.current().remove_timeout(order.automatic_money_release_timer)
-                order.automatic_money_release_timer = None
-        except Exception, e:
-            logger.debug(str(e))
+        # try:
+        #     # remove timer 3 days warning
+        #     if order.charge.warning_3_days_timer:
+        #         tornado.ioloop.IOLoop.current().remove_timeout(order.warning_3_days_timer)
+        #         order.warning_3_days_timer = None
+        #
+        #     # remove timer 5 days warning
+        #     if order.charge.warning_5_days_timer:
+        #         tornado.ioloop.IOLoop.current().remove_timeout(order.warning_5_days_timer)
+        #         order.warning_5_days_timer = None
+        #
+        #     # remove timer money release
+        #     if order.charge.automatic_money_release_timer:
+        #         tornado.ioloop.IOLoop.current().remove_timeout(order.automatic_money_release_timer)
+        #         order.automatic_money_release_timer = None
+        # except Exception, e:
+        #     logger.debug(str(e))
 
         order.available_feedback = True
+        order.sorting_status = SortingStatus.WaitForFeedback
         order.updated_at = datetime.datetime.utcnow()
         self.session.commit()
-        return self.success()
-
-
-@route('test_timer')
-class TEstTimerHandler(ApiHandler):
-    allowed_methods = ('GET', )
-
-    def read(self):
-        if self.user is None:
-            die(401)
-
-        # get charge
-        charge = self.session.query(UserOrders).get(8)
-        charge.email_user_email = charge.user.email
-        charge.email_user_username = charge.user.username
-        charge.email_listing_title = charge.listing.title
-        charge.sellerTimeout = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=10),
-                                                                   charge.warning_3_5_days)
         return self.success()

@@ -55,6 +55,12 @@ class IssueStatus(Enum):
                 return k
 
 
+class SortingStatus(Enum):
+    WaitForFeedback = 0
+    Open = 1
+    Close = 2
+
+
 class UserOrders(Base):
     __tablename__ = 'user_orders'
 
@@ -62,6 +68,7 @@ class UserOrders(Base):
     created_at = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
 
+    sorting_status = Column(SmallInteger, nullable=False, default=SortingStatus.Open)
 
     # reference to bought listing
     listing_id = Column(Integer, ForeignKey('listings.id'), nullable=True)
@@ -82,7 +89,7 @@ class UserOrders(Base):
 
     # reference to user
     user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
-    user = relationship('User', backref=backref('user_orders', order_by=order_status, cascade="all,delete",
+    user = relationship('User', backref=backref('user_orders', order_by=sorting_status, cascade="all,delete",
                                                 lazy='dynamic'), foreign_keys=user_id)
 
     available_feedback = Column(Boolean, nullable=False, default=False)
@@ -91,13 +98,6 @@ class UserOrders(Base):
     def response(self):
         return {
             'id': self.id,
-            # 'listing': {
-            #     'id': self.listing.id,
-            #     'title': self.listing.title,
-            #     'image': self.listing.listing_photos[0].image_url,
-            #     'retail_price': "%.02f" % float(self.listing.retail_price),
-            #     'selling_price': "%.02f" % float(self.listing.selling_price),
-            # },
             'listing': self.listing.response(self.user_id),
             'status': self.order_status,
             'available_feedback': self.available_feedback

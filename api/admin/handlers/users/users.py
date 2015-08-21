@@ -211,8 +211,6 @@ class AdminUsersHandler(AdminBaseHandler):
                 email_confirmation_sending(self, user, email)
                 need_commit = True
 
-
-
             # phone
             if user.phone != phone and phone:
                 phone = str(phone)

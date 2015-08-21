@@ -57,9 +57,9 @@
             <tbody>
                 {% for user in users %}
                     <tr data-id="{{ user.id }}"
-                        data-username="{{ user.username }}"
-                        data-email="{{ user.email }}"
-                        data-phone="{{ user.phone }}"
+                        data-username="{{ user.username or ''}}"
+                        data-email="{{ user.email or ''}}"
+                        data-phone="{{ user.phone or ''}}"
                         data-user_type="{{ user.user_type }}">
                         <td>{{ user.id }}</td>
                         <td align="center" id="thumbnailList1">

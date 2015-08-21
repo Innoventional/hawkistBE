@@ -40,7 +40,7 @@
             <tbody>
                 {% for o in orders %}
                     <tr data-id="{{ o.id }}">
-                        <td  data-href='{{o.listing.id }}' class="clickable-row hoover-cursor">
+                        <td  data-href='../{{o.listing.id }}' class="clickable-row hoover-cursor">
                             {{ o.listing.id }}
                         </td>
                         <td>{{ o.listing.title }}</td>

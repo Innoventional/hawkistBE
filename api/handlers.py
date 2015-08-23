@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 try:
     from users.handlers.login import *
     from users.handlers.update import *
+    from users.handlers.personalization import *
     from items.handlers import *
     from tags.handler import *
     from admin.handlers.users.users import *
@@ -32,8 +33,10 @@ try:
     from addresses.handlers import *
     from feedbacks.handlers import *
     from bank_accounts.handlers import *
+    from notifications.handlers import *
 except ImportError:
     logger.debug(ImportError)
+
 
 @route('test')
 class Test(OpenApiHandler):

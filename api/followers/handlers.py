@@ -9,6 +9,7 @@ from ui_messages.errors.followers_errors.followers_errors import FOLLOWING_NO_US
 from ui_messages.errors.users_errors.blocked_users_error import GET_BLOCKED_USER_FOLLOWERS
 from ui_messages.errors.users_errors.suspended_users_errors import GET_SUSPENDED_USER_FOLLOWERS
 from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID
+from utility.notifications import notification_new_follower
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
 __author__ = 'ne_luboff'
@@ -138,6 +139,7 @@ class FollowersHandler(ApiHandler):
 
         # else add this user to current user following
         self.user.following.append(user_to_follow)
+        notification_new_follower(user_to_follow_id)
         self.session.commit()
 
         return self.success()

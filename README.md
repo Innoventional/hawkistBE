@@ -1877,12 +1877,165 @@ Response Failure:
         'title': ''          — Error message title 
     } 
      
+     
+--------------------------
+### User Personalization
 
-STATUS CODES FOR CUSTOM ERROR TITLE
------------------------------------
     
-    Status code | Error message title
-    ---------------------------------
-        2       | No bank card
-        403     | Access denied
+**Get user holiday mode**
+
+    Url: 'user/holiday_mode'
+    Method: 'GET'
+
+
+Response :
+    
+    {
+        "status": 0,
+        "holiday_mode": Boolean
+    }
+
+
+**Update user holiday mode**
+
+    Url: 'user/holiday_mode'
+    Method: 'PUT'
+
+
+Data:
+
+    {
+        "holiday_mode": true or false
+    }
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }  
+    
+    
+    
+**Get user notification about another user item favorited**
+
+    Url: 'user/notify_about_favorite'
+    Method: 'GET'
+
+
+Response :
+    
+    {
+        "status": 0,
+        "notify_about_favorite": Boolean
+    }
+
+
+**Update user holiday mode**
+
+    Url: 'user/notify_about_favorite'
+    Method: 'PUT'
+
+
+Data:
+
+    {
+        "notify_about_favorite": true or false
+    }
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }  
+    
+    
+--------------------------
+### User Notifications
+
+NOTIFICATION_TYPES
+
+    NewComment = 0
+    ItemSold = 1
+    ItemReceived = 2   
+    NewFeedback = 3
+    FundsReleased = 4 
+    LeaveFeedback = 5
+    ItemIsFavourited = 6
+    AFavouriteItemIsSold = 7
+    NewFollowers = 8
+    NewItems = 9
+    Mentions = 10
+    NewOfferedPrice = 11
+    OfferedPriceAccepted = 12
+    OfferedPriceDeclined = 13
+    
+NOTIFICATION_INFO_DICT
+
+    'id': NOTIFICATION ID,
+    'type': NOTIFICATION TYPE,
+    'created_at': CREATED TIME,
+    'user': {
+        'id': USER TO LINK ID,
+        'username': USER TO LINK USERNAME,
+        'avatar': USER TO LINK AVATAR
+    },
+    'listing': {
+        'id': LISTING TO LINK ID,
+        'title': LISTING TO LINK TITLE,
+        'photo': LISTING TO LINK PHOTO,
+        'selling_price': LISTING SELLING PRICE,
+        'shipping_price': LISTING SHIPPING PRICE
+    },
+    'comment': {
+        'text': COMMENTED TEXT,
+        'offered_price': COMMENTED OFFER PRICE
+    },
+    'order': {
+        'id': ORDER ID
+    }
+    
+**Get new notifications count**
+
+    Url: 'user/new_notifications'
+    Method: 'GET'
+
+
+Response :
+    
+    {
+        "status": 0,
+        "count": Integer
+    }
+    
+    
+**Get all notifications**
+
+    Url: 'user/notifications'
+    Method: 'GET'
+
+
+Response :
+    
+    {
+        "status": 0,
+        "notifications": [{
+            NOTIFICATION_INFO_DICT
+        }]
+    }
     

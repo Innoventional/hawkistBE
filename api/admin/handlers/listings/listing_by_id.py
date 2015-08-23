@@ -1,10 +1,8 @@
 import logging
 import datetime
-from sqlalchemy import and_
 from api.admin.handlers.login import AdminBaseHandler
 from api.items.models import Listing
-from api.orders.models import UserOrders, OrderStatus, IssueStatus
-from base import HttpRedirect, paginate
+from base import HttpRedirect
 from helpers import route
 from ui_messages.errors.admin_errors.admin_listings_errors import ADMIN_TRY_DELETE_LISTING_WHICH_DOES_NOT_EXISTS
 

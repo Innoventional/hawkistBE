@@ -4,9 +4,9 @@ from sqlalchemy import or_
 from api.admin.handlers.login import AdminBaseHandler
 from api.items.models import Listing, ListingStatus
 from api.orders.models import UserOrders, OrderStatus, IssueStatus, IssueReason
-from base import HttpRedirect, paginate
+from base import HttpRedirect
 from helpers import route
-from ui_messages.errors.admin_errors.admin_listings_errors import ADMIN_TRY_DELETE_LISTING_WHICH_DOES_NOT_EXISTS
+from utility.notifications import notification_funds_released
 from utility.send_email import listing_with_issue_investigation_opened_buyer, transaction_canceled, refunds_issues_buyer, \
     investigation_resolved
 
@@ -91,6 +91,9 @@ class AdminIssuedListingsHandler(AdminBaseHandler):
             order.listing.user.app_wallet_pending -= order.charge.payment_sum_without_application_fee
             order.listing.user.app_wallet += order.charge.payment_sum_without_application_fee
             order.listing.status = ListingStatus.Sold
+
+            notification_funds_released(self, order.user, order.listing)
+
             investigation_resolved(order.listing.user.email, order.listing.user.username, order.listing.title)
             investigation_resolved(order.user.email, order.user.username, order.listing.title)
         order.updated_at = datetime.datetime.utcnow()

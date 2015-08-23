@@ -26,6 +26,7 @@ from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS
 from ui_messages.messages.user_messages import TRY_TO_GET_SUSPENDED_USER_ITEMS
 from utility.google_api import get_city_by_code
 from utility.items import calculate_discount_value
+from utility.notifications import notification_item_favourite, notification_following_user_new_item
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
 __author__ = 'ne_luboff'
@@ -139,7 +140,7 @@ class ListingHandler(ApiHandler):
 
             # add view
             # first we must check owner of this listing
-            if str(listing.id) != str(self.user.id):
+            if str(listing.user.id) != str(self.user.id):
                 # check does this user already view this item
                 if self.user not in listing.views:
                     # only then add view
@@ -842,6 +843,10 @@ class ListingHandler(ApiHandler):
             self.user.city = city
 
             self.session.commit()
+
+            for follower in self.user.followers:
+                notification_following_user_new_item(self, follower.id, listing)
+
             return self.success({'item': listing.response(self.user.id)})
 
     def remove(self):
@@ -930,11 +935,14 @@ class ListingLikeHandler(ApiHandler):
         # if user don't like this listing yet - make link
         if self.user not in listing_likes:
             listing_likes.append(self.user)
+            if self.user.notify_about_favorite:
+                notification_item_favourite(self, listing_to_like)
         # else delete this user like
         else:
             listing_likes.remove(self.user)
         self.session.commit()
         return self.success()
+
 
 @route('user/wishlist')
 class UserWishListHandler(ApiHandler):

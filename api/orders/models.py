@@ -104,7 +104,8 @@ class UserOrders(Base):
         }
 
     def warning_3_5_days(self):
-        send_warning_3_5_days_email(self.email_user_email, self.email_user_username, self.email_listing_title)
+        print self.order_status
+        # send_warning_3_5_days_email(self.email_user_email, self.email_user_username, self.email_listing_title)
 
     def automatic_money_release(self):
         funds_received_seller(self)

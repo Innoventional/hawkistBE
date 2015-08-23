@@ -12,6 +12,7 @@ from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID
 from ui_messages.errors.users_errors.blocked_users_error import GET_BLOCKED_USER_COMMENTS
 from ui_messages.errors.users_errors.suspended_users_errors import GET_SUSPENDED_USER_COMMENTS
 from utility.comments import get_users_from_comment
+from utility.notifications import notification_new_comment, notification_new_mention
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
 __author__ = 'ne_luboff'
@@ -124,8 +125,14 @@ class ItemCommentsHandler(ApiHandler):
                     # add new mention if this user don't mention in this comment already
                     if comment not in user_to_mention.comment_mentions:
                         user_to_mention.comment_mentions.append(comment)
+                    notification_new_mention(self, user_to_mention.id, listing)
         self.session.add(comment)
         self.session.commit()
+
+        # also add notification about new comment
+        if str(listing.user_id) != str(self.user.id):
+            notification_new_comment(self, listing, comment)
+
         return self.success()
 
 

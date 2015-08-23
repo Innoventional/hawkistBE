@@ -1,5 +1,4 @@
 import datetime
-import tornado
 from api.items.models import Listing, ListingStatus
 from api.orders.models import UserOrders, OrderStatus, IssueStatus, SortingStatus
 from api.payments.models import StripeCharges, ChargesStatus
@@ -12,11 +11,10 @@ from ui_messages.errors.orders_errors import UPDATE_ORDER_NO_ID, UPDATE_ORDER_NO
 from ui_messages.errors.payment_errors import CREATE_CHARGE_NO_CARD_ID, CREATE_CHARGE_NO_LISTING_ID, \
     CREATE_CHARGE_BUY_YOUR_OWN_LISTING, CREATE_CHARGE_BUY_RESERVED_LISTING, CREATE_CHARGE_BUY_SOLD_LISTING, \
     CREATE_CHARGE_NO_STRIPE_ACCOUNT, UPDATE_CARD_INVALID_ID
-from utility.send_email import purchase_confirmation_sending_buyer, purchase_confirmation_sending_seller, \
-    listing_with_issue_seller, listing_received_seller
+from utility.notifications import notification_item_sold, notification_funds_released, notification_leave_feedback, \
+    notification_favourite_item_sold
 from utility.stripe_api import stripe_retrieve_customer, stripe_create_charges
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
-from tornado import ioloop
 
 __author__ = 'ne_luboff'
 
@@ -179,26 +177,33 @@ class OrdersHandler(ApiHandler):
 
         self.session.commit()
 
-        # send email to buyer
-        purchase_confirmation_sending_buyer(self, listing)
+        notification_item_sold(self, listing)
 
-        # send email to seller
-        purchase_confirmation_sending_seller(self, listing)
+        if listing.likes:
+            for liked_people in listing.likes:
+                if str(liked_people.id) != str(self.user.id):
+                    notification_favourite_item_sold(self, liked_people.id, listing)
 
-        # # start 3-days warning timer
+        # TODO send email to buyer
+        # purchase_confirmation_sending_buyer(self, listing)
+
+        # TODO send email to seller
+        # purchase_confirmation_sending_seller(self, listing)
+
+        # start 3-days warning timer
         # new_order.email_user_email = new_order.user.email
         # new_order.email_user_username = new_order.user.username
         # new_order.email_listing_title = new_order.listing.title
-        #
-        # # new_order.warning_3_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(days=4),
+
+        # new_order.warning_3_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(days=4),
         # new_order.warning_3_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=30),
         #                                                                      new_order.warning_3_5_days)
-        #
-        # # start 5-days warning timer
-        # # new_order.warning_5_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(days=6),
+
+        # start 5-days warning timer
+        # new_order.warning_5_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(days=6),
         # new_order.warning_5_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=90),
         #                                                                      new_order.warning_3_5_days)
-        #
+
         # # start timer money release
         # new_order.listing_user_username = new_order.listing.user.username
         # new_order.listing_title = new_order.listing.title
@@ -267,9 +272,12 @@ class OrdersHandler(ApiHandler):
             # get money from pending balance to available
             order.listing.user.app_wallet_pending -= order.charge.payment_sum_without_application_fee
             order.listing.user.app_wallet += order.charge.payment_sum_without_application_fee
+
+            notification_funds_released(self, self.user, order.listing)
+            notification_leave_feedback(self, order)
             # self.session.commit()
-            # send notification to seller
-            listing_received_seller(self, order)
+            # TODO send notification to seller
+            # listing_received_seller(self, order)
 
         elif str(new_status) == str(OrderStatus.HasAnIssue):
             # validate issue reason
@@ -280,11 +288,16 @@ class OrdersHandler(ApiHandler):
             order.charge.system_status = ChargesStatus.Frozen
             order.issue_reason = issue_reason
             order.issue_status = IssueStatus.New
+            notification_leave_feedback(self, order)
             # self.session.commit()
-            # send notification to listing owner
-            listing_with_issue_seller(self, order.listing)
+            # TODO send notification to listing owner
+            # listing_with_issue_seller(self, order.listing)
         else:
             return self.make_error(UPDATE_ORDER_INVALID_STATUS)
+
+        # if order.warning_3_days_timer:
+        #     tornado.ioloop.IOLoop.current().remove_timeout(order.warning_3_days_timer)
+        #     order.warning_3_days_timer = None
 
         # try:
         #     # remove timer 3 days warning

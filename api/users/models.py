@@ -130,6 +130,14 @@ class User(Base):
     bank_account_city = Column(String, nullable=True)
     bank_account_post_code = Column(String, nullable=True)
 
+    average_response_time = Column(Integer, default=0, nullable=True)
+
+    # notification setting
+    notify_about_favorite = Column(Boolean, nullable=False, default=False)
+
+    # holiday mode
+    holiday_mode = Column(Boolean, nullable=False, default=False)
+
     def __repr__(self):
         return '<User %s (%s)>' % (self.id, self.username)
 
@@ -190,7 +198,7 @@ class User(Base):
             'number_of_sales': self.get_user_sales(),
             'rating': self.rating,
             'review': self.feedbacks.count(),
-            'response_time': 5,
+            'response_time': self.average_response_time,
         }
 
     @property

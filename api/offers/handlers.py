@@ -17,6 +17,8 @@ from ui_messages.errors.users_errors.suspended_users_errors import GET_SUSPENDED
 from ui_messages.messages.custom_error_titles import CREATE_OFFER_PRICE_TO_HIGH_TITLE
 from ui_messages.messages.offers_messages import OFFER_NEW, OFFER_ACCEPTED, OFFER_DECLINED
 from utility.items import calculate_discount_value
+from utility.notifications import notification_new_offered_price, notification_offered_price_accepted, \
+    notification_offered_price_declined
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
 __author__ = 'ne_luboff'
@@ -110,6 +112,8 @@ class ItemOffersHandler(ApiHandler):
         # comment.user_to_see_id = listing.user_id
         self.session.add(comment)
         self.session.commit()
+
+        notification_new_offered_price(self, listing, new_price)
         return self.success()
 
     def update(self, offer_id):
@@ -168,6 +172,8 @@ class ItemOffersHandler(ApiHandler):
             self.session.add(comment)
             self.session.commit()
 
+            notification_offered_price_accepted(self, offer.user_id, offer.listing, offer.new_price)
+
         elif str(new_status) == '2':
             offer.status = OfferStatus.Declined
 
@@ -179,6 +185,8 @@ class ItemOffersHandler(ApiHandler):
             comment.text = OFFER_DECLINED % "%.02f" % float(offer.new_price)
             self.session.add(comment)
             self.session.commit()
+
+            notification_offered_price_declined(self, offer.user_id, offer.listing, offer.new_price)
 
         return self.success()
 

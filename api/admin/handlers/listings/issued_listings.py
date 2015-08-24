@@ -73,8 +73,8 @@ class AdminIssuedListingsHandler(AdminBaseHandler):
         elif str(action) == str(IssueStatus.Cancelled):
             order.issue_status = IssueStatus.Cancelled
             # TODO money to buyer
-            order.listing.user.app_wallet_pending -= order.charge.payment_sum_without_application_fee
-            order.user.app_wallet += order.charge.payment_sum
+            order.listing.user.app_wallet_pending -= order.payment_sum_without_application_fee
+            order.user.app_wallet += order.payment_sum
             order.listing.status = ListingStatus.Active
             # send email to seller
             transaction_canceled(order.listing.user.email, order.listing.user.username, order.listing.title)
@@ -88,8 +88,8 @@ class AdminIssuedListingsHandler(AdminBaseHandler):
         elif str(action) == str(IssueStatus.Resolved):
             order.issue_status = IssueStatus.Resolved
             # TODO money to seller
-            order.listing.user.app_wallet_pending -= order.charge.payment_sum_without_application_fee
-            order.listing.user.app_wallet += order.charge.payment_sum_without_application_fee
+            order.listing.user.app_wallet_pending -= order.payment_sum_without_application_fee
+            order.listing.user.app_wallet += order.payment_sum_without_application_fee
             order.listing.status = ListingStatus.Sold
 
             notification_funds_released(self.session, order.user, order.listing)

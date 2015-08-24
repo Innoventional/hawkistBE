@@ -78,9 +78,17 @@ def purchase_confirmation_sending_buyer(self, listing):
     send_email(text, subject=subject, recipient=self.user.email)
 
 
-def purchase_confirmation_sending_seller(self, listing):
-    text = PURCHASE_ITEM_SELLER_TEXT % (listing.user.username, listing.title, self.user.username,
-                                        "%.02f" % float(listing.selling_price), self.user.email, self.user.username)
+def purchase_confirmation_sending_seller(self, listing, address):
+    if address:
+        address_row = '%s, %s %s ' % (address.address_line1, address.postcode, address.city)
+        if address.address_line2:
+            address_row = '%s %s, %s %s ' % (address.address_line1, address.address_line2, address.postcode, address.city)
+        text = PURCHASE_ITEM_SELLER_TEXT % (listing.user.username, listing.title, self.user.username,
+                                            "%.02f" % float(listing.selling_price), self.user.email, self.user.username,
+                                            address_row)
+    else:
+        text = PURCHASE_ITEM_SELLER_TEXT % (listing.user.username, listing.title, self.user.username,
+                                            "%.02f" % float(listing.selling_price), self.user.email, self.user.username)
     subject = PURCHASE_ITEM_SELLER_TITLE % listing.title
     send_email(text, subject=subject, recipient=listing.user.email)
 
@@ -93,7 +101,7 @@ def listing_with_issue_seller(self, listing):
 
 def listing_received_seller(self, order):
     text = LISTING_RECEIVED_SELLER_TEXT % (order.listing.user.username, order.listing.title,  self.user.username,
-                                           order.charge.payment_sum_without_application_fee)
+                                           order.payment_sum_without_application_fee)
     subject = LISTING_RECEIVED_SELLER_TITLE % order.listing.title
     send_email(text, subject=subject, recipient=order.listing.user.email)
 
@@ -106,7 +114,7 @@ def listing_with_issue_investigation_opened_buyer(order):
 
 def funds_received_seller(order):
     text = FUNDS_RECEIVED_SELLER_TEXT % (order.listing.user.username, order.listing.title,
-                                         order.charge.payment_sum_without_application_fee)
+                                         order.payment_sum_without_application_fee)
     subject = FUNDS_RECEIVED_SELLER_TITLE % order.listing.title
     send_email(text, subject=subject, recipient=order.listing.user.email)
 

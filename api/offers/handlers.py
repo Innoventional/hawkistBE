@@ -1,7 +1,7 @@
 import logging
 import datetime
 from api.comments.models import Comment
-from api.items.models import Listing
+from api.items.models import Listing, ListingStatus
 from api.offers.models import Offer, OfferStatus
 from api.users.models import SystemStatus
 from base import ApiHandler, die
@@ -159,6 +159,7 @@ class ItemOffersHandler(ApiHandler):
             offer.status = OfferStatus.Accepted
 
             # add reserved by user flag
+            offer.listing.status = ListingStatus.Reserved
             offer.listing.reserved_by_user = True
             offer.listing.reserve_time = datetime.datetime.utcnow()
             offer.listing.user_who_reserve_id = offer.user_id

@@ -1,6 +1,6 @@
 import datetime
 import re
-from sqlalchemy import Column, Integer, DateTime, ForeignKey, SmallInteger, Enum, Boolean
+from sqlalchemy import Column, Integer, DateTime, ForeignKey, SmallInteger, Enum, Boolean, Numeric
 from sqlalchemy.orm import relationship, backref
 from orm import Base
 
@@ -61,6 +61,16 @@ class SortingStatus(Enum):
     Close = 2
 
 
+class OrderPaymentMethod(Enum):
+    Card = 0
+    Wallet = 1
+
+
+class OrderDeliveryMethod(Enum):
+    PostTransfer = 0
+    Collection = 1
+
+
 class UserOrders(Base):
     __tablename__ = 'user_orders'
 
@@ -74,6 +84,8 @@ class UserOrders(Base):
     listing_id = Column(Integer, ForeignKey('listings.id'), nullable=True)
     listing = relationship('Listing', backref=backref('bought', order_by=id, cascade="all,delete",
                                                       lazy='dynamic'), foreign_keys=listing_id)
+    payment_sum = Column(Numeric, nullable=True)
+    payment_sum_without_application_fee = Column(Numeric, nullable=True)
 
     # reference to charge
     charge_id = Column(Integer, ForeignKey('stripe_charges.id'), nullable=True)
@@ -93,6 +105,13 @@ class UserOrders(Base):
                                                 lazy='dynamic'), foreign_keys=user_id)
 
     available_feedback = Column(Boolean, nullable=False, default=False)
+
+    payment_method = Column(SmallInteger, nullable=False, default=OrderPaymentMethod.Card)
+    delivery_method = Column(SmallInteger, nullable=False, default=OrderDeliveryMethod.PostTransfer)
+
+    address_id = Column(Integer, nullable=True)
+
+
 
     @property
     def response(self):

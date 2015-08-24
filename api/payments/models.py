@@ -19,28 +19,18 @@ class StripeCustomer(Base):
     stripe_card_id = Column(String, nullable=True)
 
 
-# available charges statuses
-class ChargesStatus(Enum):
-    Active = 0
-    Frozen = 1
-    Finished = 2
-
-
 class StripeCharges(Base):
     __tablename__ = 'stripe_charges'
 
     id = Column(Integer, autoincrement=True, primary_key=True)
     created_at = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
-    date_finish = Column(DateTime, nullable=True)
-    system_status = Column(SmallInteger, nullable=False, default=ChargesStatus.Active)
 
     charge_id = Column(String, nullable=False)
     transaction_id = Column(String, nullable=True)
     paid = Column(Boolean, default=False)
     refunded = Column(Boolean, default=False)
     payment_sum = Column(Numeric, nullable=True)
-    payment_sum_without_application_fee = Column(Numeric, nullable=True)
     transaction_status = Column(String, default="failed")
 
     buyer_id = Column(Integer, ForeignKey('users.id'), nullable=True, index=True)

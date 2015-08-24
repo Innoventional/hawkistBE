@@ -1423,7 +1423,14 @@ Data:
 
     {
         "stripe_card_id": STRIPE CARD ID,
-        "listing_id": LISTING ID
+                    OR
+        "pay_with_wallet": TRUE IF USER CAN PAY WITH WALLET,
+        
+        "address_id": USER ADDRESS ID
+                    OR
+        "collection": TRUE IF USER USE COLLECTION DELIVERY METHOD,
+        
+        "listing_id": LISTING ID        - required
     }
 
 Response Success:

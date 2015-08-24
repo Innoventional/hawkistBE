@@ -32,8 +32,8 @@ def timer_event():
                 notification_item_received(session, order.user_id, order.listing)
             elif time_delta.days >= 7:
                 # first we must transfer money from pending balance to available
-                order.listing.user.app_wallet_pending -= order.charge.payment_sum_without_application_fee
-                order.listing.user.app_wallet += order.charge.payment_sum_without_application_fee
+                order.listing.user.app_wallet_pending -= order.payment_sum_without_application_fee
+                order.listing.user.app_wallet += order.payment_sum_without_application_fee
                 order.order_status = OrderStatus.FundsReleasedByTimer
                 session.commit()
                 # send email notification to seller

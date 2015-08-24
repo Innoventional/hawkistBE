@@ -71,7 +71,6 @@ PURCHASE_ITEM_SELLER_TITLE = 'Sold: %s'
 PURCHASE_ITEM_SELLER_TEXT = "%s,\n" \
                             u"Your item %s has been sold to %s for £%s. The next step is for you to arrange delivery or " \
                             u"collection of the item. The buyer can be contacted via email on %s.\n" \
-                            u"His delivery address is BUYER_DELIVERY_ADDRESS_NEXT_SPRINT." \
                             u"Please note that you now have 7 days to arrange for delivery or collection of the item " \
                             u"before we can release your funds. The faster %s gets the item, the faster " \
                             u"you get the funds.\n" \
@@ -80,6 +79,21 @@ PURCHASE_ITEM_SELLER_TEXT = "%s,\n" \
                             u"If you have any questions, you can contact Hawkist support on info@hawkist.com.\n" \
                             u"Thanks for your business!\n" \
                             u"Hawkist"
+
+PURCHASE_ITEM_SELLER_TEXT_WITH_ADDRESS = "%s,\n" \
+                                         u"Your item %s has been sold to %s for £%s. The next step is for you to " \
+                                         u"arrange delivery or collection of the item. The buyer can be contacted via " \
+                                         u"email on %s.\n " \
+                                         u"His delivery address is %s." \
+                                         u"Please note that you now have 7 days to arrange for delivery or collection " \
+                                         u"of the item before we can release your funds. The faster %s gets the item, " \
+                                         u"the faster you get the funds.\n" \
+                                         u"For more information about receiving funds after a purchase, please visit " \
+                                         u"our FAQs on https://hawkist.zendesk.com.\n" \
+                                         u"If you have any questions, you can contact Hawkist support on " \
+                                         u"info@hawkist.com.\n " \
+                                         u"Thanks for your business!\n" \
+                                         u"Hawkist"
 
 LISTING_WITH_ISSUE_SELLER_TITLE = 'Has issue: %s'
 LISTING_WITH_ISSUE_SELLER_TEXT = '%s,\n' \

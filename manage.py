@@ -6,6 +6,7 @@ from tornado import httpserver, ioloop
 from app import HawkistApi
 from environment import env
 from orm import create_session
+from utility.cron_scripts import timer_event
 
 LOG_FORMAT = '[%(asctime)s] %(levelname)s [line:%(lineno)s] [%(funcName)s] %(message)s'
 logging.basicConfig(format=LOG_FORMAT)

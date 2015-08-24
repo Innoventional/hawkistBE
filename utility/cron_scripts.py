@@ -1,4 +1,5 @@
 import datetime
+import logging
 from api.items.models import Listing, ListingStatus
 from api.orders.models import UserOrders, OrderStatus
 from api.users.models import User, SystemStatus
@@ -9,6 +10,8 @@ from utility.send_email import send_warning_4_6_days_email, funds_received_selle
 
 __author__ = 'ne_luboff'
 
+logger = logging.getLogger(__name__)
+
 
 def timer_event():
     with new_session() as session:
@@ -16,6 +19,8 @@ def timer_event():
         First send all messages.
         Function for sending 4 days notification to email and user notification screen if order is active
         """
+        logger.debug('Start cron script')
+        logger.debug('%s' % datetime.datetime.utcnow())
         orders = session.query(UserOrders).filter(UserOrders.order_status == OrderStatus.Active)
         for order in orders:
             # check time difference

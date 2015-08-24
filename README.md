@@ -654,6 +654,10 @@ ITEM_INFO_DICT
         'liked': DOES CURRENT USER ALREADY LIKED THIS ITEM,
         'comments': NUMBER OF COMMENTS,
         'views': NUMBER OF VIEWS
+        
+        # if item was reserved by someone
+        'reserved_by_user': TRUE OR FALSE,
+        'user_who_reserve_id': USER WHO RESERVE ID
     }
    
 **Get all items (user feeds)**

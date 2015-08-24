@@ -150,7 +150,8 @@ class Listing(Base):
             'liked': user_id in [user.id for user in self.likes],
             'views': len(self.views),
             'comments': self.get_comment_count(user_id),
-            'user_who_reserve_id': self.user_who_reserve_id
+            'user_who_reserve_id': self.user_who_reserve_id,
+            'reserved_by_user': self.reserved_by_user
         }
 
 

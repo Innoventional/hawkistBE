@@ -92,7 +92,7 @@ class AdminIssuedListingsHandler(AdminBaseHandler):
             order.listing.user.app_wallet += order.charge.payment_sum_without_application_fee
             order.listing.status = ListingStatus.Sold
 
-            notification_funds_released(self, order.user, order.listing)
+            notification_funds_released(self.session, order.user, order.listing)
 
             investigation_resolved(order.listing.user.email, order.listing.user.username, order.listing.title)
             investigation_resolved(order.user.email, order.user.username, order.listing.title)

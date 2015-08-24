@@ -158,6 +158,12 @@ class ItemOffersHandler(ApiHandler):
             # update offer
             offer.status = OfferStatus.Accepted
 
+            # add reserved by user flag
+            offer.listing.reserved_by_user = True
+            offer.listing.reserve_time = datetime.datetime.utcnow()
+            offer.listing.user_who_reserve_id = offer.user_id
+            offer.listing.previous_price = offer.listing.selling_price
+
             # update discount
             offer.listing.discount = calculate_discount_value(offer.listing.retail_price, offer.new_price)
             # update listing price

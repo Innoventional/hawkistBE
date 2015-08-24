@@ -104,11 +104,11 @@ def listing_with_issue_investigation_opened_buyer(order):
     send_email(text, subject=subject, recipient=order.user.email)
 
 
-def funds_received_seller(self):
-    text = FUNDS_RECEIVED_SELLER_TEXT % (self.listing_user_username, self.listing_title,
-                                         self.order_payment_sum_without_application_fee)
-    subject = FUNDS_RECEIVED_SELLER_TITLE % self.listing_title
-    send_email(text, subject=subject, recipient=self.listing_user_email)
+def funds_received_seller(order):
+    text = FUNDS_RECEIVED_SELLER_TEXT % (order.listing.user.username, order.listing.title,
+                                         order.charge.payment_sum_without_application_fee)
+    subject = FUNDS_RECEIVED_SELLER_TITLE % order.listing.title
+    send_email(text, subject=subject, recipient=order.listing.user.email)
 
 
 def refunds_issues_buyer(self):
@@ -130,7 +130,7 @@ def investigation_resolved(email, username, title):
     send_email(text, subject=subject, recipient=email)
 
 
-def send_warning_3_5_days_email(email, username, title):
+def send_warning_4_6_days_email(email, username, title):
     text = HAS_ITEM_RECEIVED_TEXT % username
     subject = HAS_ITEM_RECEIVED_TITLE % title
     send_email(text, subject=subject, recipient=email)

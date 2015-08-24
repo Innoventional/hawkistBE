@@ -85,6 +85,13 @@ class Listing(Base):
     likes = relationship('User', secondary=listing_likes, backref='likes')
     views = relationship('User', secondary=listing_views, backref='views')
 
+    # for reserving
+    user_who_reserve_id = Column(Integer, ForeignKey('users.id'), nullable=True)
+    user_who_reserve = relationship('User', foreign_keys=user_who_reserve_id)
+    reserve_time = Column(DateTime, nullable=True)
+    reserved_by_user = Column(Boolean, nullable=True, default=False)
+    previous_price = Column(Numeric, nullable=True)
+
     def __repr__(self):
         return '<Item %s (%s)>' % (self.id, self.title)
 
@@ -142,7 +149,8 @@ class Listing(Base):
             'likes': len(self.likes),
             'liked': user_id in [user.id for user in self.likes],
             'views': len(self.views),
-            'comments': self.get_comment_count(user_id)
+            'comments': self.get_comment_count(user_id),
+            'user_who_reserve_id': self.user_who_reserve_id
         }
 
 

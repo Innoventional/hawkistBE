@@ -3,7 +3,6 @@ import re
 from sqlalchemy import Column, Integer, DateTime, ForeignKey, SmallInteger, Enum, Boolean
 from sqlalchemy.orm import relationship, backref
 from orm import Base
-from utility.send_email import send_warning_3_5_days_email, funds_received_seller
 
 __author__ = 'ne_luboff'
 
@@ -17,6 +16,7 @@ class OrderStatus(Enum):
     Active = 0
     Received = 1
     HasAnIssue = 2
+    FundsReleasedByTimer = 3
 
 
 class IssueReason(Enum):
@@ -102,10 +102,3 @@ class UserOrders(Base):
             'status': self.order_status,
             'available_feedback': self.available_feedback
         }
-
-    def warning_3_5_days(self):
-        print self.order_status
-        # send_warning_3_5_days_email(self.email_user_email, self.email_user_username, self.email_listing_title)
-
-    def automatic_money_release(self):
-        funds_received_seller(self)

@@ -38,20 +38,20 @@ def notification_item_sold(self, listing):
     self.session.commit()
 
 
-def notification_item_received(self, listing):
+def notification_item_received(session, owner_id, listing):
     notification = UserNotificantion()
     notification.created_at = datetime.datetime.utcnow()
-    notification.owner_id = listing.user_id
+    notification.owner_id = owner_id
     notification.type = NotificationType.ItemReceived
-    notification.user_id = self.user.id
-    notification.user_avatar = self.user.avatar
-    notification.user_username = self.user.username
+    notification.user_id = listing.user.id
+    notification.user_avatar = listing.user.avatar
+    notification.user_username = listing.user.username
     notification.listing_id = listing.id
     notification.listing_title = listing.title
     notification.listing_photo = listing.listing_photos[0].image_url
     notification.priority = NotificationPriority.High
-    self.session.add(notification)
-    self.session.commit()
+    session.add(notification)
+    session.commit()
 
 
 def notification_new_feedback(self, listing):
@@ -70,7 +70,7 @@ def notification_new_feedback(self, listing):
     self.session.commit()
 
 
-def notification_funds_released(self, user, listing):
+def notification_funds_released(session, user, listing):
     notification = UserNotificantion()
     notification.created_at = datetime.datetime.utcnow()
     notification.owner_id = listing.user_id
@@ -84,8 +84,8 @@ def notification_funds_released(self, user, listing):
     notification.listing_shipping_price = listing.shipping_price
     notification.listing_photo = listing.listing_photos[0].image_url
     notification.priority = NotificationPriority.High
-    self.session.add(notification)
-    self.session.commit()
+    session.add(notification)
+    session.commit()
 
 
 def notification_leave_feedback(self, order):

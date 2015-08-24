@@ -13,6 +13,8 @@ from ui_messages.errors.payment_errors import CREATE_CHARGE_NO_CARD_ID, CREATE_C
     CREATE_CHARGE_NO_STRIPE_ACCOUNT, UPDATE_CARD_INVALID_ID
 from utility.notifications import notification_item_sold, notification_funds_released, notification_leave_feedback, \
     notification_favourite_item_sold
+from utility.send_email import purchase_confirmation_sending_buyer, purchase_confirmation_sending_seller, \
+    listing_received_seller, listing_with_issue_seller
 from utility.stripe_api import stripe_retrieve_customer, stripe_create_charges
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
@@ -95,7 +97,12 @@ class OrdersHandler(ApiHandler):
 
         # check listing status
         if listing.status == ListingStatus.Reserved:
-            return self.make_error(CREATE_CHARGE_BUY_RESERVED_LISTING)
+            if listing.reserved_by_user:
+                # check listing reserver
+                if str(self.user.id) != str(listing.user_who_reserve_id):
+                    return self.make_error(CREATE_CHARGE_BUY_RESERVED_LISTING)
+            else:
+                return self.make_error(CREATE_CHARGE_BUY_RESERVED_LISTING)
         elif listing.status == ListingStatus.Sold:
             return self.make_error(CREATE_CHARGE_BUY_SOLD_LISTING)
 
@@ -175,6 +182,7 @@ class OrdersHandler(ApiHandler):
 
         new_order.sorting_status = SortingStatus.Open
 
+        listing.reserved_by_user = False
         self.session.commit()
 
         notification_item_sold(self, listing)
@@ -184,33 +192,8 @@ class OrdersHandler(ApiHandler):
                 if str(liked_people.id) != str(self.user.id):
                     notification_favourite_item_sold(self, liked_people.id, listing)
 
-        # TODO send email to buyer
-        # purchase_confirmation_sending_buyer(self, listing)
-
-        # TODO send email to seller
-        # purchase_confirmation_sending_seller(self, listing)
-
-        # start 3-days warning timer
-        # new_order.email_user_email = new_order.user.email
-        # new_order.email_user_username = new_order.user.username
-        # new_order.email_listing_title = new_order.listing.title
-
-        # new_order.warning_3_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(days=4),
-        # new_order.warning_3_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=30),
-        #                                                                      new_order.warning_3_5_days)
-
-        # start 5-days warning timer
-        # new_order.warning_5_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(days=6),
-        # new_order.warning_5_days_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=90),
-        #                                                                      new_order.warning_3_5_days)
-
-        # # start timer money release
-        # new_order.listing_user_username = new_order.listing.user.username
-        # new_order.listing_title = new_order.listing.title
-        # new_order.order_payment_sum_without_application_fee = new_order.charge.payment_sum_without_application_fee
-        # new_order.listing_user_email = new_order.listing.user.email
-        # new_order.automatic_money_release_timer = ioloop.IOLoop.current().add_timeout(datetime.timedelta(days=7),
-        #                                                                               new_order.automatic_money_release)
+        purchase_confirmation_sending_buyer(self, listing)
+        purchase_confirmation_sending_seller(self, listing)
 
         return self.success()
 
@@ -273,11 +256,10 @@ class OrdersHandler(ApiHandler):
             order.listing.user.app_wallet_pending -= order.charge.payment_sum_without_application_fee
             order.listing.user.app_wallet += order.charge.payment_sum_without_application_fee
 
-            notification_funds_released(self, self.user, order.listing)
+            notification_funds_released(self.session, self.user, order.listing)
             notification_leave_feedback(self, order)
-            # self.session.commit()
-            # TODO send notification to seller
-            # listing_received_seller(self, order)
+
+            listing_received_seller(self, order)
 
         elif str(new_status) == str(OrderStatus.HasAnIssue):
             # validate issue reason
@@ -289,33 +271,10 @@ class OrdersHandler(ApiHandler):
             order.issue_reason = issue_reason
             order.issue_status = IssueStatus.New
             notification_leave_feedback(self, order)
-            # self.session.commit()
-            # TODO send notification to listing owner
-            # listing_with_issue_seller(self, order.listing)
+
+            listing_with_issue_seller(self, order.listing)
         else:
             return self.make_error(UPDATE_ORDER_INVALID_STATUS)
-
-        # if order.warning_3_days_timer:
-        #     tornado.ioloop.IOLoop.current().remove_timeout(order.warning_3_days_timer)
-        #     order.warning_3_days_timer = None
-
-        # try:
-        #     # remove timer 3 days warning
-        #     if order.charge.warning_3_days_timer:
-        #         tornado.ioloop.IOLoop.current().remove_timeout(order.warning_3_days_timer)
-        #         order.warning_3_days_timer = None
-        #
-        #     # remove timer 5 days warning
-        #     if order.charge.warning_5_days_timer:
-        #         tornado.ioloop.IOLoop.current().remove_timeout(order.warning_5_days_timer)
-        #         order.warning_5_days_timer = None
-        #
-        #     # remove timer money release
-        #     if order.charge.automatic_money_release_timer:
-        #         tornado.ioloop.IOLoop.current().remove_timeout(order.automatic_money_release_timer)
-        #         order.automatic_money_release_timer = None
-        # except Exception, e:
-        #     logger.debug(str(e))
 
         order.available_feedback = True
         order.sorting_status = SortingStatus.WaitForFeedback

@@ -200,7 +200,7 @@ class User(Base):
             'number_of_sales': self.get_user_sales(),
             'rating': self.rating,
             'review': self.feedbacks.count(),
-            'response_time': self.average_response_time,
+            'response_time': self.average_response_time
         }
 
     @property

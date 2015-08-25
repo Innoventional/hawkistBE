@@ -82,7 +82,7 @@ class Listing(Base):
     location_lat = Column(Numeric, nullable=True)
     location_lon = Column(Numeric, nullable=True)
 
-    likes = relationship('User', secondary=listing_likes, backref='likes')
+    likes = relationship('User', secondary=listing_likes, backref=backref('likes', lazy='dynamic'))
     views = relationship('User', secondary=listing_views, backref='views')
 
     # for reserving

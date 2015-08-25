@@ -161,11 +161,13 @@ class ListingHandler(ApiHandler):
                                                                        Listing.id != listing.id,
                                                                        ~Listing.user_id.in_(suspended_users_id),
                                                                        ~Listing.user_id.in_(block_me_user_id),
-                                                                       Listing.status != ListingStatus.Sold)).limit(6)
+                                                                       Listing.status != ListingStatus.Sold,
+                                                                       ~Listing.user.has(User.holiday_mode))).limit(6)
             # find 6 items of this user
             user_listings = self.session.query(Listing).filter(and_(Listing.user_id == listing.user_id,
                                                                     Listing.id != listing.id,
-                                                                    Listing.status != ListingStatus.Sold)).limit(6)
+                                                                    Listing.status != ListingStatus.Sold,
+                                                                    ~Listing.user.has(User.holiday_mode))).limit(6)
             current_listing_response = listing.response(self.user.id)
             # current_listing_response['liked'] = self.user in listing.likes
             current_listing_response['user'] = listing.user.user_response
@@ -188,6 +190,8 @@ class ListingHandler(ApiHandler):
                 return self.make_error(TRY_TO_GET_SUSPENDED_USER_ITEMS % user.username.upper())
 
             user_items = self.session.query(Listing).filter(Listing.user_id == user_id).order_by(desc(Listing.id))
+            if str(user_id) != str(self.user.id):
+                user_items = user_items.filter(~Listing.user.has(User.holiday_mode))
 
             if str(user_id) != str(self.user.id):
                 user_items = user_items.filter(Listing.status != ListingStatus.Sold)
@@ -287,7 +291,8 @@ class ListingHandler(ApiHandler):
                                                                         right_usernames_item_ids))),
                                                     ~Listing.user_id.in_(block_me_user_id),
                                                     ~Listing.user_id.in_(suspended_users_id),
-                                                    Listing.status != ListingStatus.Sold)).order_by(Listing.selling_price)
+                                                    Listing.status != ListingStatus.Sold,
+                                                    ~Listing.user.has(User.holiday_mode))).order_by(Listing.selling_price)
 
             # if not search - return listing depending on user's tags
             else:
@@ -320,7 +325,8 @@ class ListingHandler(ApiHandler):
                                                                    ~Listing.user_id.in_(block_me_user_id),
                                                                    ~Listing.user_id.in_(suspended_users_id),
                                                                    Listing.user_id != self.user.id,
-                                                                   Listing.status != ListingStatus.Sold)).order_by(desc(Listing.id))
+                                                                   Listing.status != ListingStatus.Sold,
+                                                                   ~Listing.user.has(User.holiday_mode))).order_by(desc(Listing.id))
 
                 # TODO 2015-07-08 return all items
                 # listings = self.session.query(Listing).filter(Listing.sold == False).order_by(desc(Listing.id))
@@ -988,9 +994,6 @@ class UserWishListHandler(ApiHandler):
             if user.system_status == SystemStatus.Suspended:
                 return self.make_error(GET_SUSPENDED_USER % user.username.upper())
 
-        if user:
-            wish_items = user.likes
-        else:
-            wish_items = self.user.likes
+        wish_items = user.likes.filter(~Listing.user.has(User.holiday_mode))
 
         return self.success({'items': [i.response(self.user.id) for i in wish_items]})

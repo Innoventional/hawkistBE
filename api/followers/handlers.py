@@ -139,7 +139,7 @@ class FollowersHandler(ApiHandler):
 
         # else add this user to current user following
         self.user.following.append(user_to_follow)
-        notification_new_follower(user_to_follow_id)
+        notification_new_follower(self, user_to_follow_id)
         self.session.commit()
 
         return self.success()

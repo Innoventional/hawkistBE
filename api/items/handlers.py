@@ -26,7 +26,8 @@ from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS
 from ui_messages.messages.user_messages import TRY_TO_GET_SUSPENDED_USER_ITEMS
 from utility.google_api import get_city_by_code
 from utility.items import calculate_discount_value
-from utility.notifications import notification_item_favourite, notification_following_user_new_item
+from utility.notifications import notification_item_favourite, notification_following_user_new_item, \
+    update_notification_listing_title, update_notification_listing_photo
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
 __author__ = 'ne_luboff'
@@ -160,11 +161,11 @@ class ListingHandler(ApiHandler):
                                                                        Listing.id != listing.id,
                                                                        ~Listing.user_id.in_(suspended_users_id),
                                                                        ~Listing.user_id.in_(block_me_user_id),
-                                                                       Listing.status == ListingStatus.Active)).limit(6)
+                                                                       Listing.status != ListingStatus.Sold)).limit(6)
             # find 6 items of this user
             user_listings = self.session.query(Listing).filter(and_(Listing.user_id == listing.user_id,
                                                                     Listing.id != listing.id,
-                                                                    Listing.status == ListingStatus.Active)).limit(6)
+                                                                    Listing.status != ListingStatus.Sold)).limit(6)
             current_listing_response = listing.response(self.user.id)
             # current_listing_response['liked'] = self.user in listing.likes
             current_listing_response['user'] = listing.user.user_response
@@ -189,10 +190,10 @@ class ListingHandler(ApiHandler):
             user_items = self.session.query(Listing).filter(Listing.user_id == user_id).order_by(desc(Listing.id))
 
             if str(user_id) != str(self.user.id):
-                user_items = user_items.filter(Listing.status == ListingStatus.Active)
+                user_items = user_items.filter(Listing.status != ListingStatus.Sold)
 
             # user_items = self.session.query(Listing).filter(and_(Listing.user_id == user_id,
-            #                                                      Listing.status == ListingStatus.Active)).order_by(desc(Listing.id))
+            #                                                      Listing.status != ListingStatus.Sold)).order_by(desc(Listing.id))
 
             # pagination
             page = self.get_arg('p', int, 1)
@@ -286,7 +287,7 @@ class ListingHandler(ApiHandler):
                                                                         right_usernames_item_ids))),
                                                     ~Listing.user_id.in_(block_me_user_id),
                                                     ~Listing.user_id.in_(suspended_users_id),
-                                                    Listing.status == ListingStatus.Active)).order_by(Listing.selling_price)
+                                                    Listing.status != ListingStatus.Sold)).order_by(Listing.selling_price)
 
             # if not search - return listing depending on user's tags
             else:
@@ -319,7 +320,7 @@ class ListingHandler(ApiHandler):
                                                                    ~Listing.user_id.in_(block_me_user_id),
                                                                    ~Listing.user_id.in_(suspended_users_id),
                                                                    Listing.user_id != self.user.id,
-                                                                   Listing.status == ListingStatus.Active)).order_by(desc(Listing.id))
+                                                                   Listing.status != ListingStatus.Sold)).order_by(desc(Listing.id))
 
                 # TODO 2015-07-08 return all items
                 # listings = self.session.query(Listing).filter(Listing.sold == False).order_by(desc(Listing.id))
@@ -502,6 +503,7 @@ class ListingHandler(ApiHandler):
             if listing_to_update.title != title:
                 listing_to_update.title = title
                 need_commit = True
+                update_notification_listing_title(self, listing_to_update)
 
             if listing_to_update.description != description:
                 listing_to_update.description = description
@@ -637,6 +639,7 @@ class ListingHandler(ApiHandler):
                     listing_photo.listing = listing_to_update
                     listing_photo.image_url = photo
                     self.session.add(listing_photo)
+                    update_notification_listing_photo(self, listing_to_update)
                     self.session.commit()
 
             # next get all listing photos and remove from it photos which are not in currently received

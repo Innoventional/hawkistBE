@@ -228,3 +228,37 @@ def notification_offered_price_declined(self, owner_id, listing, offered_price):
     notification.priority = NotificationPriority.Mandatory
     self.session.add(notification)
     self.session.commit()
+
+
+def update_notification_user_username(self, user):
+    notifications_with_this_user = self.session.query(UserNotificantion).filter(UserNotificantion.user_id == user.id)
+    if notifications_with_this_user:
+        for n in notifications_with_this_user:
+            n.user_username = user.username
+            if n.user_avatar != user.avatar:
+                n.user_avatar = user.avatar
+        # self.session.commit()
+
+
+def update_notification_user_avatar(self, user):
+    notifications_with_this_user = self.session.query(UserNotificantion).filter(UserNotificantion.user_id == user.id)
+    if notifications_with_this_user:
+        for n in notifications_with_this_user:
+            n.user_avatar = user.avatar
+        # self.session.commit()
+
+
+def update_notification_listing_title(self, listing):
+    notifications_with_this_listing = self.session.query(UserNotificantion).filter(UserNotificantion.listing_id == listing.id)
+    if notifications_with_this_listing:
+        for l in notifications_with_this_listing:
+            l.listing_title = listing.title
+        # self.session.commit()
+
+
+def update_notification_listing_photo(self, listing):
+    notifications_with_this_listing = self.session.query(UserNotificantion).filter(UserNotificantion.listing_id == listing.id)
+    if notifications_with_this_listing:
+        for l in notifications_with_this_listing:
+            l.listing_photo = listing.listing_photos[0].image_url
+        # self.session.commit()

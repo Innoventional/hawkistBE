@@ -19,6 +19,7 @@ from utility.amazon import upload_file
 from utility.facebook_api import get_facebook_user
 from utility.format_verification import username_verification, email_verification
 from utility.image.processor import make_thumbnail
+from utility.notifications import update_notification_user_username, update_notification_user_avatar
 from utility.send_email import email_confirmation_sending, send_email
 from utility.user_utility import update_user_last_activity, check_user_suspension_status, check_email_uniqueness
 
@@ -151,6 +152,7 @@ class UserHandler(ApiHandler):
             if self.user.username != username:
                 self.user.username = username
                 need_commit = True
+                update_notification_user_username(self, self.user)
 
         # EMAIL handler
         if email:
@@ -188,6 +190,7 @@ class UserHandler(ApiHandler):
                 self.user.avatar = image_url
                 self.user.thumbnail = thumbnail_url
                 need_commit = True
+                update_notification_user_avatar(self, self.user)
             except Exception, e:
                 logger.debug(e)
 

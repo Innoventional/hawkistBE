@@ -23,6 +23,7 @@ from ui_messages.messages.email import ADMIN_BACK_USER_TO_STANDARD_USERTYPE_LETT
     ADMIN_EMAIL_CHANGED_LETTER_TEXT
 from ui_messages.messages.sms import UPDATE_USER_PHONE_NUMBER_SMS
 from utility.format_verification import username_verification, email_verification, phone_verification, phone_reformat
+from utility.notifications import update_notification_user_username
 from utility.send_email import send_email, email_confirmation_sending
 from utility.twilio_api import send_sms
 from utility.user_utility import check_email_uniqueness
@@ -183,6 +184,7 @@ class AdminUsersHandler(AdminBaseHandler):
                                            title=UPDATE_USER_INFO_USERNAME_ALREADY_USED_TITLE)
                 user.username = username
                 need_commit = True
+                update_notification_user_username(self, user)
 
             # email
             if user.email != email and email:

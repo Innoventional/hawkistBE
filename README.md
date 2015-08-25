@@ -1935,7 +1935,7 @@ Response Failure:
     
     
     
-**Get user notification about another user item favorited**
+**Get user notification about another user item favourited**
 
     Url: 'user/notify_about_favorite'
     Method: 'GET'
@@ -1949,7 +1949,7 @@ Response :
     }
 
 
-**Update user holiday mode**
+**Update user notification about another user item favourited**
 
     Url: 'user/notify_about_favorite'
     Method: 'PUT'

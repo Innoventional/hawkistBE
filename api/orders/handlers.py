@@ -3,7 +3,7 @@ from api.addresses.models import Address
 from api.items.models import Listing, ListingStatus
 from api.orders.models import UserOrders, OrderStatus, IssueStatus, SortingStatus, OrderPaymentMethod, \
     OrderDeliveryMethod
-from api.payments.models import StripeCharges, ChargesStatus
+from api.payments.models import StripeCharges
 from base import ApiHandler, die, logger
 from environment import env
 from helpers import route
@@ -171,7 +171,6 @@ class OrdersHandler(ApiHandler):
                 new_charge.created_at = datetime.datetime.utcnow()
                 new_charge.updated_at = datetime.datetime.utcnow()
                 new_charge.date_finish = new_charge.created_at + datetime.timedelta(days=7)
-                new_charge.system_status = ChargesStatus.Active
                 new_charge.charge_id = stripe_charge['id']
                 new_charge.transaction_id = stripe_charge['balance_transaction']
                 new_charge.paid = stripe_charge['paid']
@@ -285,7 +284,6 @@ class OrdersHandler(ApiHandler):
         if str(new_status) == str(OrderStatus.Received):
             order.order_status = OrderStatus.Received
             order.listing.status = ListingStatus.Sold
-            order.charge.system_status = ChargesStatus.Finished
 
             # get money from pending balance to available
             order.listing.user.app_wallet_pending -= order.payment_sum_without_application_fee
@@ -302,7 +300,6 @@ class OrdersHandler(ApiHandler):
                 return self.make_error(UPDATE_ODER_INVALID_ISSUE_REASON)
             # mark this order with has issue flag
             order.order_status = OrderStatus.HasAnIssue
-            order.charge.system_status = ChargesStatus.Frozen
             order.issue_reason = issue_reason
             order.issue_status = IssueStatus.New
             notification_leave_feedback(self, order)

@@ -13,7 +13,7 @@ from ui_messages.errors.orders_errors import UPDATE_ORDER_NO_ID, UPDATE_ORDER_NO
 from ui_messages.errors.payment_errors import CREATE_CHARGE_NO_CARD_ID, CREATE_CHARGE_NO_LISTING_ID, \
     CREATE_CHARGE_BUY_YOUR_OWN_LISTING, CREATE_CHARGE_BUY_RESERVED_LISTING, CREATE_CHARGE_BUY_SOLD_LISTING, \
     CREATE_CHARGE_NO_STRIPE_ACCOUNT, UPDATE_CARD_INVALID_ID, CREATE_CHARGE_NOT_ENOUGH_MONEY, \
-    ORDER_CREATE_LISTING_NOT_SUPPORT_COLLECTION, ORDER_CREATE_INVALID_ADDRESS_ID
+    ORDER_CREATE_LISTING_NOT_SUPPORT_COLLECTION, ORDER_CREATE_INVALID_ADDRESS_ID, CREATE_CHARGE_NO_ADDRESS
 from utility.notifications import notification_item_sold, notification_funds_released, notification_leave_feedback, \
     notification_favourite_item_sold
 from utility.send_email import purchase_confirmation_sending_buyer, purchase_confirmation_sending_seller, \
@@ -94,11 +94,11 @@ class OrdersHandler(ApiHandler):
             if 'collection' in self.request_object:
                 collection = self.request_object['collection']
 
-        if not stripe_card_id and not pay_with_wallet:
+        if not stripe_card_id and not pay_with_wallet or stripe_card_id and pay_with_wallet:
             return self.make_error(CREATE_CHARGE_NO_CARD_ID)
 
-        if not address_id and not collection:
-            return self.make_error(CREATE_CHARGE_NO_CARD_ID)
+        if not address_id and not collection or address_id and collection:
+            return self.make_error(CREATE_CHARGE_NO_ADDRESS)
 
         if not listing_id:
             return self.make_error(CREATE_CHARGE_NO_LISTING_ID)

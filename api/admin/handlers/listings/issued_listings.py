@@ -3,10 +3,10 @@ import datetime
 from sqlalchemy import or_
 from api.admin.handlers.login import AdminBaseHandler
 from api.items.models import Listing, ListingStatus
-from api.orders.models import UserOrders, OrderStatus, IssueStatus, IssueReason
+from api.orders.models import UserOrders, OrderStatus, IssueStatus, IssueReason, SortingStatus
 from base import HttpRedirect
 from helpers import route
-from utility.notifications import notification_funds_released
+from utility.notifications import notification_funds_released, notification_leave_feedback
 from utility.send_email import listing_with_issue_investigation_opened_buyer, transaction_canceled, refunds_issues_buyer, \
     investigation_resolved
 
@@ -85,6 +85,10 @@ class AdminIssuedListingsHandler(AdminBaseHandler):
             #
             investigation_resolved(order.listing.user.email, order.listing.user.username, order.listing.title)
             investigation_resolved(order.user.email, order.user.username, order.listing.title)
+
+            order.available_feedback = True
+            order.sorting_status = SortingStatus.WaitForFeedback
+            notification_leave_feedback(self, order)
         elif str(action) == str(IssueStatus.Resolved):
             order.issue_status = IssueStatus.Resolved
             # TODO money to seller
@@ -96,6 +100,10 @@ class AdminIssuedListingsHandler(AdminBaseHandler):
 
             investigation_resolved(order.listing.user.email, order.listing.user.username, order.listing.title)
             investigation_resolved(order.user.email, order.user.username, order.listing.title)
+
+            order.available_feedback = True
+            order.sorting_status = SortingStatus.WaitForFeedback
+            notification_leave_feedback(self, order)
         order.updated_at = datetime.datetime.utcnow()
         self.session.commit()
         return self.success()

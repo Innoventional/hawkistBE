@@ -289,6 +289,9 @@ class OrdersHandler(ApiHandler):
             order.listing.user.app_wallet_pending -= order.payment_sum_without_application_fee
             order.listing.user.app_wallet += order.payment_sum_without_application_fee
 
+            order.available_feedback = True
+            order.sorting_status = SortingStatus.WaitForFeedback
+
             notification_funds_released(self.session, self.user, order.listing)
             notification_leave_feedback(self, order)
 
@@ -308,8 +311,6 @@ class OrdersHandler(ApiHandler):
         else:
             return self.make_error(UPDATE_ORDER_INVALID_STATUS)
 
-        order.available_feedback = True
-        order.sorting_status = SortingStatus.WaitForFeedback
         order.updated_at = datetime.datetime.utcnow()
         self.session.commit()
         return self.success()

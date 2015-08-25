@@ -4,6 +4,8 @@ from sqlalchemy.orm import relationship, backref
 from api.comments.models import comment_mentioned_users
 from api.followers.models import user_followers
 from api.items.models import ListingStatus
+from api.payments.models import StripeCustomer
+from api.tags.models import Platform
 from api.users.blocked_users.models import user_blacklist
 from api.users.reported_users.models import user_reportlist
 from orm import Base
@@ -102,8 +104,8 @@ class User(Base):
                                     backref=backref('mentions', order_by=id, cascade="all,delete", lazy='dynamic'))
 
     stripe_customer_id = Column(Integer, ForeignKey('stripe_customers.id'), nullable=True)
-    stripe_customer = relationship('StripeCustomer', backref=backref('user_stripe_account', order_by=id,
-                                                                     cascade="all,delete", lazy='dynamic'),
+    stripe_customer = relationship(StripeCustomer, backref=backref('user_stripe_account', order_by=id,
+                                                                   cascade="all,delete", lazy='dynamic'),
                                    foreign_keys=stripe_customer_id)
 
     app_wallet = Column(Numeric, nullable=False, default=0)
@@ -257,8 +259,8 @@ class UserMetaTag(Base):
     # selected metatags for user feeds can be 3 types: platform, category and subcategory
     metatag_type = Column(SmallInteger, nullable=False)
     platform_id = Column(Integer, ForeignKey('platforms.id'), nullable=True, index=True)
-    platform = relationship('Platform', backref=backref('user_interested_platforms', order_by=id, cascade="all,delete",
-                                                        lazy='dynamic'), foreign_keys=platform_id)
+    platform = relationship(Platform, backref=backref('user_interested_platforms', order_by=id, cascade="all,delete",
+                                                      lazy='dynamic'), foreign_keys=platform_id)
 
     category_id = Column(Integer, ForeignKey('categories.id'), nullable=True, index=True)
     category = relationship('Category', backref=backref('user_interested_categories', order_by=id, cascade="all,delete",

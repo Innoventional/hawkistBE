@@ -1,6 +1,7 @@
 import datetime
 from sqlalchemy import Column, Integer, DateTime, String, ForeignKey, Table
 from sqlalchemy.orm import backref, relationship
+from api.offers.models import Offer
 from orm import Base
 
 __author__ = 'ne_luboff'
@@ -28,8 +29,8 @@ class Comment(Base):
                                                       lazy='dynamic'), foreign_keys=listing_id)
 
     offer_id = Column(Integer, ForeignKey('offers.id'), nullable=True, index=True)
-    offer = relationship('Offer', backref=backref('offer_comment', order_by=id, cascade="all,delete",
-                                                  lazy='dynamic'), foreign_keys=offer_id)
+    offer = relationship(Offer, backref=backref('offer_comment', order_by=id, cascade="all,delete",
+                                                lazy='dynamic'), foreign_keys=offer_id)
 
     user_mentions = relationship('User', secondary=comment_mentioned_users,
                                  backref=backref('user_mentions', order_by=id, cascade="all,delete", lazy='dynamic'))

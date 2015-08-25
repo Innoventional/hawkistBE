@@ -84,14 +84,14 @@ class UserNotificantion(Base):
             },
             'listing': {
                 'id': self.listing_id,
-                'selling_price': "%.02f" % float(self.listing_selling_price),
+                'selling_price': "%.02f" % float(self.listing_selling_price) if self.listing_selling_price else None,
                 'shipping_price': self.get_shipping_price_value(),
                 'photo': self.listing_photo,
                 'title': self.listing_title
             },
             'comment': {
                 'text': self.comment_text,
-                'offered_price': "%.02f" % float(self.comment_offer_price)
+                'offered_price': "%.02f" % float(self.comment_offer_price) if self.comment_offer_price else None
             },
             'order': {
                 'id': self.order_id,

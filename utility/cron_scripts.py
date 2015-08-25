@@ -19,8 +19,7 @@ def timer_event():
         First send all messages.
         Function for sending 4 days notification to email and user notification screen if order is active
         """
-        logger.debug('Start cron script')
-        logger.debug('%s' % datetime.datetime.utcnow())
+        logger.debug('Cron script started: %s' % datetime.datetime.utcnow())
         orders = session.query(UserOrders).filter(UserOrders.order_status == OrderStatus.Active)
         for order in orders:
             # check time difference
@@ -58,3 +57,4 @@ def timer_event():
         for user in users:
             user.average_response_time = calculate_average_response_time(user)
         session.commit()
+        logger.debug('Cron script finished: %s' % datetime.datetime.utcnow())

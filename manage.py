@@ -111,6 +111,9 @@ class ApiManager(object):
         print 'API Key: ', api_key
         print 'API Pass:', api_pass
 
+    def do_timer_event(self):
+        timer_event()
+
 
 if __name__ == '__main__':
     ApiManager(sys.argv)

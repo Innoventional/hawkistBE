@@ -35,7 +35,7 @@ ADD_ADDRESS_GET_LATEST_NO_CARD_TITLE = 'No Billing Address'
 
 LISTING_INVALID_MINIMUM_PRICE_TITLE = 'Minimum Price Not Met'
 
-INVALID_NUMBER_FORMAT_TITLE = 'Invalid Number Format'
+INVALID_NUMBER_FORMAT_TITLE = 'Account Number Invalid'
 
-INVALID_SORT_CODE_FORMAT_TITLE = 'Invalid Number Format'
+INVALID_SORT_CODE_FORMAT_TITLE = 'Sort Code Invalid'
 

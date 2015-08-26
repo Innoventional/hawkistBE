@@ -25,6 +25,7 @@ WRONG_SUBCATEGORY_CONDITION_RELATION = "Subcategory %s (%s > %s) has no Conditio
 
 # validate create new listing data
 CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1 = u'Retail price must be greater than £1'
+CREATE_LISTING_SELLING_PRICE_LESS_THAN_1 = u'Selling price must be greater than £1'
 CREATE_LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE = "Retail price must be greater than selling price"
 CREATE_LISTING_TOO_MANY_PHOTOS = 'You can add only 4 photos'
 

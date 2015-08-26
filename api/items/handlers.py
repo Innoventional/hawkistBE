@@ -17,7 +17,7 @@ from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID,
     CREATE_LISTING_USER_DONT_CONFIRM_EMAIL, CREATE_LISTING_USER_HAVENT_FB, DELETE_LISTING_NO_ID, \
     DELETE_LISTING_ANOTHER_USER, LIKE_LISTING_NO_ID, LIKE_YOUR_OWN_LISTING, UPDATE_LISTING_UNDEFINED_LISTING_ID, \
     UPDATE_LISTING_LISTING_SOLD, UPDATE_LISTING_EMPTY_FIELDS, UPDATE_LISTING_SELLING_PRICE_MUST_BE_LESS_THAN_RETAIL, \
-    DELETE_RESERVED_LISTING, DELETE_SOLD_LISTING
+    DELETE_RESERVED_LISTING, DELETE_SOLD_LISTING, CREATE_LISTING_SELLING_PRICE_LESS_THAN_1
 from ui_messages.errors.users_errors.blocked_users_error import GET_BLOCKED_USER
 from ui_messages.errors.users_errors.suspended_users_errors import GET_SUSPENDED_USER
 from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID
@@ -596,10 +596,14 @@ class ListingHandler(ApiHandler):
             selling_price = float(selling_price)
 
             if float(listing_to_update.retail_price) != float(retail_price):
+                if retail_price < 1:
+                    return self.make_error(CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1)
                 listing_to_update.retail_price = retail_price
                 need_commit = True
 
             if float(listing_to_update.selling_price) != float(selling_price):
+                if selling_price < 1:
+                    return self.make_error(CREATE_LISTING_SELLING_PRICE_LESS_THAN_1)
                 if float(selling_price) > float(listing_to_update.retail_price) \
                         or float(selling_price) == float(listing_to_update.retail_price):
                     return self.make_error(UPDATE_LISTING_SELLING_PRICE_MUST_BE_LESS_THAN_RETAIL
@@ -793,6 +797,9 @@ class ListingHandler(ApiHandler):
 
             if retail_price < 1:
                 return self.make_error(CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1)
+
+            if selling_price < 1:
+                return self.make_error(CREATE_LISTING_SELLING_PRICE_LESS_THAN_1)
 
             if selling_price > retail_price or selling_price == retail_price:
                     return self.make_error(CREATE_LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE)

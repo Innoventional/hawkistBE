@@ -24,8 +24,10 @@ WRONG_SUBCATEGORY_COLOUR_RELATION = "Subcategory %s (%s > %s) has no Colour %s (
 WRONG_SUBCATEGORY_CONDITION_RELATION = "Subcategory %s (%s > %s) has no Condition %s (%s > %s > %s). Try again"
 
 # validate create new listing data
-CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1 = u'Retail price must be greater than £1'
-CREATE_LISTING_SELLING_PRICE_LESS_THAN_1 = u'Selling price must be greater than £1'
+CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1 = u'The minimum Retail Price for an item is £1.00. ' \
+                                          u'Please update your Retail Price.'
+CREATE_LISTING_SELLING_PRICE_LESS_THAN_1 = u'The minimum Selling Price for an item is £1.00. Please update your ' \
+                                           u'Selling Price.'
 CREATE_LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE = "Retail price must be greater than selling price"
 CREATE_LISTING_TOO_MANY_PHOTOS = 'You can add only 4 photos'
 

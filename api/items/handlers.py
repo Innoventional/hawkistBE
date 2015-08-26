@@ -22,7 +22,8 @@ from ui_messages.errors.users_errors.blocked_users_error import GET_BLOCKED_USER
 from ui_messages.errors.users_errors.suspended_users_errors import GET_SUSPENDED_USER
 from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID
 from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE, \
-    CREATE_LISTING_USER_DONT_CONFIRM_EMAIL_TITLE, CREATE_LISTING_USER_HAVENT_FB_TITLE
+    CREATE_LISTING_USER_DONT_CONFIRM_EMAIL_TITLE, CREATE_LISTING_USER_HAVENT_FB_TITLE, \
+    LISTING_INVALID_MINIMUM_PRICE_TITLE
 from ui_messages.messages.user_messages import TRY_TO_GET_SUSPENDED_USER_ITEMS
 from utility.google_api import get_city_by_code
 from utility.items import calculate_discount_value
@@ -597,13 +598,15 @@ class ListingHandler(ApiHandler):
 
             if float(listing_to_update.retail_price) != float(retail_price):
                 if retail_price < 1:
-                    return self.make_error(CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1)
+                    return self.make_error(message=CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1,
+                                           title=LISTING_INVALID_MINIMUM_PRICE_TITLE)
                 listing_to_update.retail_price = retail_price
                 need_commit = True
 
             if float(listing_to_update.selling_price) != float(selling_price):
                 if selling_price < 1:
-                    return self.make_error(CREATE_LISTING_SELLING_PRICE_LESS_THAN_1)
+                    return self.make_error(message=CREATE_LISTING_SELLING_PRICE_LESS_THAN_1,
+                                           title=LISTING_INVALID_MINIMUM_PRICE_TITLE)
                 if float(selling_price) > float(listing_to_update.retail_price) \
                         or float(selling_price) == float(listing_to_update.retail_price):
                     return self.make_error(UPDATE_LISTING_SELLING_PRICE_MUST_BE_LESS_THAN_RETAIL
@@ -796,10 +799,12 @@ class ListingHandler(ApiHandler):
             selling_price = float(selling_price)
 
             if retail_price < 1:
-                return self.make_error(CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1)
+                return self.make_error(message=CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1,
+                                       title=LISTING_INVALID_MINIMUM_PRICE_TITLE)
 
             if selling_price < 1:
-                return self.make_error(CREATE_LISTING_SELLING_PRICE_LESS_THAN_1)
+                return self.make_error(message=CREATE_LISTING_SELLING_PRICE_LESS_THAN_1,
+                                       title=LISTING_INVALID_MINIMUM_PRICE_TITLE)
 
             if selling_price > retail_price or selling_price == retail_price:
                     return self.make_error(CREATE_LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE)

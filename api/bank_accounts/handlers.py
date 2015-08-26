@@ -3,8 +3,10 @@ import datetime
 from base import ApiHandler, die
 from helpers import route
 from ui_messages.errors.my_balance_errors import BALANCE_EDIT_USER_INFO_EMPTY_FIELDS, \
-    BALANCE_EDIT_BANK_ACCOUNT_INFO_EMPTY_FIELDS, BALANCE_EDIT_BANK_ADDRESS_INFO_EMPTY_FIELDS
-from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE
+    BALANCE_EDIT_BANK_ACCOUNT_INFO_EMPTY_FIELDS, BALANCE_EDIT_BANK_ADDRESS_INFO_EMPTY_FIELDS, \
+    BALANCE_EDIT_BANK_ACCOUNT_INFO_INVALID_SORT_CODE_FORMAT, BALANCE_EDIT_BANK_ACCOUNT_INFO_INVALID_NUMBER_FORMAT
+from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE, INVALID_NUMBER_FORMAT_TITLE, \
+    INVALID_SORT_CODE_FORMAT_TITLE
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
 __author__ = 'ne_luboff'
@@ -234,6 +236,14 @@ class BankAccountHandler(ApiHandler):
             return self.make_error(message=BALANCE_EDIT_BANK_ACCOUNT_INFO_EMPTY_FIELDS % empty_fields,
                                    title=CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields_title.capitalize())
 
+        # length validation
+        if len(str(number)) != 8:
+            return self.make_error(message=BALANCE_EDIT_BANK_ACCOUNT_INFO_INVALID_NUMBER_FORMAT,
+                                   title=INVALID_NUMBER_FORMAT_TITLE)
+
+        if len(str(sort_code)) != 6:
+            return self.make_error(message=BALANCE_EDIT_BANK_ACCOUNT_INFO_INVALID_SORT_CODE_FORMAT,
+                                   title=INVALID_SORT_CODE_FORMAT_TITLE)
         need_commit = False
 
         if self.user.bank_account_first_name != holder_first_name:

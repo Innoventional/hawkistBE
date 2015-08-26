@@ -83,8 +83,8 @@ PURCHASE_ITEM_SELLER_TEXT = "%s,\n" \
 PURCHASE_ITEM_SELLER_TEXT_WITH_ADDRESS = "%s,\n" \
                                          u"Your item %s has been sold to %s for £%s. The next step is for you to " \
                                          u"arrange delivery or collection of the item. The buyer can be contacted via " \
-                                         u"email on %s.\n " \
-                                         u"His delivery address is %s." \
+                                         u"email on %s.\n" \
+                                         u"His delivery address is %s.\n" \
                                          u"Please note that you now have 7 days to arrange for delivery or collection " \
                                          u"of the item before we can release your funds. The faster %s gets the item, " \
                                          u"the faster you get the funds.\n" \

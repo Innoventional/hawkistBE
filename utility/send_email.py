@@ -10,7 +10,7 @@ from ui_messages.messages.email import CONFIRM_EMAIL_LETTER_SUBJECT, CONFIRM_EMA
     LISTING_WITH_ISSUE_INVESTIGATION_OPENED_TEXT, LISTING_RECEIVED_SELLER_TITLE, LISTING_RECEIVED_SELLER_TEXT, \
     FUNDS_RECEIVED_SELLER_TITLE, FUNDS_RECEIVED_SELLER_TEXT, TRANSACTION_CANCELED_TITLE, TRANSACTION_CANCELED_TEXT, \
     REFUND_ISSUES_BUYER_TEXT, REFUND_ISSUES_BUYER_TITLE, INVESTIGATION_RESOLVED_TITLE, INVESTIGATION_RESOLVED_TEXT, \
-    HAS_ITEM_RECEIVED_TITLE, HAS_ITEM_RECEIVED_TEXT
+    HAS_ITEM_RECEIVED_TITLE, HAS_ITEM_RECEIVED_TEXT, PURCHASE_ITEM_SELLER_TEXT_WITH_ADDRESS
 
 __author__ = 'ne_luboff'
 
@@ -80,12 +80,15 @@ def purchase_confirmation_sending_buyer(self, listing):
 
 def purchase_confirmation_sending_seller(self, listing, address):
     if address:
-        address_row = '%s, %s %s ' % (address.address_line1, address.postcode, address.city)
+        address_row = '%s, %s %s' % (address.address_line1, address.postcode, address.city)
         if address.address_line2:
-            address_row = '%s %s, %s %s ' % (address.address_line1, address.address_line2, address.postcode, address.city)
-        text = PURCHASE_ITEM_SELLER_TEXT % (listing.user.username, listing.title, self.user.username,
-                                            "%.02f" % float(listing.selling_price), self.user.email, self.user.username,
-                                            address_row)
+            # address_row = "{0} {1}, {2} {3}".format(address.address_line1, address.address_line2, address.postcode,
+            #                                  address.city)
+            address_row = '%s %s, %s %s' % (address.address_line1, address.address_line2, address.postcode,
+                                            address.city)
+        text = PURCHASE_ITEM_SELLER_TEXT_WITH_ADDRESS % (listing.user.username, listing.title, self.user.username,
+                                                         "%.02f" % float(listing.selling_price), self.user.email,
+                                                         address_row, self.user.username)
     else:
         text = PURCHASE_ITEM_SELLER_TEXT % (listing.user.username, listing.title, self.user.username,
                                             "%.02f" % float(listing.selling_price), self.user.email, self.user.username)

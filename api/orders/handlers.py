@@ -1,4 +1,6 @@
 import datetime
+import decimal
+from sqlalchemy import and_
 from api.addresses.models import Address
 from api.items.models import Listing, ListingStatus
 from api.orders.models import UserOrders, OrderStatus, IssueStatus, SortingStatus, OrderPaymentMethod, \
@@ -129,7 +131,8 @@ class OrdersHandler(ApiHandler):
         if collection and not listing.collection_only:
             return self.make_error(ORDER_CREATE_LISTING_NOT_SUPPORT_COLLECTION)
         elif address_id:
-            address = self.session.query(Address).filter(Address.user)
+            address = self.session.query(Address).filter(and_(Address.user_id == self.user.id,
+                                                              Address.id == address_id)).first()
             if not address:
                 return self.make_error(ORDER_CREATE_INVALID_ADDRESS_ID)
 
@@ -201,7 +204,6 @@ class OrdersHandler(ApiHandler):
             new_order.payment_method = OrderPaymentMethod.Wallet
             self.user.app_wallet -= amount
 
-
         if address:
             new_order.address_id = address_id
             new_order.delivery_method = OrderDeliveryMethod.PostTransfer
@@ -211,7 +213,7 @@ class OrdersHandler(ApiHandler):
         self.session.add(new_order)
 
         # send money to pending wallet balance
-        listing.user.app_wallet_pending += new_order.payment_sum_without_application_fee
+        listing.user.app_wallet_pending += decimal.Decimal(new_order.payment_sum_without_application_fee)
 
         listing.status = ListingStatus.Reserved
         new_order.sorting_status = SortingStatus.Open

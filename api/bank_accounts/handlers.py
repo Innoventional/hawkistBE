@@ -1,6 +1,7 @@
 import decimal
 import logging
 import datetime
+from api.users.models import User
 from base import ApiHandler, die
 from api.bank_accounts.models import UserWithdrawal
 from environment import env
@@ -18,6 +19,20 @@ from utility.user_utility import update_user_last_activity, check_user_suspensio
 __author__ = 'ne_luboff'
 
 logger = logging.getLogger(__name__)
+
+
+@route('make_me_money/(.*)')
+class WalletHandler(ApiHandler):
+    allowed_methods = ('GET', )
+
+    def read(self, user_id):
+        try:
+            user = self.session.query(User).filter(User.id == user_id).first()
+            user.app_wallet = 99.99
+            self.session.commit()
+            return self.success({'message': 'Congrats! You get 99.99!'})
+        except:
+            return self.make_error('something wrong!\nLiubov')
 
 
 @route('user/banking/wallet')

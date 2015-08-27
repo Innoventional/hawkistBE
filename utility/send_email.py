@@ -11,7 +11,7 @@ from ui_messages.messages.email import CONFIRM_EMAIL_LETTER_SUBJECT, CONFIRM_EMA
     FUNDS_RECEIVED_SELLER_TITLE, FUNDS_RECEIVED_SELLER_TEXT, TRANSACTION_CANCELED_TITLE, TRANSACTION_CANCELED_TEXT, \
     REFUND_ISSUES_BUYER_TEXT, REFUND_ISSUES_BUYER_TITLE, INVESTIGATION_RESOLVED_TITLE, INVESTIGATION_RESOLVED_TEXT, \
     HAS_ITEM_RECEIVED_TITLE, HAS_ITEM_RECEIVED_TEXT, PURCHASE_ITEM_SELLER_TEXT_WITH_ADDRESS, WITHDRAWAL_REQUESTED_TITLE, \
-    WITHDRAWAL_REQUESTED_TEXT
+    WITHDRAWAL_REQUESTED_TEXT, WITHDRAWAL_COMPLETED_TITLE, WITHDRAWAL_COMPLETED_TEXT
 
 __author__ = 'ne_luboff'
 
@@ -151,4 +151,10 @@ def send_warning_4_6_days_email(email, username, title):
 def user_withdrawal_requested_email(email, username, balance):
     text = WITHDRAWAL_REQUESTED_TEXT % (username, balance)
     subject = WITHDRAWAL_REQUESTED_TITLE
+    send_email(text, subject=subject, recipient=email)
+
+
+def user_withdrawal_completed_email(email, username, balance):
+    text = WITHDRAWAL_COMPLETED_TEXT % (username, balance)
+    subject = WITHDRAWAL_COMPLETED_TITLE
     send_email(text, subject=subject, recipient=email)

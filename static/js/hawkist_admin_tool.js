@@ -961,7 +961,38 @@ download_withdrawals = function(completion)
     return false;
 };
 
-function update_selected_withdrawals() {
-    console.log(this.checked);
-    console.log(this.val);
+var selected_withdrawals_ids = [];
+
+function update_selected_withdrawals(c) {
+    var current_withdrawal_id = c.value;
+    //if (current_withdrawal_id in selected_withdrawals_ids) {
+    if (selected_withdrawals_ids.indexOf(current_withdrawal_id) > -1) {
+        var index = selected_withdrawals_ids.indexOf(current_withdrawal_id);
+        selected_withdrawals_ids.splice(index, 1);
+    } else {
+        selected_withdrawals_ids.push(current_withdrawal_id);
+    }
 }
+
+$('.btn_complete_withdrawals').click(function(){
+    if (selected_withdrawals_ids.length == 0) {
+        alert('First select withdrawals')
+    } else {
+        $.ajax({
+            url: '/api/admin/withdrawals/new',
+            type: 'PUT',
+            data: {
+                'ids': selected_withdrawals_ids.toString()
+            },
+            success: function(data) {
+                var status = data['status'];
+                var message = data['message'];
+                if (status == 0 ) {
+                    location.replace("completed");
+                } else {
+                    alert(message);
+                }
+            }
+        });
+    }
+});

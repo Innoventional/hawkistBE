@@ -39,7 +39,7 @@
                             <td>{{ "%.02f" % float(w.amount) }}</td>
                             <td>{{ w.user_id }}</td>
                             <td>
-                                <input type="checkbox" onclick="update_selected_withdrawals(this);" data-id="{{ w.id }}">
+                                <input type="checkbox" onclick="update_selected_withdrawals(this);" value="{{ w.id }}">
                             </td>
                          </tr>
                     {% end %}

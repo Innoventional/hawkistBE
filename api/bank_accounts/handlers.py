@@ -433,6 +433,6 @@ class WithdrawalHandler(ApiHandler):
 
         self.session.commit()
 
-        user_withdrawal_requested_email(self.user.email, self.user.username, new_withdrawal.amount_total)
+        user_withdrawal_requested_email(self.user.email, self.user.username, "%.02f" % float(new_withdrawal.amount_total))
 
         return self.success()

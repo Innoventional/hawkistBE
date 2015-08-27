@@ -1,10 +1,12 @@
 import logging
 import datetime
+from sqlalchemy import and_
 from api.admin.handlers.login import AdminBaseHandler
 from api.bank_accounts.models import UserWithdrawal, WithdrawalStatus
 from base import HttpRedirect
 from helpers import route
 from utility.amazon import upload_file_withdrawals
+from utility.send_email import user_withdrawal_completed_email
 
 __author__ = 'ne_luboff'
 
@@ -57,6 +59,7 @@ class AdminWithdrawalsHandler(AdminBaseHandler):
                                      "%.02f" % float(w.amount), w.user_id)
             # marked withdrawals as in process
             w.status = WithdrawalStatus.InProcess
+            w.updated_at = datetime.datetime.utcnow()
             data += current_row
 
         # for beauty
@@ -66,3 +69,23 @@ class AdminWithdrawalsHandler(AdminBaseHandler):
         file_url = upload_file_withdrawals('{0}'.format(filename), data, content_type='scv')
         self.session.commit()
         return self.success({'message': file_url})
+
+    def update(self, withdrawal_status):
+        if not self.user:
+            return HttpRedirect('/api/admin/login')
+
+        logger.debug(self.user)
+
+        ids = self.get_arg('ids')
+        id_list = ids.split(',')
+        withdrawals = self.session.query(UserWithdrawal).filter(and_(UserWithdrawal.id.in_(id_list),
+                                                                     UserWithdrawal.status == WithdrawalStatus.InProcess))
+
+        for w in withdrawals:
+            w.status = WithdrawalStatus.Completed
+            w.updated_at = datetime.datetime.utcnow()
+
+            # send notification to user
+            user_withdrawal_completed_email(w.user_email, w.user_username, "%.02f" % float(w.amount))
+        self.session.commit()
+        return self.success()

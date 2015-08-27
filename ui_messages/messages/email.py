@@ -196,4 +196,14 @@ WITHDRAWAL_REQUESTED_TEXT = u'%s,\n' \
                             u'Thanks for your business!\n' \
                             u'Hawkist'
 
+WITHDRAWAL_COMPLETED_TITLE = 'Withdrawal Request Processed'
+WITHDRAWAL_COMPLETED_TEXT = u'%s,\n' \
+                            u'We have now processed your withdrawal request for £(%s). The money is available in your ' \
+                            u'bank account.\n' \
+                            u'For more information about withdrawing your account balance, please visit our FAQs ' \
+                            u'on https://hawkist.zendesk.com.\n' \
+                            u'If you have any questions, you can contact Hawkist support on info@hawkist.com.\n' \
+                            u'Thanks for your business!\n' \
+                            u'Hawkist'
+
 

@@ -42,7 +42,7 @@ class WalletHandler(ApiHandler):
             self.user.app_wallet = 0
             need_commit = True
 
-        if not self.user.app_wallet:
+        if not self.user.app_wallet_pending:
             self.user.app_wallet_pending = 0
             need_commit = True
 

@@ -960,3 +960,8 @@ download_withdrawals = function(completion)
     });
     return false;
 };
+
+function update_selected_withdrawals() {
+    console.log(this.checked);
+    console.log(this.val);
+}

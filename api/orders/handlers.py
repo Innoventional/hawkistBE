@@ -17,7 +17,7 @@ from ui_messages.errors.payment_errors import CREATE_CHARGE_NO_CARD_ID, CREATE_C
     CREATE_CHARGE_NO_STRIPE_ACCOUNT, UPDATE_CARD_INVALID_ID, CREATE_CHARGE_NOT_ENOUGH_MONEY, \
     ORDER_CREATE_LISTING_NOT_SUPPORT_COLLECTION, ORDER_CREATE_INVALID_ADDRESS_ID, CREATE_CHARGE_NO_ADDRESS
 from utility.notifications import notification_item_sold, notification_funds_released, notification_leave_feedback, \
-    notification_favourite_item_sold
+    notification_favourite_item_sold, notification_item_received
 from utility.send_email import purchase_confirmation_sending_buyer, purchase_confirmation_sending_seller, \
     listing_received_seller, listing_with_issue_seller
 from utility.stripe_api import stripe_retrieve_customer, stripe_create_charges
@@ -295,6 +295,7 @@ class OrdersHandler(ApiHandler):
             order.available_feedback = True
             order.sorting_status = SortingStatus.WaitForFeedback
 
+            notification_item_received(self.session, order)
             notification_funds_released(self.session, self.user, order.listing)
             notification_leave_feedback(self, order)
 

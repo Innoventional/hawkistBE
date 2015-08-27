@@ -13,7 +13,39 @@
     {% if withdrawals.count() == 0 %}
         No withdrawals in progress
     {% else %}
-        {% include 'admin_withdrawal_table.html' %}
+        <a class="btn btn_complete_withdrawals green-color" href="#" title="Complete selected withdrawals">
+            <i class="glyphicon glyphicon-ok"> Complete selected withdrawals</i>
+        </a>
+        <div class="row-offcanvas">
+            <table class="table table-hover">
+                <thead>
+                    <th>Requested time</th>
+                    <th>Account Holder</th>
+                    <th>Account Number</th>
+                    <th>Sort Code</th>
+                    <th>Email address</th>
+                    <th>Balance to Withdraw</th>
+                    <th>Reference</th>
+                    <th>Action</th>
+                </thead>
+                <tbody>
+                    {% for w in withdrawals %}
+                        <tr>
+                            <td>{{ (w.created_at + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M")}}</td>
+                            <td>{{ w.account_holder }}</td>
+                            <td>{{ w.account_number }}</td>
+                            <td>{{ w.account_sort_code }}</td>
+                            <td>{{ w.user_email }}</td>
+                            <td>{{ "%.02f" % float(w.amount) }}</td>
+                            <td>{{ w.user_id }}</td>
+                            <td>
+                                <input type="checkbox" onclick="update_selected_withdrawals(this);" data-id="{{ w.id }}">
+                            </td>
+                         </tr>
+                    {% end %}
+                </tbody>
+            </table>
+        </div>
     {% end %}
 
 {% end %}

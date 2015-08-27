@@ -38,17 +38,17 @@ def notification_item_sold(self, listing):
     self.session.commit()
 
 
-def notification_item_received(session, owner_id, listing):
+def notification_item_received(session, order):
     notification = UserNotificantion()
     notification.created_at = datetime.datetime.utcnow()
-    notification.owner_id = owner_id
+    notification.owner_id = order.listing.user.id
     notification.type = NotificationType.ItemReceived
-    notification.user_id = listing.user.id
-    notification.user_avatar = listing.user.avatar
-    notification.user_username = listing.user.username
-    notification.listing_id = listing.id
-    notification.listing_title = listing.title
-    notification.listing_photo = listing.listing_photos[0].image_url
+    notification.user_id = order.user.id
+    notification.user_avatar = order.user.avatar
+    notification.user_username = order.user.username
+    notification.listing_id = order.listing.id
+    notification.listing_title = order.listing.title
+    notification.listing_photo = order.listing.listing_photos[0].image_url
     notification.priority = NotificationPriority.High
     session.add(notification)
     session.commit()

@@ -28,7 +28,7 @@ def timer_event():
                 # send 4 days warning letter
                 send_warning_4_6_days_email(order.user.email, order.user.username, order.listing.title)
                 # add notifications
-                notification_item_received(session, order.user_id, order.listing)
+                notification_item_received(session, order)
             elif time_delta.days >= 7:
                 # first we must transfer money from pending balance to available
                 order.listing.user.app_wallet_pending -= order.payment_sum_without_application_fee

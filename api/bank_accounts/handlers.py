@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 @route('make_me_money/(.*)')
-class WalletHandler(ApiHandler):
+class MoneyHandler(ApiHandler):
     allowed_methods = ('GET', )
 
     def read(self, user_id):

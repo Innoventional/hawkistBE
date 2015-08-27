@@ -399,10 +399,10 @@ class WithdrawalHandler(ApiHandler):
         transfer_amount = decimal.Decimal(transfer_amount_total) - decimal.Decimal(env['stripe_hawkist_fee_withdrawal'])
 
         # create stripe transfer
-        stripe_response = stripe_create_transfer(amount=transfer_amount_total * 100, user_id=self.user.id)
-        logger.debug('STRIPE_TRANSFER_RESPONSE')
-        logger.debug(stripe_response)
-        stripe_error, stripe_data = stripe_response['error'], stripe_response['data']
+        # stripe_response = stripe_create_transfer(amount=transfer_amount_total * 100, user_id=self.user.id)
+        # logger.debug('STRIPE_TRANSFER_RESPONSE')
+        # logger.debug(stripe_response)
+        # stripe_error, stripe_data = stripe_response['error'], stripe_response['data']
         # if stripe_error:
         #     return self.make_error(stripe_error)
 

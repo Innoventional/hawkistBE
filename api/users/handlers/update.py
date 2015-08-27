@@ -293,7 +293,7 @@ class UserMetaTagsHandler(ApiHandler):
         # first we must get users metatags
         existing_user_tags_id = [metatag.platform_id for metatag in self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
                                                                                                            UserMetaTag.metatag_type == UserMetaTagType.Platform))]
-        tags_to_be_added = self.session.query(Platform).filter(~Platform.id.in_(existing_user_tags_id)).limit(12)
+        tags_to_be_added = self.session.query(Platform).filter(~Platform.id.in_(existing_user_tags_id)).order_by(Platform.id)
 
         return self.success(
             {

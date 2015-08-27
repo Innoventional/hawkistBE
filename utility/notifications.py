@@ -237,7 +237,6 @@ def update_notification_user_username(self, user):
             n.user_username = user.username
             if n.user_avatar != user.avatar:
                 n.user_avatar = user.avatar
-        # self.session.commit()
 
 
 def update_notification_user_avatar(self, user):
@@ -245,7 +244,6 @@ def update_notification_user_avatar(self, user):
     if notifications_with_this_user:
         for n in notifications_with_this_user:
             n.user_avatar = user.avatar
-        # self.session.commit()
 
 
 def update_notification_listing_title(self, listing):
@@ -253,7 +251,6 @@ def update_notification_listing_title(self, listing):
     if notifications_with_this_listing:
         for l in notifications_with_this_listing:
             l.listing_title = listing.title
-        # self.session.commit()
 
 
 def update_notification_listing_photo(self, listing):
@@ -261,4 +258,3 @@ def update_notification_listing_photo(self, listing):
     if notifications_with_this_listing:
         for l in notifications_with_this_listing:
             l.listing_photo = listing.listing_photos[0].image_url
-        # self.session.commit()

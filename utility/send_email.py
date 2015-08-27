@@ -10,7 +10,8 @@ from ui_messages.messages.email import CONFIRM_EMAIL_LETTER_SUBJECT, CONFIRM_EMA
     LISTING_WITH_ISSUE_INVESTIGATION_OPENED_TEXT, LISTING_RECEIVED_SELLER_TITLE, LISTING_RECEIVED_SELLER_TEXT, \
     FUNDS_RECEIVED_SELLER_TITLE, FUNDS_RECEIVED_SELLER_TEXT, TRANSACTION_CANCELED_TITLE, TRANSACTION_CANCELED_TEXT, \
     REFUND_ISSUES_BUYER_TEXT, REFUND_ISSUES_BUYER_TITLE, INVESTIGATION_RESOLVED_TITLE, INVESTIGATION_RESOLVED_TEXT, \
-    HAS_ITEM_RECEIVED_TITLE, HAS_ITEM_RECEIVED_TEXT, PURCHASE_ITEM_SELLER_TEXT_WITH_ADDRESS
+    HAS_ITEM_RECEIVED_TITLE, HAS_ITEM_RECEIVED_TEXT, PURCHASE_ITEM_SELLER_TEXT_WITH_ADDRESS, WITHDRAWAL_REQUESTED_TITLE, \
+    WITHDRAWAL_REQUESTED_TEXT
 
 __author__ = 'ne_luboff'
 
@@ -144,4 +145,10 @@ def investigation_resolved(email, username, title):
 def send_warning_4_6_days_email(email, username, title):
     text = HAS_ITEM_RECEIVED_TEXT % username
     subject = HAS_ITEM_RECEIVED_TITLE % title
+    send_email(text, subject=subject, recipient=email)
+
+
+def user_withdrawal_requested_email(email, username, balance):
+    text = WITHDRAWAL_REQUESTED_TEXT % (username, balance)
+    subject = WITHDRAWAL_REQUESTED_TITLE
     send_email(text, subject=subject, recipient=email)

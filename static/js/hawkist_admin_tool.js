@@ -931,9 +931,15 @@ $(".clickable-row").click(function() {
 $('.btn_download_new_withdrawals').click(function(){
     if (confirm('Do you really want to download all new withdrawals?'))
     {
-        download_withdrawals(function(status, message){
-            if (status != 0)
+        download_withdrawals(function(status, message) {
+            if (status == 0)
             {
+                var link = document.createElement("a");
+                link.download = 'hawkist_withdrawal';
+                link.href = message;
+                link.click();
+                //location.reload();
+            } else {
                 alert(message);
             }
         });

@@ -1886,6 +1886,28 @@ Response Failure:
         'status': 1,
         'message': '',          — Error message text
         'title': ''          — Error message title 
+    }
+        
+
+**Requested withdrawal**
+
+
+    Url: 'user/banking/withdrawal'
+    Method: 'PUT'
+
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
     } 
      
      

@@ -5,6 +5,7 @@ from api.admin.handlers.login import AdminBaseHandler
 from api.bank_accounts.models import UserWithdrawal, WithdrawalStatus
 from base import HttpRedirect
 from helpers import route
+from utility.amazon import upload_file_withdrawals
 
 __author__ = 'ne_luboff'
 
@@ -40,12 +41,29 @@ class AdminWithdrawalsHandler(AdminBaseHandler):
         if not self.user:
             return HttpRedirect('/api/admin/login')
 
-        # write into csv
-        with open('test.csv', 'w') as fp:
-            a = csv.writer(fp, delimiter=',')
-            data = [['Me', 'You'],
-                    ['293', '219'],
-                    ['54', '13']]
-            a.writerows(data)
-
         logger.debug(self.user)
+
+        # get all new withdrawals
+        withdrawals = self.session.query(UserWithdrawal).filter(UserWithdrawal.status == WithdrawalStatus.New).order_by(UserWithdrawal.id)
+        if not withdrawals:
+            return self.make_error('No withdrawals to download')
+        # write into csv
+        filename = 'Hawkist_withdrawals_{0}'.format((datetime.datetime.utcnow() + datetime.timedelta(hours=1)).strftime("%Y-%m-%d_%H:%M"))
+        data = ''
+        for w in withdrawals:
+            current_row = 'Withdrawal id: {0}, Requested time: {1}, Account Holder: {2}, Account Number: {3}, ' \
+                          'Sort Code: {4}, Email address: {5}, Balance to Withdraw: {6}, Reference: {7};\n'.\
+                              format(w.id, (w.created_at + datetime.timedelta(hours=1)).strftime("%Y-%m-%d %H:%M"),
+                                     w.account_holder, w.account_number, w.account_sort_code, w.user_email,
+                                     "%.02f" % float(w.amount), w.user_id)
+            # marked withdrawals as in process
+            w.status = WithdrawalStatus.InProcess
+            data += current_row
+
+        # for beauty
+        data = data[:-2] + '.'
+
+        # load this file to amazon
+        file_url = upload_file_withdrawals('{0}'.format(filename), data, content_type='scv')
+        self.session.commit()
+        return self.success({'message': file_url})

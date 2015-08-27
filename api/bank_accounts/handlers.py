@@ -11,6 +11,7 @@ from ui_messages.errors.my_balance_errors import BALANCE_EDIT_USER_INFO_EMPTY_FI
     BALANCE_WITHDRAWAL_NOT_ENOUGH_MONEY
 from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE, INVALID_NUMBER_FORMAT_TITLE, \
     INVALID_SORT_CODE_FORMAT_TITLE
+from utility.send_email import user_withdrawal_requested_email
 from utility.stripe_api import stripe_create_transfer
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
@@ -373,9 +374,9 @@ class BankAddressHandler(ApiHandler):
 
 @route('user/banking/withdrawal')
 class WithdrawalHandler(ApiHandler):
-    allowed_methods = ('GET', )
+    allowed_methods = ('PUT', )
 
-    def read(self):
+    def update(self):
         if self.user is None:
             die(401)
 
@@ -431,5 +432,7 @@ class WithdrawalHandler(ApiHandler):
         self.user.app_wallet = 0
 
         self.session.commit()
+
+        user_withdrawal_requested_email(self.user.email, self.user.username, new_withdrawal.amount_total)
 
         return self.success()

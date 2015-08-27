@@ -9,6 +9,7 @@ from boto.s3.key import Key
 
 # hawkist live aws credentials
 AWS_S3_BUCKET = 'hawkist-avatar'
+AWS_S3_BUCKET_WITHDRAWALS = 'hawkist-withdrawals'
 AWS_ACCESS_KEY_ID = 'AKIAJZDNOKN3IAAMLYJQ'
 AWS_SECRET_ACCESS_KEY = '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'
 
@@ -60,4 +61,24 @@ def upload_file(filename, data, content_type='image/jpeg'):
         return k.generate_url(expires, force_http=True)
     except Exception as e:
         boto_logger.error('Image pushing to Amazon s3 failed, error: %s' % str(e))
+        return ''
+
+
+def upload_file_withdrawals(filename, data, content_type='csv'):
+    try:
+        s3 = boto.connect_s3(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+        bucket = s3.get_bucket(AWS_S3_BUCKET_WITHDRAWALS)
+        k = Key(bucket)
+
+        k.key = '{0}.csv'.format(filename)
+
+        if content_type:
+            k.content_type = content_type
+
+        k.set_contents_from_string(data, policy='public-read')
+        expires = 60 * 60 * 24 * 360 * 10
+
+        return k.generate_url(expires, force_http=True)
+    except Exception as e:
+        boto_logger.error('File pushing to Amazon s3 failed, error: %s' % str(e))
         return ''

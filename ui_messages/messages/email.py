@@ -186,4 +186,14 @@ HAS_ITEM_RECEIVED_TEXT = '%s,\n' \
                          'Thanks for your business!\n' \
                          'Hawkist'
 
+WITHDRAWAL_REQUESTED_TITLE = 'Withdrawal Request Received'
+WITHDRAWAL_REQUESTED_TEXT = u'%s,\n' \
+                            u'We have received your request to withdraw £%s from your Hawkist account. We will contact ' \
+                            u'you once the money has been transferred to your bank account.\n' \
+                            u'For more information about withdrawing your account balance, please visit our FAQs on ' \
+                            u'https://hawkist.zendesk.com.\n' \
+                            u'If you have any questions, you can contact Hawkist support on info@hawkist.com.\n' \
+                            u'Thanks for your business!\n' \
+                            u'Hawkist'
+
 

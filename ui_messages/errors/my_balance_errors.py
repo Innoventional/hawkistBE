@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 __author__ = 'ne_luboff'
 
 BALANCE_EDIT_USER_INFO_EMPTY_FIELDS = 'You must input the %s in order to update your details.'
@@ -11,3 +12,5 @@ BALANCE_EDIT_BANK_ACCOUNT_INFO_INVALID_NUMBER_FORMAT = 'Please check the Account
 
 BALANCE_EDIT_BANK_ACCOUNT_INFO_INVALID_SORT_CODE_FORMAT = 'Please check the Sort Code to ensure it is correctly ' \
                                                           'formatted.'
+
+BALANCE_WITHDRAWAL_NOT_ENOUGH_MONEY = u'£15 minimum to withdraw'

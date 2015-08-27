@@ -1,0 +1,19 @@
+{% extends '../base.html' %}
+
+{% block title %}Completed Withdrawal{% end %}
+
+{% block content %}
+    <div class="tag_navigation_div">
+        <button class="btn btn-default" onclick="window.location = 'new'">New</button>
+        <button class="btn btn-warning" onclick="window.location = 'in_progress'">In Progress</button>
+        <button class="btn btn-success text-bold" disabled>Completed</button>
+    </div>
+    <div>&nbsp</div>
+
+    {% if withdrawals.count() == 0 %}
+        No completed withdrawals
+    {% else %}
+        {% include 'admin_withdrawal_table.html' %}
+    {% end %}
+
+{% end %}

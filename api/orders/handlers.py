@@ -308,7 +308,6 @@ class OrdersHandler(ApiHandler):
             order.order_status = OrderStatus.HasAnIssue
             order.issue_reason = issue_reason
             order.issue_status = IssueStatus.New
-            notification_leave_feedback(self, order)
 
             listing_with_issue_seller(self, order.listing)
         else:

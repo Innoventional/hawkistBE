@@ -178,3 +178,7 @@
 .cyan-color {
     color: #428bca;
 }
+
+.download-button {
+    float: right;
+}

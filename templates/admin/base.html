@@ -27,6 +27,7 @@
                     <li {% if menu_tab_active == 'tab_users' %} class="active"{% end %}><a href="/api/admin/users">Users</a></li>
                     <li {% if menu_tab_active == 'tab_listings' %} class="active"{% end %}><a href="/api/admin/listings">Listings</a></li>
                     <li {% if menu_tab_active == 'tab_metatags' %} class="active"{% end %}><a href="/api/admin/metatags">Metatags</a></li>
+                    <li {% if menu_tab_active == 'tab_withdrawals' %} class="active"{% end %}><a href="/api/admin/withdrawals/new">Withdrawals</a></li>
                 </ul>
                 <!--{% block logout %}{% end %}-->
                 <ul class="nav navbar-nav navbar-right {% try %} {% if undefined_user %} display-none {% end %} {% except %} {% end %}">

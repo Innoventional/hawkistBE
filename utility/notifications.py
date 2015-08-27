@@ -91,11 +91,11 @@ def notification_funds_released(session, user, listing):
 def notification_leave_feedback(self, order):
     notification = UserNotificantion()
     notification.created_at = datetime.datetime.utcnow()
-    notification.owner_id = order.listing.user_id
+    notification.owner_id = self.user.id
     notification.type = NotificationType.LeaveFeedback
-    notification.user_id = self.user.id
-    notification.user_avatar = self.user.avatar
-    notification.user_username = self.user.username
+    notification.user_id = order.listing.user_id
+    notification.user_avatar = order.listing.user.avatar
+    notification.user_username = order.listing.user.username
     notification.listing_id = order.listing.id
     notification.listing_title = order.listing.title
     notification.listing_photo = order.listing.listing_photos[0].image_url

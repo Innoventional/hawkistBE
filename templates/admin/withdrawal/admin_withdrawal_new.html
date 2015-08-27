@@ -1,0 +1,27 @@
+{% extends '../base.html' %}
+
+{% block title %}New Withdrawal{% end %}
+
+{% block content %}
+    <div class="row">
+        <div class="tag_navigation_div col-lg-4">
+            <button class="btn btn-default text-bold" disabled>New</button>
+            <button class="btn btn-warning" onclick="window.location = 'in_progress'">In Progress</button>
+            <button class="btn btn-success" onclick="window.location = 'completed'">Completed</button>
+        </div>
+        <div  class="col-lg-1 download-button">
+            <a class="btn btn_download_new_withdrawals silver-color fs-20" href="#" title="Delete condition">
+                <i class="glyphicon glyphicon-download-alt"></i>
+            </a>
+        </div>
+    </div>
+
+    <div>&nbsp</div>
+
+    {% if withdrawals.count() == 0 %}
+        No new withdrawals
+    {% else %}
+        {% include 'admin_withdrawal_table.html' %}
+    {% end %}
+
+{% end %}

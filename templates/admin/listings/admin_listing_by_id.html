@@ -89,7 +89,12 @@
                     </tr>
                     <tr>
                         <th>Shipping price</th>
-                        <td>{{ "£%.02f" % float(listing.shipping_price) }}</td>
+                        <td>
+                            {% try %}
+                                {{ "£%.02f" % float(listing.shipping_price) }}
+                            {% except %]
+                            {% end %}
+                        </td>
                     </tr>
                     <tr>
                         <th>Collection only</th>

@@ -9,9 +9,9 @@ __author__ = 'ne_luboff'
 class NotificationType(Enum):
     NewComment = 0
     ItemSold = 1
-    ItemReceived = 2    # +- TODO with cron
+    ItemReceived = 2
     NewFeedback = 3
-    FundsReleased = 4   # +- TODO with cron
+    FundsReleased = 4
     LeaveFeedback = 5
     ItemIsFavourited = 6
     AFavouriteItemIsSold = 7

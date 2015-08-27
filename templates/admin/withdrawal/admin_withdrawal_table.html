@@ -1,0 +1,26 @@
+<div class="row-offcanvas">
+    <table class="table table-hover">
+        <thead>
+            <th>Requested time</th>
+            <th>Account Holder</th>
+            <th>Account Number</th>
+            <th>Sort Code</th>
+            <th>Email address</th>
+            <th>Balance to Withdraw</th>
+            <th>Reference</th>
+        </thead>
+        <tbody>
+            {% for w in withdrawals %}
+                <tr data-id="{{ w.id }}">
+                    <td>{{ (w.created_at + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M")}}</td>
+                    <td>{{ w.account_holder }}</td>
+                    <td>{{ w.account_number }}</td>
+                    <td>{{ w.account_sort_code }}</td>
+                    <td>{{ w.user_email }}</td>
+                    <td>{{ "%.02f" % float(w.amount) }}</td>
+                    <td>{{ w.user_id }}</td>
+                 </tr>
+            {% end %}
+        </tbody>
+    </table>
+</div>

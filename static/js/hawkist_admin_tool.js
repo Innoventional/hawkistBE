@@ -925,3 +925,32 @@ $(".clickable-row").click(function() {
     //win = window.open($(this).data("href"), '_blank');
     //win.focus();
 });
+
+
+// WITHDRAWALS
+$('.btn_download_new_withdrawals').click(function(){
+    if (confirm('Do you really want to download all new withdrawals?'))
+    {
+        download_withdrawals(function(status, message){
+            if (status != 0)
+            {
+                alert(message);
+            }
+        });
+    }
+});
+
+download_withdrawals = function(completion)
+{
+    $.ajax({
+        url: '/api/admin/withdrawals/new',
+        type: 'POST',
+        success: function(data) {
+            var status = data['status'];
+            var message = data['message'];
+            completion(status, message);
+            location.reload();
+        }
+    });
+    return false;
+};

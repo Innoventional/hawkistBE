@@ -28,6 +28,7 @@ from api.orders.models import *
 from api.addresses.models import *
 from api.feedbacks.models import *
 from api.notifications.models import *
+from api.bank_accounts.models import *
 
 # add your model's MetaData object here
 # for 'autogenerate' support

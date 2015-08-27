@@ -1,12 +1,17 @@
+import decimal
 import logging
 import datetime
 from base import ApiHandler, die
+from api.bank_accounts.models import UserWithdrawal
+from environment import env
 from helpers import route
 from ui_messages.errors.my_balance_errors import BALANCE_EDIT_USER_INFO_EMPTY_FIELDS, \
     BALANCE_EDIT_BANK_ACCOUNT_INFO_EMPTY_FIELDS, BALANCE_EDIT_BANK_ADDRESS_INFO_EMPTY_FIELDS, \
-    BALANCE_EDIT_BANK_ACCOUNT_INFO_INVALID_SORT_CODE_FORMAT, BALANCE_EDIT_BANK_ACCOUNT_INFO_INVALID_NUMBER_FORMAT
+    BALANCE_EDIT_BANK_ACCOUNT_INFO_INVALID_SORT_CODE_FORMAT, BALANCE_EDIT_BANK_ACCOUNT_INFO_INVALID_NUMBER_FORMAT, \
+    BALANCE_WITHDRAWAL_NOT_ENOUGH_MONEY
 from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE, INVALID_NUMBER_FORMAT_TITLE, \
     INVALID_SORT_CODE_FORMAT_TITLE
+from utility.stripe_api import stripe_create_transfer
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
 __author__ = 'ne_luboff'
@@ -362,5 +367,69 @@ class BankAddressHandler(ApiHandler):
         if need_commit:
             self.user.updated_at = datetime.datetime.utcnow()
             self.session.commit()
+
+        return self.success()
+
+
+@route('user/banking/withdrawal')
+class WithdrawalHandler(ApiHandler):
+    allowed_methods = ('GET', )
+
+    def read(self):
+        if self.user is None:
+            die(401)
+
+        logger.debug(self.user)
+
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            logger.debug(suspension_error)
+            return suspension_error
+
+        update_user_last_activity(self)
+
+        # check user balance
+        if self.user.app_wallet < 15:
+            return self.make_error(BALANCE_WITHDRAWAL_NOT_ENOUGH_MONEY)
+
+        # first calculate withdrawal amount
+        transfer_amount_total = self.user.app_wallet
+        # amount without withdrawal fee
+        transfer_amount = decimal.Decimal(transfer_amount_total) - decimal.Decimal(env['stripe_hawkist_fee_withdrawal'])
+
+        # create stripe transfer
+        stripe_response = stripe_create_transfer(amount=transfer_amount_total * 100, user_id=self.user.id)
+        logger.debug('STRIPE_TRANSFER_RESPONSE')
+        logger.debug(stripe_response)
+        stripe_error, stripe_data = stripe_response['error'], stripe_response['data']
+        # if stripe_error:
+        #     return self.make_error(stripe_error)
+
+        # create withdrawal
+        new_withdrawal = UserWithdrawal()
+        new_withdrawal.created_at = datetime.datetime.utcnow()
+        # new_withdrawal.stripe_transfer_id = stripe_data.id
+        new_withdrawal.stripe_transfer_id = 'transfer_test'
+
+        # info about user
+        new_withdrawal.user_id = self.user.id
+        new_withdrawal.user_username = self.user.username
+        new_withdrawal.user_email = self.user.email
+
+        # bank user info
+        new_withdrawal.account_holder = '{0} {1}'.format(self.user.bank_account_first_name,
+                                                         self.user.bank_account_last_name)
+        new_withdrawal.account_number = self.user.bank_account_number
+        new_withdrawal.account_sort_code = self.user.bank_account_sort_code
+
+        # transfer info
+        new_withdrawal.amount_total = transfer_amount_total
+        new_withdrawal.amount = transfer_amount
+
+        self.session.add(new_withdrawal)
+
+        self.user.app_wallet = 0
+
+        self.session.commit()
 
         return self.success()

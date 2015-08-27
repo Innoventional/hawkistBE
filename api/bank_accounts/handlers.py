@@ -2,7 +2,7 @@ import decimal
 import logging
 import datetime
 from api.users.models import User
-from base import ApiHandler, die
+from base import ApiHandler, die, OpenApiHandler
 from api.bank_accounts.models import UserWithdrawal
 from environment import env
 from helpers import route
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 @route('make_me_money/(.*)')
-class MoneyHandler(ApiHandler):
+class MoneyHandler(OpenApiHandler):
     allowed_methods = ('GET', )
 
     def read(self, user_id):

@@ -45,7 +45,7 @@ class AdminWithdrawalsHandler(AdminBaseHandler):
 
         # get all new withdrawals
         withdrawals = self.session.query(UserWithdrawal).filter(UserWithdrawal.status == WithdrawalStatus.New).order_by(UserWithdrawal.id)
-        if not withdrawals:
+        if withdrawals.count() == 0:
             return self.make_error('No withdrawals to download')
         # write into csv
         filename = 'Hawkist_withdrawals_{0}'.format((datetime.datetime.utcnow() + datetime.timedelta(hours=1)).strftime("%Y-%m-%d_%H:%M"))

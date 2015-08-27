@@ -10,9 +10,11 @@
             <button class="btn btn-success" onclick="window.location = 'completed'">Completed</button>
         </div>
         <div  class="col-lg-1 download-button">
-            <a class="btn btn_download_new_withdrawals silver-color fs-20" href="#" title="Download new withdrawals">
-                <i class="glyphicon glyphicon-download-alt"></i>
-            </a>
+            {% if withdrawals.count() != 0 %}
+                <a class="btn btn_download_new_withdrawals silver-color fs-20" href="#" title="Download new withdrawals">
+                    <i class="glyphicon glyphicon-download-alt"></i>
+                </a>
+            {% end %}
         </div>
     </div>
 

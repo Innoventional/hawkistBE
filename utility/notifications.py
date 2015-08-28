@@ -262,6 +262,6 @@ def update_notification_listing_photo(self, listing):
 
 
 def update_notification_order_available_feedback(self, order_id):
-    notification_with_this_order = self.session.query(UserNotificantion).get(order_id)
+    notification_with_this_order = self.session.query(UserNotificantion).filter(UserNotificantion.order_id == order_id).first()
     if notification_with_this_order:
         notification_with_this_order.order_available_feedback = False

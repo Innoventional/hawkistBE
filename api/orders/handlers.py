@@ -218,7 +218,7 @@ class OrdersHandler(ApiHandler):
         # send money to pending wallet balance
         listing.user.app_wallet_pending += decimal.Decimal(new_order.payment_sum_without_application_fee)
 
-        listing.status = ListingStatus.Reserved
+        listing.status = ListingStatus.Sold
         new_order.sorting_status = SortingStatus.Open
         listing.reserved_by_user = False
         listing.user_who_reserve_id = None
@@ -288,7 +288,6 @@ class OrdersHandler(ApiHandler):
         # if new status is received we must send this money to seller
         if str(new_status) == str(OrderStatus.Received):
             order.order_status = OrderStatus.Received
-            order.listing.status = ListingStatus.Sold
 
             # get money from pending balance to available
             order.listing.user.app_wallet_pending -= order.payment_sum_without_application_fee

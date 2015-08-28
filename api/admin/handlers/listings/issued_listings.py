@@ -75,7 +75,6 @@ class AdminIssuedListingsHandler(AdminBaseHandler):
             # TODO money to buyer
             order.listing.user.app_wallet_pending -= order.payment_sum_without_application_fee
             order.user.app_wallet += order.payment_sum
-            order.listing.status = ListingStatus.Active
             # send email to seller
             transaction_canceled(order.listing.user.email, order.listing.user.username, order.listing.title)
             # send email to buyer
@@ -94,7 +93,6 @@ class AdminIssuedListingsHandler(AdminBaseHandler):
             # TODO money to seller
             order.listing.user.app_wallet_pending -= order.payment_sum_without_application_fee
             order.listing.user.app_wallet += order.payment_sum_without_application_fee
-            order.listing.status = ListingStatus.Sold
 
             notification_funds_released(self.session, order.user, order.listing)
 

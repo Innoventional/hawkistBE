@@ -2041,6 +2041,7 @@ NOTIFICATION_INFO_DICT
     },
     'order': {
         'id': ORDER ID
+        'available_feedback': IS FEEDBACK FOR THIS ORDER AVAILABLE
     }
     
 **Get new notifications count**

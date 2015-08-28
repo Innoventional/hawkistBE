@@ -9,7 +9,7 @@ from ui_messages.errors.feedback_errors import FEEDBACK_NO_ORDER_ID, FEEDBACK_NO
     FEEDBACK_NO_TYPE, FEEDBACK_INVALID_TYPE
 from ui_messages.errors.orders_errors import UPDATE_ORDER_NO_ORDER
 from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID
-from utility.notifications import notification_new_feedback
+from utility.notifications import notification_new_feedback, update_notification_order_available_feedback
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
 
 __author__ = 'ne_luboff'
@@ -111,6 +111,8 @@ class FeedbackHandler(ApiHandler):
 
         order.available_feedback = False
         order.sorting_status = SortingStatus.Close
+
+        update_notification_order_available_feedback(self, order_id)
 
         # calculate user rating
         # get all feedbacks

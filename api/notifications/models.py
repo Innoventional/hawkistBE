@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, Integer, DateTime, String, ForeignKey, SmallInteger, Enum, Numeric, desc
+from sqlalchemy import Column, Integer, DateTime, String, ForeignKey, SmallInteger, Enum, Numeric, desc, Boolean
 from sqlalchemy.orm import relationship, backref
 from orm import Base
 
@@ -64,6 +64,7 @@ class UserNotificantion(Base):
 
     # info about order
     order_id = Column(Integer, nullable=True)
+    order_available_feedback = Column(Boolean, nullable=True)
 
     def get_shipping_price_value(self):
         try:
@@ -95,5 +96,6 @@ class UserNotificantion(Base):
             },
             'order': {
                 'id': self.order_id,
+                'available_feedback': self.order_available_feedback
             }
         }

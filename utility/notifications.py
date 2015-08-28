@@ -100,6 +100,7 @@ def notification_leave_feedback(self, order):
     notification.listing_title = order.listing.title
     notification.listing_photo = order.listing.listing_photos[0].image_url
     notification.order_id = order.id
+    notification.order_available_feedback = True
     notification.priority = NotificationPriority.Low
     self.session.add(notification)
     self.session.commit()
@@ -258,3 +259,9 @@ def update_notification_listing_photo(self, listing):
     if notifications_with_this_listing:
         for l in notifications_with_this_listing:
             l.listing_photo = listing.listing_photos[0].image_url
+
+
+def update_notification_order_available_feedback(self, order_id):
+    notification_with_this_order = self.session.query(UserNotificantion).get(order_id)
+    if notification_with_this_order:
+        notification_with_this_order.order_available_feedback = False

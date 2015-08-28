@@ -50,6 +50,9 @@ def timer_event():
                 listing.selling_price = listing.previous_price
                 listing.reserved_by_user = False
                 listing.status = ListingStatus.Active
+                listing.user_who_reserve_id = None
+                listing.user_who_reserve = None
+                listing.reserve_time = None
         """
         Recalculate response time for every user
         """

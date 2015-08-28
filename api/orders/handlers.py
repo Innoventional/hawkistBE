@@ -296,7 +296,6 @@ class OrdersHandler(ApiHandler):
             order.available_feedback = True
             order.sorting_status = SortingStatus.WaitForFeedback
 
-            notification_item_received(self.session, order)
             notification_funds_released(self.session, self.user, order.listing)
             notification_leave_feedback(self, order)
 

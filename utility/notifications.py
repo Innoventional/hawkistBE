@@ -41,11 +41,11 @@ def notification_item_sold(self, listing):
 def notification_item_received(session, order):
     notification = UserNotificantion()
     notification.created_at = datetime.datetime.utcnow()
-    notification.owner_id = order.listing.user.id
+    notification.owner_id = order.user.id
     notification.type = NotificationType.ItemReceived
-    notification.user_id = order.user.id
-    notification.user_avatar = order.user.avatar
-    notification.user_username = order.user.username
+    notification.user_id = order.listing.user.id
+    notification.user_avatar = order.listing.user.avatar
+    notification.user_username = order.listing.user.username
     notification.listing_id = order.listing.id
     notification.listing_title = order.listing.title
     notification.listing_photo = order.listing.listing_photos[0].image_url

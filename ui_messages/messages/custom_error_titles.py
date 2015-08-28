@@ -39,3 +39,4 @@ INVALID_NUMBER_FORMAT_TITLE = 'Account Number Invalid'
 
 INVALID_SORT_CODE_FORMAT_TITLE = 'Sort Code Invalid'
 
+CREATE_CHARGE_NOT_ENOUGH_MONEY_TITLE = 'Insufficient Funds'

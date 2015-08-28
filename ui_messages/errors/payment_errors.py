@@ -24,4 +24,4 @@ CREATE_CHARGE_BUY_SOLD_LISTING = 'Sorry, but this listing is sold out'
 ORDER_CREATE_LISTING_NOT_SUPPORT_COLLECTION = 'Sorry, but this listing dont support collection. Only post delivery!'
 ORDER_CREATE_INVALID_ADDRESS_ID = 'Invalid address id'
 
-CREATE_CHARGE_NOT_ENOUGH_MONEY = 'Sorry, but you have not enough money to buy this listing'
+CREATE_CHARGE_NOT_ENOUGH_MONEY = "You don't have enough funds in your wallet. Choose another payment option."

@@ -119,5 +119,6 @@ class UserOrders(Base):
             'id': self.id,
             'listing': self.listing.response(self.user_id),
             'status': self.order_status,
-            'available_feedback': self.available_feedback
+            'available_feedback': self.available_feedback,
+            'sorting_status': self.sorting_status
         }

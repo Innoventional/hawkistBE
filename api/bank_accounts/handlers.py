@@ -32,7 +32,7 @@ class MoneyHandler(OpenApiHandler):
             self.session.commit()
             return self.success({'message': 'Congrats! You get 99.99!'})
         except:
-            return self.make_error('something wrong!\nLiubov')
+            return self.make_error('Invalid user id=(')
 
 
 @route('user/banking/wallet')

@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, Integer, DateTime, String, ForeignKey, SmallInteger, Enum, Numeric
+from sqlalchemy import Column, Integer, DateTime, String, ForeignKey, SmallInteger, Enum, Numeric, desc
 from sqlalchemy.orm import relationship, backref
 from orm import Base
 
@@ -39,7 +39,7 @@ class UserNotificantion(Base):
 
     # reference to user-owner
     owner_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    owner = relationship('User', backref=backref('user_notifications', order_by=id, cascade="all,delete",
+    owner = relationship('User', backref=backref('user_notifications', order_by=desc(id), cascade="all,delete",
                                                  lazy='dynamic'), foreign_keys=owner_id)
 
     type = Column(SmallInteger, nullable=False, default=NotificationType.NewComment)

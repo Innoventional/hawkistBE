@@ -47,3 +47,5 @@ UPDATE_LISTING_SELLING_PRICE_MUST_BE_LESS_THAN_RETAIL = u'Selling price must be 
 # Listing likes
 LIKE_LISTING_NO_ID = 'No listing to like id'
 LIKE_YOUR_OWN_LISTING = 'You cannot add your own listings to wishlist'
+
+LISTING_SHIPPING_PRICE_TOO_HIGH = 'The Shipping Price of the item cannot be greater than its Selling Price.'

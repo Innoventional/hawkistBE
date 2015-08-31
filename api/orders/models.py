@@ -56,6 +56,12 @@ class IssueStatus(Enum):
 
 
 class SortingStatus(Enum):
+    """
+    Supporting value.
+    If feedback is available in current order this order must appears first.
+    Second time appears all opened orders.
+    After if closed.
+    """
     WaitForFeedback = 0
     Open = 1
     Close = 2
@@ -110,8 +116,6 @@ class UserOrders(Base):
     delivery_method = Column(SmallInteger, nullable=False, default=OrderDeliveryMethod.PostTransfer)
 
     address_id = Column(Integer, nullable=True)
-
-
 
     @property
     def response(self):

@@ -6,7 +6,7 @@ from tornado import httpserver, ioloop
 from app import HawkistApi
 from environment import env
 from orm import create_session
-from utility.cron_scripts import timer_event
+from utility.cron_scripts import daily_events, hourly_events
 
 LOG_FORMAT = '[%(asctime)s] %(levelname)s [line:%(lineno)s] [%(funcName)s] %(message)s'
 logging.basicConfig(format=LOG_FORMAT)
@@ -110,8 +110,11 @@ class ApiManager(object):
         print 'API Key: ', api_key
         print 'API Pass:', api_pass
 
-    def do_timer_event(self):
-        timer_event()
+    def do_daily_events(self):
+        daily_events()
+
+    def do_hourly_events(self):
+        hourly_events()
 
 if __name__ == '__main__':
     ApiManager(sys.argv)

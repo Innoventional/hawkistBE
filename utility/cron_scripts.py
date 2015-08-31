@@ -13,34 +13,43 @@ __author__ = 'ne_luboff'
 logger = logging.getLogger(__name__)
 
 
-def timer_event():
+def daily_events():
+    """
+    Daily events are:
+        - send warnings and notifications on 4th and 6th days to buyer "Is item received?"
+        - automatic money release on 7th day to seller.
+    """
     with new_session() as session:
         """
-        First send all messages.
-        Function for sending 4 days notification to email and user notification screen if order is active
+        Send all messages.
+        Function for sending 4/6 days notification to email and user notification screen if order is active
         """
         logger.debug('Cron script started: %s' % datetime.datetime.utcnow())
         orders = session.query(UserOrders).filter(UserOrders.order_status == OrderStatus.Active)
         for order in orders:
             # check time difference
             time_delta = datetime.datetime.utcnow() - order.created_at
-            if 7 > time_delta.days >= 4:
-                # send 4 days warning letter
+            if time_delta.days == 4 or time_delta.days == 6:
+                # send 4/6 days warning letter
                 send_warning_4_6_days_email(order.user.email, order.user.username, order.listing.title)
                 # add notifications
                 notification_item_received(session, order)
-            elif time_delta.days >= 7:
+            elif time_delta.days == 7:
                 # first we must transfer money from pending balance to available
                 order.listing.user.app_wallet_pending -= order.payment_sum_without_application_fee
                 order.listing.user.app_wallet += order.payment_sum_without_application_fee
                 order.order_status = OrderStatus.FundsReleasedByTimer
-                session.commit()
                 # send email notification to seller
                 funds_received_seller(order)
                 # add notification
                 notification_funds_released(session, order.user, order.listing)
+        session.commit()
+
+
+def hourly_events():
+    with new_session() as session:
         """
-        Then check all reserved listings
+        Check all reserved listings
         """
         listings = session.query(Listing).filter(Listing.reserved_by_user == True)
         for listing in listings:

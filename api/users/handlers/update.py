@@ -13,10 +13,10 @@ from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID,UPDATE
     UPDATE_USER_TAGS_NO_EXISTING_USER_TAG, UPDATE_USER_INFO_MISSING_USERNAME_OR_EMAIL
 from ui_messages.messages.custom_error_titles import USERNAME_VERIFICATION_INVALID_FORMAT_TITLE, \
     CREATE_LISTING_EMPTY_FIELDS_TITLE, UPDATE_USER_INFO_USERNAME_ALREADY_USED_TITLE, \
-    UPDATE_USER_INFO_EMAIL_ALREADY_USED_TITLE
+    UPDATE_USER_INFO_EMAIL_ALREADY_USED_TITLE, UPDATE_USER_FB_ALREADY_USED_TITLE
 from ui_messages.messages.email import CONFIRM_SUCCESS_EMAIL_LETTER_SUBJECT, CONFIRM_SUCCESS_EMAIL_LETTER_TEXT
 from utility.amazon import upload_file
-from utility.facebook_api import get_facebook_user
+from utility.facebook_api import get_facebook_user, get_facebook_photo
 from utility.format_verification import username_verification, email_verification
 from utility.image.processor import make_thumbnail
 from utility.notifications import update_notification_user_username, update_notification_user_avatar
@@ -266,9 +266,19 @@ class UserSocialHandler(ApiHandler):
         already_used = self.session.query(User).filter(and_(User.facebook_id == facebook_id,
                                                             User.id != self.user.id)).first()
         if already_used:
-            return self.make_error(UPDATE_USER_FB_ALREADY_USED)
+            return self.make_error(message=UPDATE_USER_FB_ALREADY_USED, title=UPDATE_USER_FB_ALREADY_USED_TITLE)
 
         self.user.facebook_id = facebook_id
+
+        # if this user have not avatar picture get it from his facebook profile
+        if not self.user.avatar:
+            fb_avatar_response = get_facebook_photo(facebook_token)
+            fb_avatar_error, fb_avatar_data = fb_avatar_response['error'], fb_avatar_response['data']
+            if not fb_avatar_error:
+                self.user.avatar = fb_avatar_data['avatar']
+                self.user.thumbnail = fb_avatar_data['thumbnail']
+            else:
+                logger.debug(fb_avatar_error)
         self.session.commit()
         return self.success({'user': self.user.user_response})
 

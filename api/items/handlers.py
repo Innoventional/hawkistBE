@@ -94,9 +94,9 @@ class CheckSellingAbilityHandler(ApiHandler):
             logger.debug(suspension_error)
             return suspension_error
 
-        # if not self.user.facebook_id:
-        #     return self.make_error(message=CREATE_LISTING_USER_HAVENT_FB,
-        #                            title=CREATE_LISTING_USER_HAVENT_FB_TITLE)
+        if not self.user.facebook_id:
+            return self.make_error(message=CREATE_LISTING_USER_HAVENT_FB,
+                                   title=CREATE_LISTING_USER_HAVENT_FB_TITLE)
 
         if not self.user.email_status:
             return self.make_error(message=CREATE_LISTING_USER_DONT_CONFIRM_EMAIL,

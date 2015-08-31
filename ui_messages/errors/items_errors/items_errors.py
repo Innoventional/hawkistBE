@@ -6,7 +6,8 @@ GET_LISTING_INVALID_ID = 'No listing with id %s'
 GET_LISTING_BY_USER_INVALID_ID = 'No user with id %s'
 
 # Create new listing
-CREATE_LISTING_USER_HAVENT_FB = "Sorry, but you cannot sell on Hawkist until you have connected a Facebook account."
+CREATE_LISTING_USER_HAVENT_FB = "In order to sell on Hawkist, you must connect a Facebook account to verify your " \
+                                "identity."
 CREATE_LISTING_USER_DONT_CONFIRM_EMAIL = "In order to sell on Hawkist you must confirm an email address."
 CREATE_LISTING_EMPTY_FIELDS = 'You must input the %s in order to create a listing.'
 

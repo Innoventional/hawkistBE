@@ -13,7 +13,7 @@ INVALID_CONFIRM_EMAIL_LINK = 'Invalid confirmation link. Try again later.'
 
 # link fb to profile
 UPDATE_USER_LINK_FB_NO_TOKEN = 'No Facebook account linked to this profile.'
-UPDATE_USER_FB_ALREADY_USED = 'This Facebook account is already linked to another profile.'
+UPDATE_USER_FB_ALREADY_USED = 'This Facebook Account has already been connected to Hawkist. Please try another.'
 
 # user tags
 UPDATE_USER_TAGS_NO_TAG_ID = 'No tag id'

@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, Integer, DateTime, ForeignKey, Numeric, SmallInteger, Enum
+from sqlalchemy import Column, Integer, DateTime, ForeignKey, Numeric, SmallInteger, Enum, Boolean
 from sqlalchemy.orm import backref, relationship
 from orm import Base
 
@@ -37,11 +37,14 @@ class Offer(Base):
     listing = relationship('Listing', backref=backref('listing_offers', order_by=id, cascade="all,delete",
                                                       lazy='dynamic'), foreign_keys=listing_id)
 
+    visibility = Column(Boolean, nullable=False, default=True)
+
     @property
     def response(self):
         return {
             'id': self.id,
             'status': self.status,
             'offer_receiver_id': self.listing.user_id,
-            'offer_creater_id': self.user_id
+            'offer_creater_id': self.user_id,
+            'visibility': self.visibility
         }

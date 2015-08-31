@@ -1,5 +1,6 @@
 import logging
 import datetime
+from sqlalchemy import and_
 from api.comments.models import Comment
 from api.items.models import Listing, ListingStatus
 from api.offers.models import Offer, OfferStatus
@@ -177,6 +178,14 @@ class ItemOffersHandler(ApiHandler):
             comment.user = self.user
             comment.text = OFFER_ACCEPTED % "%.02f" % float(offer.new_price)
             self.session.add(comment)
+
+            # hide other offers
+            other_offers = self.session.query(Offer).filter(and_(Offer.status == OfferStatus.Active,
+                                                                 Offer.listing_id == offer.listing_id,
+                                                                 Offer.id != offer.id))
+            for o in other_offers:
+                o.visibility = False
+
             self.session.commit()
 
             notification_offered_price_accepted(self, offer.user_id, offer.listing, offer.new_price)

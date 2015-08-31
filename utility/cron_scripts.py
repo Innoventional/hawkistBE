@@ -1,6 +1,7 @@
 import datetime
 import logging
 from api.items.models import Listing, ListingStatus
+from api.offers.models import OfferStatus
 from api.orders.models import UserOrders, OrderStatus
 from api.users.models import User, SystemStatus
 from orm import new_session
@@ -62,6 +63,11 @@ def hourly_events():
                 listing.user_who_reserve_id = None
                 listing.user_who_reserve = None
                 listing.reserve_time = None
+
+            # make hidden offers visible
+            for offer in listing.listing_offers:
+                if offer.status == OfferStatus.Active and not offer.visibility:
+                    offer.visibility = True
         """
         Recalculate response time for every user
         """

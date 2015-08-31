@@ -1035,10 +1035,7 @@ COMMENT_RESPONSE_DICT
         "listing_id": COMMENTED LISTING ID,
         "text": TEXT,
         "offer": {
-            "id": ID,
-            "status": 0 IF THIS OFFER IS UNANSWERED,
-            "offer_creater_id": USER WHO CREATE OFFER ID,
-            "offer_receiver_id": OFFERED LISTING OWNER ID
+            OFFER_RESPONSE_DICT
         },
         "offer_id": OFFER ID OR NONE,
         "mentions": [
@@ -1133,6 +1130,22 @@ Response:
 
 --------------------------
 ### Offers
+
+OfferStatus
+
+    Active = 0
+    Accepted = 1
+    Declined = 2
+
+OFFER_RESPONSE_DICT
+
+    {
+        'id': OFFER ID,
+        'status': OFFER STATUS,
+        'offer_receiver_id': USER WHO RECEIVE OFFER ID,
+        'offer_creater_id': USER WHO CREATE OFFER ID,
+        'visibility': IS THIS OFFER VISIBLE - TRUE OR FALS
+    }
 
 **Offer a new price**
 

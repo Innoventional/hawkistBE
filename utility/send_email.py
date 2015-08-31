@@ -36,6 +36,17 @@ def send_email(text=None, subject=None, recipient=None, filename=None, recipient
     from_email = from_email.encode('utf-8')
     recipient = recipient.encode('utf-8')
 
+    html = """\
+            <html>
+              <head></head>
+              <body>
+                {0}
+              </body>
+            </html>
+            """.format(text)
+    html = html.replace('\033[1m', '<b>')
+    html = html.replace('\033[0m', '</b>')
+
     msg['Subject'] = subject
     msg['From'] = from_email
     msg['To'] = recipient
@@ -43,6 +54,10 @@ def send_email(text=None, subject=None, recipient=None, filename=None, recipient
     if text:
         part1 = MIMEText(text, 'plain')
         msg.attach(part1)
+
+    if html:
+        part2 = MIMEText(html, 'html')
+        msg.attach(part2)
 
 
     # Send the message via our own SMTP server, but don't include the

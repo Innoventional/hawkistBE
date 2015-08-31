@@ -19,7 +19,7 @@ __author__ = 'ne_luboff'
 logger = logging.getLogger(__name__)
 
 # for bold text
-BOLD_STRING = '\033[1m%s\033[0m'
+BOLD_STRING = '<b>%s</b>'
 
 
 def send_email(text=None, subject=None, recipient=None, filename=None, recipients=None, html=None, template_name=None,
@@ -36,17 +36,6 @@ def send_email(text=None, subject=None, recipient=None, filename=None, recipient
     from_email = from_email.encode('utf-8')
     recipient = recipient.encode('utf-8')
 
-    html = """\
-            <html>
-              <head></head>
-              <body>
-                {0}
-              </body>
-            </html>
-            """.format(text)
-    html = html.replace('\033[1m', '<b>')
-    html = html.replace('\033[0m', '</b>')
-
     msg['Subject'] = subject
     msg['From'] = from_email
     msg['To'] = recipient
@@ -55,8 +44,7 @@ def send_email(text=None, subject=None, recipient=None, filename=None, recipient
         part1 = MIMEText(text, 'plain')
         msg.attach(part1)
 
-    if html:
-        part2 = MIMEText(html, 'html')
+        part2 = MIMEText(text, 'html')
         msg.attach(part2)
 
 

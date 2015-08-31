@@ -606,7 +606,7 @@ class ListingHandler(ApiHandler):
                 need_commit = True
 
             if float(listing_to_update.selling_price) != float(selling_price):
-                if selling_price < 1:
+                if selling_price < 0.5:
                     return self.make_error(message=CREATE_LISTING_SELLING_PRICE_LESS_THAN_1,
                                            title=LISTING_INVALID_MINIMUM_PRICE_TITLE)
                 if float(selling_price) > float(listing_to_update.retail_price) \
@@ -809,7 +809,7 @@ class ListingHandler(ApiHandler):
                 return self.make_error(message=CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1,
                                        title=LISTING_INVALID_MINIMUM_PRICE_TITLE)
 
-            if selling_price < 1:
+            if selling_price < 0.5:
                 return self.make_error(message=CREATE_LISTING_SELLING_PRICE_LESS_THAN_1,
                                        title=LISTING_INVALID_MINIMUM_PRICE_TITLE)
 

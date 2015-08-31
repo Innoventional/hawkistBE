@@ -18,6 +18,9 @@ __author__ = 'ne_luboff'
 
 logger = logging.getLogger(__name__)
 
+# for bold text
+BOLD_STRING = '\033[1m%s\033[0m'
+
 
 def send_email(text=None, subject=None, recipient=None, filename=None, recipients=None, html=None, template_name=None,
                from_email=None, **kwargs):
@@ -73,8 +76,9 @@ def email_confirmation_sending(self, user, email):
 
 
 def purchase_confirmation_sending_buyer(self, listing):
-    text = PURCHASE_ITEM_BUYER_TEXT % (self.user.username, listing.title, "%.02f" % float(listing.selling_price),
-                                       listing.user.username, listing.user.email)
+    text = PURCHASE_ITEM_BUYER_TEXT % (self.user.username, BOLD_STRING % listing.title,
+                                       "%.02f" % float(listing.selling_price), listing.user.username,
+                                       listing.user.email)
     subject = PURCHASE_ITEM_BUYER_TITLE % listing.title
     send_email(text, subject=subject, recipient=self.user.email)
 
@@ -83,61 +87,59 @@ def purchase_confirmation_sending_seller(self, listing, address):
     if address:
         address_row = '%s, %s %s' % (address.address_line1, address.postcode, address.city)
         if address.address_line2:
-            # address_row = "{0} {1}, {2} {3}".format(address.address_line1, address.address_line2, address.postcode,
-            #                                  address.city)
             address_row = '%s %s, %s %s' % (address.address_line1, address.address_line2, address.postcode,
                                             address.city)
-        text = PURCHASE_ITEM_SELLER_TEXT_WITH_ADDRESS % (listing.user.username, listing.title, self.user.username,
-                                                         "%.02f" % float(listing.selling_price), self.user.email,
-                                                         address_row, self.user.username)
+        text = PURCHASE_ITEM_SELLER_TEXT_WITH_ADDRESS % (listing.user.username, BOLD_STRING % listing.title,
+                                                         self.user.username, "%.02f" % float(listing.selling_price),
+                                                         self.user.email, address_row, self.user.username)
     else:
-        text = PURCHASE_ITEM_SELLER_TEXT % (listing.user.username, listing.title, self.user.username,
+        text = PURCHASE_ITEM_SELLER_TEXT % (listing.user.username, BOLD_STRING % listing.title, self.user.username,
                                             "%.02f" % float(listing.selling_price), self.user.email, self.user.username)
     subject = PURCHASE_ITEM_SELLER_TITLE % listing.title
     send_email(text, subject=subject, recipient=listing.user.email)
 
 
 def listing_with_issue_seller(self, listing):
-    text = LISTING_WITH_ISSUE_SELLER_TEXT % (listing.user.username, listing.title, self.user.username)
+    text = LISTING_WITH_ISSUE_SELLER_TEXT % (listing.user.username, BOLD_STRING % listing.title, self.user.username)
     subject = LISTING_WITH_ISSUE_SELLER_TITLE % listing.title
     send_email(text, subject=subject, recipient=listing.user.email)
 
 
 def listing_received_seller(self, order):
-    text = LISTING_RECEIVED_SELLER_TEXT % (order.listing.user.username, order.listing.title,  self.user.username,
-                                           order.payment_sum_without_application_fee)
+    text = LISTING_RECEIVED_SELLER_TEXT % (order.listing.user.username, BOLD_STRING % order.listing.title,
+                                           self.user.username, order.payment_sum_without_application_fee)
     subject = LISTING_RECEIVED_SELLER_TITLE % order.listing.title
     send_email(text, subject=subject, recipient=order.listing.user.email)
 
 
 def listing_with_issue_investigation_opened_buyer(order):
-    text = LISTING_WITH_ISSUE_INVESTIGATION_OPENED_TEXT % (order.user.username, order.listing.title)
+    text = LISTING_WITH_ISSUE_INVESTIGATION_OPENED_TEXT % (order.user.username, BOLD_STRING % order.listing.title)
     subject = LISTING_WITH_ISSUE_INVESTIGATION_OPENED_TITLE % order.listing.title
     send_email(text, subject=subject, recipient=order.user.email)
 
 
 def funds_received_seller(order):
-    text = FUNDS_RECEIVED_SELLER_TEXT % (order.listing.user.username, order.listing.title,
+    text = FUNDS_RECEIVED_SELLER_TEXT % (order.listing.user.username, BOLD_STRING % order.listing.title,
                                          order.payment_sum_without_application_fee)
     subject = FUNDS_RECEIVED_SELLER_TITLE % order.listing.title
     send_email(text, subject=subject, recipient=order.listing.user.email)
 
 
 def refunds_issues_buyer(self):
-    text = REFUND_ISSUES_BUYER_TEXT % (self.user.username, self.listing.title,
+    text = REFUND_ISSUES_BUYER_TEXT % (self.user.username, BOLD_STRING % self.listing.title,
                                        self.charge.payment_sum)
     subject = REFUND_ISSUES_BUYER_TITLE % self.listing.title
     send_email(text, subject=subject, recipient=self.user.email)
 
 
 def transaction_canceled(email, username, title):
-    text = TRANSACTION_CANCELED_TEXT % (username, title)
+    text = TRANSACTION_CANCELED_TEXT % (username, BOLD_STRING % title)
     subject = TRANSACTION_CANCELED_TITLE % title
     send_email(text, subject=subject, recipient=email)
 
 
 def investigation_resolved(email, username, title):
-    text = INVESTIGATION_RESOLVED_TEXT % (username, title)
+    text = INVESTIGATION_RESOLVED_TEXT % (username, BOLD_STRING % title)
     subject = INVESTIGATION_RESOLVED_TITLE % title
     send_email(text, subject=subject, recipient=email)
 

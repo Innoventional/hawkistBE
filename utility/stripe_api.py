@@ -401,10 +401,16 @@ def stripe_create_transfer(amount=None, currency='gbp', user_id=None):
             'data': transfer
         }
 
+
+def stripe_get_account_balance():
+    account_balance = stripe.Balance.retrieve()
+    return account_balance.available[0].amount + account_balance.pending[0].amount
+
 # test stripe customer
 if __name__ == '__main__':
     print 'In utility/stripe_api'
-    print stripe_retrieve_customer('cus_6mres87eeXpxfI')
+    # print stripe_retrieve_customer('cus_6mres87eeXpxfI')
+    print stripe_get_account_balance()
     # print stripe_retrieve_card()
     # print stripe_create_charges(customer_id='cus_6hj6xWiBBKO1rH', card_id='card_16UJeRArfhEk5XzXwbkhgiT4', amount=1200,
     #                             description='ne_luboff test charge')

@@ -28,7 +28,7 @@ WRONG_SUBCATEGORY_CONDITION_RELATION = "Subcategory %s (%s > %s) has no Conditio
 CREATE_LISTING_RETAIL_PRICE_LESS_THAN_1 = u'The minimum Retail Price for an item is £1.00. ' \
                                           u'Please update your Retail Price.'
 CREATE_LISTING_SELLING_PRICE_LESS_THAN_1 = u'The minimum Selling Price for an item is £0.50.'
-CREATE_LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE = "Retail price must be greater than selling price"
+LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE = "The Retail Price of the item must be greater than its Selling Price"
 CREATE_LISTING_TOO_MANY_PHOTOS = 'You can add only 4 photos'
 
 # Delete the listing
@@ -41,7 +41,6 @@ DELETE_SOLD_LISTING = 'You cannot delete sold listing'
 UPDATE_LISTING_UNDEFINED_LISTING_ID = 'No listing to update id'
 UPDATE_LISTING_LISTING_SOLD = 'You cannot update sold listing'
 UPDATE_LISTING_EMPTY_FIELDS = 'You must select the %s in order to update a listing.'
-UPDATE_LISTING_SELLING_PRICE_MUST_BE_LESS_THAN_RETAIL = u'Selling price must be less than £%s'
 
 # Listing likes
 LIKE_LISTING_NO_ID = 'No listing to like id'

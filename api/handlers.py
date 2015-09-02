@@ -8,6 +8,7 @@ try:
     from users.handlers.login import *
     from users.handlers.update import *
     from users.handlers.personalization import *
+    from users.handlers.socials import *
     from items.handlers import *
     from tags.handler import *
     from admin.handlers.users.users import *

@@ -7,16 +7,15 @@ from base import ApiHandler, die, USER_ID, OpenApiHandler
 from helpers import route
 from ui_messages.errors.users_errors.blocked_users_error import GET_BLOCKED_USER
 from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID,UPDATE_USER_INFO_USERNAME_ALREADY_USED,\
-    INVALID_CONFIRM_EMAIL_LINK, UPDATE_USER_LINK_FB_NO_TOKEN, UPDATE_USER_FB_ALREADY_USED, \
-    UPDATE_USER_TAGS_TAG_DOES_NOT_EXISTS, UPDATE_USER_TAGS_TAG_ALREADY_ADDED, UPDATE_USER_TAGS_NO_TAG_ID, \
+    INVALID_CONFIRM_EMAIL_LINK, UPDATE_USER_TAGS_TAG_DOES_NOT_EXISTS, UPDATE_USER_TAGS_TAG_ALREADY_ADDED, \
+    UPDATE_USER_TAGS_NO_TAG_ID, \
     UPDATE_USER_TAGS_NO_TAG_TYPE, UPDATE_USER_TAGS_INVALID_TAG_ID, UPDATE_USER_TAGS_INVALID_TAG_TYPE, \
     UPDATE_USER_TAGS_NO_EXISTING_USER_TAG, UPDATE_USER_INFO_MISSING_USERNAME_OR_EMAIL
 from ui_messages.messages.custom_error_titles import USERNAME_VERIFICATION_INVALID_FORMAT_TITLE, \
     CREATE_LISTING_EMPTY_FIELDS_TITLE, UPDATE_USER_INFO_USERNAME_ALREADY_USED_TITLE, \
-    UPDATE_USER_INFO_EMAIL_ALREADY_USED_TITLE, UPDATE_USER_FB_ALREADY_USED_TITLE
+    UPDATE_USER_INFO_EMAIL_ALREADY_USED_TITLE
 from ui_messages.messages.email import CONFIRM_SUCCESS_EMAIL_LETTER_SUBJECT, CONFIRM_SUCCESS_EMAIL_LETTER_TEXT
 from utility.amazon import upload_file
-from utility.facebook_api import get_facebook_user, get_facebook_photo
 from utility.format_verification import username_verification, email_verification
 from utility.image.processor import make_thumbnail
 from utility.notifications import update_notification_user_username, update_notification_user_avatar
@@ -224,64 +223,6 @@ class UserEmailVerificationHandler(OpenApiHandler):
         subject = CONFIRM_SUCCESS_EMAIL_LETTER_SUBJECT
         send_email(text, subject=subject, recipient=user.email)
         return self.render_string('ui/welcome.html', menu_tab_active='')
-
-
-@route('user/socials')
-class UserSocialHandler(ApiHandler):
-    allowed_methods = ('PUT', )
-
-    def update(self):
-
-        if self.user is None:
-            die(401)
-
-        update_user_last_activity(self)
-
-        # check user status
-        suspension_error = check_user_suspension_status(self.user)
-        if suspension_error:
-            logger.debug(suspension_error)
-            return suspension_error
-
-        logger.debug('REQUEST_OBJECT_USER_SOCIAL')
-        logger.debug(self.request_object)
-
-        facebook_token = ''
-
-        if self.request_object:
-            if 'facebook_token' in self.request_object:
-                facebook_token = self.request_object['facebook_token']
-
-        if not facebook_token:
-            return self.make_error(UPDATE_USER_LINK_FB_NO_TOKEN)
-
-        facebook_response = get_facebook_user(facebook_token)
-        facebook_error, facebook_data = facebook_response['error'], facebook_response['data']
-        if facebook_error:
-            return self.make_error(facebook_error)
-        if not facebook_data:
-            return self.make_error('Something wrong! Try again later')
-        facebook_id = facebook_data['id']
-
-        # check is this facebook id available
-        already_used = self.session.query(User).filter(and_(User.facebook_id == facebook_id,
-                                                            User.id != self.user.id)).first()
-        if already_used:
-            return self.make_error(message=UPDATE_USER_FB_ALREADY_USED, title=UPDATE_USER_FB_ALREADY_USED_TITLE)
-
-        self.user.facebook_id = facebook_id
-
-        # if this user have not avatar picture get it from his facebook profile
-        if not self.user.avatar:
-            fb_avatar_response = get_facebook_photo(facebook_token)
-            fb_avatar_error, fb_avatar_data = fb_avatar_response['error'], fb_avatar_response['data']
-            if not fb_avatar_error:
-                self.user.avatar = fb_avatar_data['avatar']
-                self.user.thumbnail = fb_avatar_data['thumbnail']
-            else:
-                logger.debug(fb_avatar_error)
-        self.session.commit()
-        return self.success({'user': self.user.user_response})
 
 
 @route('user/metatags')

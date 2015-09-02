@@ -69,5 +69,31 @@ def get_facebook_photo(token):
             'error': error
         }
 
+
+def get_facebook_friends(token):
+    """
+    Getting facebook friends in api
+    """
+    friends = []
+    error = None
+    try:
+        opener = urllib2.build_opener()
+        # get friends
+        url = 'https://graph.facebook.com/me/friends?access_token={0}'.format(token)
+        response = opener.open(url).read()
+        response_dict = json.loads(response)
+        logger.debug('Facebook friend response')
+        logger.debug(response_dict)
+        for f in response_dict['data']:
+            friends.append(f['id'])
+        # print response_dict
+    except urllib2.HTTPError, e:
+        error = str(e)
+    finally:
+        return {
+            'data': friends,
+            'error': error
+        }
+
 if __name__ == '__main__':
-    print get_facebook_user('CAACEdEose0cBAD54FnGjjaQpcZCZAofYxyASxhWsK6teG1B50kcmZChjdqZBwjPKrk7WSgH7XwoZAWcem8efejjHa3McVMZAnRmKFtnUgL3ZCYa83ZBKZB3wYqPC9ZCDrjGgCsGNixzo1iWUzOt1UPgn4NQKwoWPQ2mUVp1XEeEVJn8mqIpQujRXrd6qdzkYxhLO7pSRuDAHgC5eZBdlzCnMzYVKstCKkFlzcMZD')
+    print get_facebook_friends('CAAGbgG3gWzEBAML5O1TUvGhYu0PCNJNmWMcEptI9u679GvVZCXJmIaRIybAMx44JgTEM8sJ5PZAVjddcUZBzASXsuadnDtSQYJMgLex1TTV3nAnA5KkzESfelMcixXjaJ1g5kwAJ74g8MkSZCXbyVo1rDBhVEZBlQvNLdZAxTKBYNEmxqL7kGRwLStX8oLIkiDnNe85tsm7fGyueGwPtaM7cPL3lgxaMSEomb5BJn01hfyvWvmjebX')

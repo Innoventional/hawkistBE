@@ -442,6 +442,29 @@ Response:
                 ...
             }
         ]
+    }    
+
+
+**Search user using facebook**
+    
+    url = '/user/socials?facebook_token=FACEBOOK_TOKEN'
+    type: 'GET'
+    
+Response:
+    
+    {
+        "status": 0,
+        "users": [
+            {
+                'id': PROPOSED FRIEND ID,
+                'avatar': PROPOSED FRIEND AVATAR,
+                'username': PROPOSED FRIEND USERNAME,
+                'following': DOES CURRENT USER FOLLOW PROPOSED FRIEND
+            },
+            {
+                ...
+            }
+        ]
     }
     
 

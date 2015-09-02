@@ -26,7 +26,10 @@ def get_facebook_user(token):
             data['email'] = response_dict['email']
             data['username'] = response_dict['name']
         except Exception, e:
-            logger.debug('Facebook response have not key %s' % str(e))
+            if str(e) == "'email'":
+                error = 'Add email address to facebook first'
+            else:
+                error = 'Facebook response have not key %s' % str(e)
     except urllib2.HTTPError, e:
         error = str(e)
     finally:

@@ -154,6 +154,33 @@ Response Failure:
         'message': '',          — Error message text
         'title': ''          — Error message title 
     }
+
+
+**Update apns token**
+
+    Url: 'user/apns_token'
+    Method: 'PUT'
+    Content-Type: application/json; charset=UTF-8
+    
+Data:
+
+    {
+        'apns_token' : DEVICE TOKEN
+    }
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }
     
 
     
@@ -2000,6 +2027,68 @@ Response Success:
     
     {
         'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    } 
+    
+PUSH_NOTIFICATION_SETTINGS_RESPONSE 
+
+    "enable": true,
+    "types": {
+        "0": true,
+        "1": true,
+        "2": true,
+        "3": true,
+        "4": true,
+        "5": true,
+        "6": false,
+        "7": true,
+        "8": true,
+        "9": true,
+        "10": true
+    }
+        
+**Get user push notification settings**
+
+    Url: 'user/push_notifications'
+    Method: 'GET'
+
+
+Response :
+    
+    {
+        "status": 0,
+        PUSH_NOTIFICATION_SETTINGS_RESPONSE
+    }
+
+
+**Update user push notification settings**
+
+    Url: 'user/push_notifications'
+    Method: 'PUT'
+
+
+Data:
+
+    {
+        "enable": true or false, global push settings
+            
+            OR
+            
+        "type": ONE OF TYPE ABOVE
+    }
+
+Response Success:
+    
+    {
+        'status': 0,
+        PUSH_NOTIFICATION_SETTINGS_RESPONSE
     }
     
 Response Failure:

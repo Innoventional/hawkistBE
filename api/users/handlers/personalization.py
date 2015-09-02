@@ -1,3 +1,4 @@
+import json
 import logging
 from base import ApiHandler, die
 from helpers import route
@@ -105,3 +106,76 @@ class UserNotifyAboutFavoriteHandler(ApiHandler):
             self.session.commit()
 
         return self.success({'notify_about_favorite': self.user.notify_about_favorite})
+
+
+@route('user/push_notifications')
+class UserEnablePushNotificationsHandler(ApiHandler):
+    allowed_methods = ('GET', 'PUT')
+
+    def read(self):
+
+        if self.user is None:
+            die(401)
+
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            logger.debug(suspension_error)
+            return suspension_error
+
+        update_user_last_activity(self)
+
+        return self.success(self.user.push_response)
+
+    def update(self):
+
+        if self.user is None:
+            die(401)
+
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            logger.debug(suspension_error)
+            return suspension_error
+
+        update_user_last_activity(self)
+
+        logger.debug('REQUEST_OBJECT_USER_AVAILABLE_PUSH_NOTIFICATIONS')
+        logger.debug(self.request_object)
+
+        enable = ''
+        type = ''
+
+        if self.request_object:
+            if 'enable' in self.request_object:
+                enable = self.request_object['enable']
+
+            if 'type' in self.request_object:
+                type = str(self.request_object['type'])
+
+        need_commit = False
+        if len(str(enable)) != 0:
+            if self.user.available_push_notifications != enable:
+                if enable:
+                    self.user.available_push_notifications = True
+                else:
+                    self.user.available_push_notifications = False
+                need_commit = True
+
+        if len(type) != 0:
+            current_user_push_types = json.loads(json.loads(json.dumps(self.user.available_push_notifications_types))) \
+                if self.user.available_push_notifications_types else '{}'
+            try:
+                # get current type status
+                current_type_status = current_user_push_types.get(type)
+                # change status
+                if current_type_status:
+                    current_type_new_status = False
+                else:
+                    current_type_new_status = True
+                self.user.available_push_notifications_types = self.user.available_push_notifications_types.replace('"%s":%s' % (type, str(current_type_status).lower()), '"%s":%s' % (type, str(current_type_new_status).lower()))
+                need_commit = True
+            except Exception, e:
+                logger.debug(str(e))
+        if need_commit:
+            self.session.commit()
+
+        return self.success(self.user.push_response)

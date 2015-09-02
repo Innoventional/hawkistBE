@@ -1,4 +1,6 @@
 import datetime
+import json
+import logging
 from sqlalchemy import Column, Integer, DateTime, String, Boolean, SmallInteger, ForeignKey, Enum, Numeric
 from sqlalchemy.orm import relationship, backref
 from api.comments.models import comment_mentioned_users
@@ -9,8 +11,11 @@ from api.tags.models import Platform
 from api.users.blocked_users.models import user_blacklist
 from api.users.reported_users.models import user_reportlist
 from orm import Base
+from utility.apple.push import send_ios_notify
 
 __author__ = 'ne_luboff'
+
+logger = logging.getLogger(__name__)
 
 
 class UserType(Enum):
@@ -140,6 +145,13 @@ class User(Base):
     # holiday mode
     holiday_mode = Column(Boolean, nullable=False, default=False)
 
+    # device token for push notifications
+    apns_token = Column(String, nullable=True)
+    available_push_notifications = Column(Boolean, nullable=False, default=True)
+    available_push_notifications_types = Column(String, nullable=False, default='{"0":true,"1":true,"2":true,"3":true,'
+                                                                                '"4":true,"5":true,"6":true,"7":true,'
+                                                                                '"8":true,"9":true,"10":true}')
+
     def __repr__(self):
         return '<User %s (%s)>' % (self.id, self.username)
 
@@ -239,6 +251,35 @@ class User(Base):
             'address_line2': self.bank_account_address_line2,
             'city': self.bank_account_city,
             'post_code': self.bank_account_post_code,
+        }
+
+    def notify(self, alert, custom, sound, badge):
+        payloads = {}
+
+        if alert:
+            payloads['alert'] = alert
+
+        if custom:
+            payloads['custom'] = custom
+
+        if sound:
+            payloads['sound'] = sound
+
+        if badge:
+            payloads['badge'] = badge
+
+        logger.debug("Device notify")
+        logger.debug(payloads)
+
+        result = send_ios_notify(self.apns_token, alert=alert, custom=custom, sound=sound, badge=badge)
+        logger.debug(result)
+
+    @property
+    def push_response(self):
+        return {
+            'enable': self.available_push_notifications,
+            'types': json.loads(json.loads(json.dumps(self.available_push_notifications_types)))
+                    if self.available_push_notifications_types else '{}'
         }
 
 

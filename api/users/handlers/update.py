@@ -256,11 +256,12 @@ class UserSocialHandler(ApiHandler):
             return self.make_error(UPDATE_USER_LINK_FB_NO_TOKEN)
 
         facebook_response = get_facebook_user(facebook_token)
-        facebook_error, facebook_id = facebook_response['error'], facebook_response['data']
+        facebook_error, facebook_data = facebook_response['error'], facebook_response['data']
         if facebook_error:
             return self.make_error(facebook_error)
-        if not facebook_id:
+        if not facebook_data:
             return self.make_error('Something wrong! Try again later')
+        facebook_id = facebook_data['id']
 
         # check is this facebook id available
         already_used = self.session.query(User).filter(and_(User.facebook_id == facebook_id,
@@ -556,3 +557,56 @@ class DeleteAnthonyTagsHandler(OpenApiHandler):
             self.session.commit()
 
         return 'Deleted %s' % tag_response
+
+
+@route('user/apns_token')
+class UserAPNSTokenHandler(ApiHandler):
+    allowed_methods = ('PUT',)
+
+    def update(self):
+
+        if self.user is None:
+            die(401)
+
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            logger.debug(suspension_error)
+            return suspension_error
+
+        update_user_last_activity(self)
+
+        logger.debug('REQUEST_OBJECT_USER_APNS_TOKEN')
+        logger.debug(self.request_object)
+
+        apns_token = ''
+
+        if self.request_object:
+            if 'apns_token' in self.request_object:
+                apns_token = str(self.request_object['apns_token'])
+
+        if not apns_token:
+            return self.make_error('Anton, attention! No apns token in request')
+
+        # set apns_token to user
+        # first check has any user this token
+        need_commit = False
+
+        users_with_this_token = self.session.query(User).filter(and_(User.apns_token == apns_token,
+                                                                     User.id != self.user.id))
+        for u in users_with_this_token:
+            u.apns_token = None
+            u.updated_at = datetime.datetime.utcnow()
+            need_commit = True
+
+        # update token if current user has another
+        if self.user.apns_token != apns_token:
+            self.user.apns_token = apns_token
+            need_commit = True
+
+        if need_commit:
+            self.user.updated_at = datetime.datetime.utcnow()
+            self.session.commit()
+
+
+        return self.success()

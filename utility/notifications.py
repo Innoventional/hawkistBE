@@ -34,6 +34,7 @@ def notification_new_comment(self, listing, comment):
         listing.user.notify(alert=NEW_COMMENTS % listing.title,
                             custom={'type': '0',
                                     'listing_id': listing.id},
+                            sound='',
                             badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == listing.user_id,
                                                                                     UserNotificantion.seen_at == None)).count())
 

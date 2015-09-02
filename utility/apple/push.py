@@ -37,6 +37,7 @@ def get_feedbacks(server):
 
 
 if __name__ == '__main__':
-    result = send_ios_notify('f18b174eb350e4ee95bf79c332146dd80a3c66bd6bd73b164718876af0cd3b2c',
+    # result = send_ios_notify('f18b174eb350e4ee95bf79c332146dd80a3c66bd6bd73b164718876af0cd3b2c',
+    result = send_ios_notify('35ca4ca211290f75ba046612de3a18246cd41322608365d0e32cb64ceaa00bc4',
                              alert='Daaaa!', badge=0)
     print result

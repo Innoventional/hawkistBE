@@ -387,7 +387,7 @@ Response Success:
 
 **Get all users in application**
     
-    url = '/users'
+    Url: 'users'
     type: 'GET'
     
 Response:
@@ -408,7 +408,7 @@ Response:
 
 Get user by id:
 
-    url = '/user?id=USER_ID'
+    Url: 'user?id=USER_ID'
     type: 'GET'
 
 Response:
@@ -427,7 +427,7 @@ Response:
 
 **Search user by username / email**
     
-    url = '/users?q=a'
+    Url: 'users?q=a'
     type: 'GET'
     
 Response:
@@ -447,7 +447,7 @@ Response:
 
 **Search user using facebook**
     
-    url = '/user/socials?facebook_token=FACEBOOK_TOKEN'
+    Url: 'user/socials?facebook_token=FACEBOOK_TOKEN'
     type: 'GET'
     
 Response:

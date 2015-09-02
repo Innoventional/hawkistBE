@@ -128,7 +128,7 @@ class FeedbackHandler(ApiHandler):
             else:
                 neutral += 1
 
-        rating = int(round((positive + 0.5 * neutral - negative) / feedbacks.count()))
+        rating = int(round(((positive + 0.5 * neutral - negative) / feedbacks.count()) * 5))
 
         if rating < 1:
             rating = 1

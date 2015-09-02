@@ -2098,7 +2098,48 @@ Response Failure:
         'message': '',          — Error message text
         'title': ''          — Error message title 
     }  
+        
     
+    
+**Get user LET USER FIND ME IN FIND FRIENDS visibility flag**
+
+    Url: 'user/visible_in_find_friends'
+    Method: 'GET'
+
+
+Response :
+    
+    {
+        "status": 0,
+        "visible_in_find_friends": Boolean
+    }
+
+
+**Update user LET USER FIND ME IN FIND FRIENDS visibility flag**
+
+    Url: 'user/visible_in_find_friends'
+    Method: 'PUT'
+
+
+Data:
+
+    {
+        "visible_in_find_friends": true or false
+    }
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    } 
     
 --------------------------
 ### User Notifications

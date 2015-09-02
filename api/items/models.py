@@ -64,7 +64,7 @@ class Listing(Base):
     condition = relationship('Condition', backref=backref('condition_items', order_by=id, cascade="all,delete",
                                                           lazy='dynamic'), foreign_keys=condition_id)
 
-    color_id = Column(Integer, ForeignKey('colors.id'), nullable=False, index=True)
+    color_id = Column(Integer, ForeignKey('colors.id'), nullable=True, index=True)
     color = relationship('Color', backref=backref('color_items', order_by=id, cascade="all,delete", lazy='dynamic'),
                          foreign_keys=color_id)
 
@@ -135,7 +135,7 @@ class Listing(Base):
             'category': self.category_id,
             'subcategory': self.subcategory_id,
             'condition': self.condition_id,
-            'color': self.color_id,
+            # 'color': self.color_id,
             'retail_price': "%.02f" % float(self.retail_price),
             'selling_price': "%.02f" % float(self.selling_price),
             'discount': self.discount,

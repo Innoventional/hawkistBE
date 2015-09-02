@@ -367,6 +367,7 @@ class ListingHandler(ApiHandler):
         category_id = ''
         subcategory_id = ''
         condition_id = ''
+        # TODO uncomment color (commented 2015-09-02)
         color_id = ''
         retail_price = ''
         selling_price = ''
@@ -401,8 +402,9 @@ class ListingHandler(ApiHandler):
             if 'condition' in self.request_object:
                 condition_id = self.request_object['condition']
 
-            if 'color' in self.request_object:
-                color_id = self.request_object['color']
+            # TODO uncomment color (commented 2015-09-02)
+            # if 'color' in self.request_object:
+            #     color_id = self.request_object['color']
 
             if 'retail_price' in self.request_object:
                 retail_price = self.request_object['retail_price']
@@ -462,8 +464,9 @@ class ListingHandler(ApiHandler):
             if not condition_id:
                 empty_field_error.append('condition')
 
-            if not color_id:
-                empty_field_error.append('colour')
+            # TODO uncomment color (commented 2015-09-02)
+            # if not color_id:
+            #     empty_field_error.append('colour')
 
             if not retail_price:
                 empty_field_error.append('retail price')
@@ -562,22 +565,23 @@ class ListingHandler(ApiHandler):
                 listing_to_update.subcategory_id = subcategory_id
                 need_commit = True
 
-            if str(listing_to_update.color_id) != str(color_id):
-                # check color
-                colour = self.session.query(Color).filter(Color.id == color_id).first()
-                if not colour:
-                    return self.make_error(INVALID_COLOUR_ID % color_id)
-                subcategory_color = [c.id for c in subcategory.color_subcategory]
-                if color_id not in subcategory_color:
-                    return self.make_error(WRONG_SUBCATEGORY_COLOUR_RELATION % (subcategory.title.upper(),
-                                                                                subcategory.category.platform.title.upper(),
-                                                                                subcategory.category.title.upper(),
-                                                                                colour.title.upper(),
-                                                                                colour.subcategory.category.platform.title.upper(),
-                                                                                colour.subcategory.category.title.upper(),
-                                                                                colour.subcategory.title.upper()))
-                listing_to_update.color_id = color_id
-                need_commit = True
+            # TODO uncomment color (commented 2015-09-02)
+            # if str(listing_to_update.color_id) != str(color_id):
+            #     # check color
+            #     colour = self.session.query(Color).filter(Color.id == color_id).first()
+            #     if not colour:
+            #         return self.make_error(INVALID_COLOUR_ID % color_id)
+            #     subcategory_color = [c.id for c in subcategory.color_subcategory]
+            #     if color_id not in subcategory_color:
+            #         return self.make_error(WRONG_SUBCATEGORY_COLOUR_RELATION % (subcategory.title.upper(),
+            #                                                                     subcategory.category.platform.title.upper(),
+            #                                                                     subcategory.category.title.upper(),
+            #                                                                     colour.title.upper(),
+            #                                                                     colour.subcategory.category.platform.title.upper(),
+            #                                                                     colour.subcategory.category.title.upper(),
+            #                                                                     colour.subcategory.title.upper()))
+            #     listing_to_update.color_id = color_id
+            #     need_commit = True
 
             if str(listing_to_update.condition_id) != str(condition_id):
                 # check condition
@@ -699,8 +703,9 @@ class ListingHandler(ApiHandler):
             if not condition_id:
                 empty_field_error.append('condition')
 
-            if not color_id:
-                empty_field_error.append('colour')
+            # TODO uncomment color (commented 2015-09-02)
+            # if not color_id:
+            #     empty_field_error.append('colour')
 
             if not retail_price:
                 empty_field_error.append('retail price')
@@ -757,10 +762,11 @@ class ListingHandler(ApiHandler):
             if not subcategory:
                 return self.make_error(INVALID_SUBCATEGORY_ID % category_id)
 
+            # TODO uncomment color (commented 2015-09-02)
             # check color
-            colour = self.session.query(Color).filter(Color.id == color_id).first()
-            if not colour:
-                return self.make_error(INVALID_COLOUR_ID % color_id)
+            # colour = self.session.query(Color).filter(Color.id == color_id).first()
+            # if not colour:
+            #     return self.make_error(INVALID_COLOUR_ID % color_id)
 
             # check condition
             condition = self.session.query(Condition).filter(Condition.id == condition_id).first()
@@ -781,15 +787,16 @@ class ListingHandler(ApiHandler):
                                                                               subcategory.category.platform.title.upper(),
                                                                               subcategory.category.title.upper()))
 
-            subcategory_color = [c.id for c in subcategory.color_subcategory]
-            if color_id not in subcategory_color:
-                return self.make_error(WRONG_SUBCATEGORY_COLOUR_RELATION % (subcategory.title.upper(),
-                                                                            subcategory.category.platform.title.upper(),
-                                                                            subcategory.category.title.upper(),
-                                                                            colour.title.upper(),
-                                                                            colour.subcategory.category.platform.title.upper(),
-                                                                            colour.subcategory.category.title.upper(),
-                                                                            colour.subcategory.title.upper()))
+            # TODO uncomment color (commented 2015-09-02)
+            # subcategory_color = [c.id for c in subcategory.color_subcategory]
+            # if color_id not in subcategory_color:
+            #     return self.make_error(WRONG_SUBCATEGORY_COLOUR_RELATION % (subcategory.title.upper(),
+            #                                                                 subcategory.category.platform.title.upper(),
+            #                                                                 subcategory.category.title.upper(),
+            #                                                                 colour.title.upper(),
+            #                                                                 colour.subcategory.category.platform.title.upper(),
+            #                                                                 colour.subcategory.category.title.upper(),
+            #                                                                 colour.subcategory.title.upper()))
 
             subcategory_condition = [c.id for c in subcategory.condition_subcategory]
             if condition_id not in subcategory_condition:
@@ -837,7 +844,8 @@ class ListingHandler(ApiHandler):
             listing.category_id = category_id
             listing.subcategory_id = subcategory_id
             listing.condition_id = condition_id
-            listing.color_id = color_id
+            # TODO uncomment color (commented 2015-09-02)
+            # listing.color_id = color_id
             listing.retail_price = retail_price
             listing.selling_price = selling_price
 

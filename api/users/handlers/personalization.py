@@ -179,3 +179,51 @@ class UserEnablePushNotificationsHandler(ApiHandler):
             self.session.commit()
 
         return self.success(self.user.push_response)
+
+@route('user/visible_in_find_friends')
+class LetMembersFindMeUsingFindFriendsHandler(ApiHandler):
+    allowed_methods = ('GET', 'PUT')
+
+    def read(self):
+
+        if self.user is None:
+            die(401)
+
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            logger.debug(suspension_error)
+            return suspension_error
+
+        update_user_last_activity(self)
+
+        return self.success({'visible_in_find_friends': self.user.visible_in_find_friends})
+
+    def update(self):
+
+        if self.user is None:
+            die(401)
+
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            logger.debug(suspension_error)
+            return suspension_error
+
+        update_user_last_activity(self)
+
+        logger.debug('REQUEST_OBJECT_USER_FIND_FRIENDS_VISIBILITY')
+        logger.debug(self.request_object)
+
+        visible_in_find_friends = ''
+
+        if self.request_object:
+            if 'visible_in_find_friends' in self.request_object:
+                visible_in_find_friends = self.request_object['visible_in_find_friends']
+
+        if self.user.visible_in_find_friends != visible_in_find_friends:
+            if visible_in_find_friends:
+                self.user.visible_in_find_friends = True
+            else:
+                self.user.visible_in_find_friends = False
+            self.session.commit()
+
+        return self.success({'visible_in_find_friends': self.user.visible_in_find_friends})

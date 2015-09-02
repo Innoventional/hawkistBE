@@ -145,6 +145,9 @@ class User(Base):
     # holiday mode
     holiday_mode = Column(Boolean, nullable=False, default=False)
 
+    # Let members find me in Find Friends TickBox
+    visible_in_find_friends = Column(Boolean, nullable=False, default=False)
+
     # device token for push notifications
     apns_token = Column(String, nullable=True)
     available_push_notifications = Column(Boolean, nullable=False, default=True)

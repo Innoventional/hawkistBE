@@ -142,14 +142,14 @@ class UserEnablePushNotificationsHandler(ApiHandler):
         logger.debug(self.request_object)
 
         enable = ''
-        type = ''
+        type_to_be_changed = ''
 
         if self.request_object:
             if 'enable' in self.request_object:
                 enable = self.request_object['enable']
 
             if 'type' in self.request_object:
-                type = str(self.request_object['type'])
+                type_to_be_changed = str(self.request_object['type'])
 
         need_commit = False
         if len(str(enable)) != 0:
@@ -159,18 +159,20 @@ class UserEnablePushNotificationsHandler(ApiHandler):
                 self.user.available_push_notifications = True
             need_commit = True
 
-        if len(type) != 0:
+        if len(type_to_be_changed) != 0:
             current_user_push_types = json.loads(json.loads(json.dumps(self.user.available_push_notifications_types))) \
                 if self.user.available_push_notifications_types else '{}'
             try:
                 # get current type status
-                current_type_status = current_user_push_types.get(type)
+                current_type_status = current_user_push_types.get(type_to_be_changed)
                 # change status
                 if current_type_status:
                     current_type_new_status = False
                 else:
                     current_type_new_status = True
-                self.user.available_push_notifications_types = self.user.available_push_notifications_types.replace('"%s":%s' % (type, str(current_type_status).lower()), '"%s":%s' % (type, str(current_type_new_status).lower()))
+                self.user.available_push_notifications_types = self.user.available_push_notifications_types.\
+                    replace('"%s":%s' % (type_to_be_changed, str(current_type_status).lower()),
+                            '"%s":%s' % (type_to_be_changed, str(current_type_new_status).lower()))
                 need_commit = True
             except Exception, e:
                 logger.debug(str(e))

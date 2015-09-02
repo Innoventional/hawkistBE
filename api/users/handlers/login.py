@@ -272,11 +272,11 @@ class LogoutHandler(OpenApiHandler):
         logger.debug(self.user)
         update_user_last_activity(self)
 
-        self.user = None
-
         # delete apns_token
         if self.user.apns_token:
             self.user.apns_token = None
+
+        self.user = None
 
         self.session.commit()
 

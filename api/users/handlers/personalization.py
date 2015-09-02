@@ -153,12 +153,11 @@ class UserEnablePushNotificationsHandler(ApiHandler):
 
         need_commit = False
         if len(str(enable)) != 0:
-            if self.user.available_push_notifications != enable:
-                if enable:
-                    self.user.available_push_notifications = True
-                else:
-                    self.user.available_push_notifications = False
-                need_commit = True
+            if self.user.available_push_notifications:
+                self.user.available_push_notifications = False
+            else:
+                self.user.available_push_notifications = True
+            need_commit = True
 
         if len(type) != 0:
             current_user_push_types = json.loads(json.loads(json.dumps(self.user.available_push_notifications_types))) \

@@ -49,7 +49,6 @@ class UserSocialHandler(ApiHandler):
             'following': True if u in self.user.following else False
         } for u in friends]})
 
-
     def update(self):
 
         if self.user is None:

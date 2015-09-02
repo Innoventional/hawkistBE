@@ -1,7 +1,16 @@
 import datetime
+import json
+from sqlalchemy import and_
 from api.notifications.models import UserNotificantion, NotificationType, NotificationPriority
+from ui_messages.messages.push_notifications import NEW_COMMENTS
 
 __author__ = 'ne_luboff'
+
+
+def check_is_pushes_available_by_type(user, push_type):
+    if user.apns_token and user.available_push_notifications and json.loads(json.loads(json.dumps(user.available_push_notifications_types))).get(push_type):
+        return True
+    return False
 
 
 def notification_new_comment(self, listing, comment):
@@ -21,6 +30,14 @@ def notification_new_comment(self, listing, comment):
     self.session.add(notification)
     self.session.commit()
 
+    if check_is_pushes_available_by_type(listing.user, '0'):
+        listing.user.notify(alert=NEW_COMMENTS % listing.title,
+                            custom={'type': '0',
+                                    'listing_id': listing.id},
+                            badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == listing.user_id,
+                                                                                    UserNotificantion.seen_at == None)).count())
+
+
 
 def notification_item_sold(self, listing):
     notification = UserNotificantion()
@@ -36,6 +53,7 @@ def notification_item_sold(self, listing):
     notification.priority = NotificationPriority.High
     self.session.add(notification)
     self.session.commit()
+
 
 
 def notification_item_received(session, order):

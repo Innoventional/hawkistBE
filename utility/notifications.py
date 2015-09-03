@@ -153,7 +153,7 @@ def notification_leave_feedback(self, order):
     self.session.add(notification)
     self.session.commit()
 
-    if check_is_pushes_available_by_type(self.user, '5'):
+    if check_is_pushes_available_by_type(order.user, '5'):
         order.user.notify(alert=LEAVE_FEEDBACK % order.listing.title,
                           custom={'type': '5',
                                   'order_id': order.id,

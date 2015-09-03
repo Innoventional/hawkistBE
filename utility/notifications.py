@@ -139,7 +139,7 @@ def notification_funds_released(session, user, listing):
 def notification_leave_feedback(self, order):
     notification = UserNotificantion()
     notification.created_at = datetime.datetime.utcnow()
-    notification.owner_id = self.user.id
+    notification.owner_id = order.user.id
     notification.type = NotificationType.LeaveFeedback
     notification.user_id = order.listing.user_id
     notification.user_avatar = order.listing.user.avatar
@@ -154,13 +154,13 @@ def notification_leave_feedback(self, order):
     self.session.commit()
 
     if check_is_pushes_available_by_type(self.user, '5'):
-        self.user.notify(alert=LEAVE_FEEDBACK % order.listing.title,
-                         custom={'type': '5',
-                                 'order_id': order.id,
-                                 'order_available_feedback': True},
-                         sound='',
-                         badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == self.user.id,
-                                                                                 UserNotificantion.seen_at == None)).count())
+        order.user.notify(alert=LEAVE_FEEDBACK % order.listing.title,
+                          custom={'type': '5',
+                                  'order_id': order.id,
+                                  'order_available_feedback': True},
+                          sound='',
+                          badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == order.user.id,
+                                                                                  UserNotificantion.seen_at == None)).count())
 
 
 def notification_item_favourite(self, listing):

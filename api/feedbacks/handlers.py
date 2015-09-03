@@ -137,7 +137,7 @@ class FeedbackHandler(ApiHandler):
         # 0.4 - 0.59 -> 3
         # 0.6 - 0.79 -> 4
         # 0.8 - 1 -> 5
-        
+
         rating = 1
         if 0.2 <= rating_percentage < 0.4:
             rating = 2

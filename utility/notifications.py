@@ -88,7 +88,7 @@ def notification_item_received(session, order):
                                                                              UserNotificantion.seen_at == None)).count())
 
 
-def notification_new_feedback(self, listing):
+def notification_new_feedback(self, listing, feedback_type):
     notification = UserNotificantion()
     notification.created_at = datetime.datetime.utcnow()
     notification.owner_id = listing.user_id
@@ -100,12 +100,14 @@ def notification_new_feedback(self, listing):
     notification.listing_title = listing.title
     notification.listing_photo = listing.listing_photos[0].image_url
     notification.priority = NotificationPriority.High
+    notification.feedback_type = feedback_type
     self.session.add(notification)
     self.session.commit()
 
     if check_is_pushes_available_by_type(listing.user, '3'):
         listing.user.notify(alert=NEW_FEEDBACK,
-                            custom={'type': '3'},
+                            custom={'type': '3',
+                                    'feedback_type': feedback_type},
                             sound='',
                             badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == listing.user_id,
                                                                                     UserNotificantion.seen_at == None)).count())

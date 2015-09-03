@@ -65,6 +65,7 @@ class UserNotificantion(Base):
     # info about order
     order_id = Column(Integer, nullable=True)
     order_available_feedback = Column(Boolean, nullable=True)
+    feedback_type = Column(SmallInteger, nullable=True)
 
     def get_shipping_price_value(self):
         try:

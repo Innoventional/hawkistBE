@@ -149,7 +149,7 @@ class FeedbackHandler(ApiHandler):
             rating = 5
 
         user.rating = rating
-        notification_new_feedback(self, order.listing)
+        notification_new_feedback(self, order.listing, feedback_type)
 
         self.session.commit()
 

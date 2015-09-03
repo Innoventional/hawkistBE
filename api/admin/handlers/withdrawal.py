@@ -50,20 +50,16 @@ class AdminWithdrawalsHandler(AdminBaseHandler):
             return self.make_error('No withdrawals to download')
         # write into csv
         filename = 'Hawkist_withdrawals_{0}'.format((datetime.datetime.utcnow() + datetime.timedelta(hours=1)).strftime("%Y-%m-%d_%H:%M"))
-        data = ''
+        data = 'Withdrawal id, Requested time, Account Holder, Account Number, Sort Code, Email address, ' \
+               'Balance to Withdraw, Reference\n'
         for w in withdrawals:
-            current_row = 'Withdrawal id: {0}, Requested time: {1}, Account Holder: {2}, Account Number: {3}, ' \
-                          'Sort Code: {4}, Email address: {5}, Balance to Withdraw: {6}, Reference: {7};\n'.\
-                              format(w.id, (w.created_at + datetime.timedelta(hours=1)).strftime("%Y-%m-%d %H:%M"),
-                                     w.account_holder, w.account_number, w.account_sort_code, w.user_email,
-                                     "%.02f" % float(w.amount), w.user_id)
+            current_row = '{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}\n'.format(w.id,
+                           (w.created_at + datetime.timedelta(hours=1)).strftime("%Y-%m-%d %H:%M"), w.account_holder,
+                           w.account_number, w.account_sort_code, w.user_email, "%.02f" % float(w.amount), w.user_id)
             # marked withdrawals as in process
             w.status = WithdrawalStatus.InProcess
             w.updated_at = datetime.datetime.utcnow()
             data += current_row
-
-        # for beauty
-        data = data[:-2] + '.'
 
         # load this file to amazon
         file_url = upload_file_withdrawals('{0}'.format(filename), data, content_type='scv')

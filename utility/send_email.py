@@ -130,7 +130,7 @@ def funds_received_seller(order):
 
 def refunds_issues_buyer(self):
     text = REFUND_ISSUES_BUYER_TEXT % (self.user.username, BOLD_STRING % self.listing.title,
-                                       self.charge.payment_sum)
+                                       self.payment_sum)
     subject = REFUND_ISSUES_BUYER_TITLE % self.listing.title
     send_email(text, subject=subject, recipient=self.user.email)
 

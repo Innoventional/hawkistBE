@@ -128,10 +128,25 @@ class FeedbackHandler(ApiHandler):
             else:
                 neutral += 1
 
-        rating = int(round(((positive + 0.5 * neutral - negative) / feedbacks.count()) * 5))
+        # get percent value
+        rating_percentage = (positive + 0.5 * neutral - negative) / feedbacks.count()
 
-        if rating < 1:
-            rating = 1
+        # percentage to stars
+        # 0 - 0.19 -> 1
+        # 0.2 - 0.39 -> 2
+        # 0.4 - 0.59 -> 3
+        # 0.6 - 0.79 -> 4
+        # 0.8 - 1 -> 5
+        
+        rating = 1
+        if 0.2 <= rating_percentage < 0.4:
+            rating = 2
+        elif 0.4 <= rating_percentage < 0.6:
+            rating = 3
+        elif 0.6 <= rating_percentage < 0.8:
+            rating = 4
+        elif rating_percentage >= 0.8:
+            rating = 5
 
         user.rating = rating
         notification_new_feedback(self, order.listing)

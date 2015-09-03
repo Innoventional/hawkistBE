@@ -2,7 +2,10 @@ import datetime
 import json
 from sqlalchemy import and_
 from api.notifications.models import UserNotificantion, NotificationType, NotificationPriority
-from ui_messages.messages.push_notifications import NEW_COMMENTS
+from api.users.models import User
+from ui_messages.messages.push_notifications import NEW_COMMENTS, ITEM_SOLD, ITEM_RECEIVED, NEW_FEEDBACK, FUNDS_RELEASED, \
+    LEAVE_FEEDBACK, ITEM_IS_FAVOURITED, A_FAVOURITE_ITEM_IS_SOLD, NEW_FOLLOWERS, NEW_ITEMS, MENTIONS, NEW_OFFERED_PRICE, \
+    OFFERED_PRICE_ACCEPTED, OFFERED_PRICE_DECLINED
 
 __author__ = 'ne_luboff'
 
@@ -39,7 +42,6 @@ def notification_new_comment(self, listing, comment):
                                                                                     UserNotificantion.seen_at == None)).count())
 
 
-
 def notification_item_sold(self, listing):
     notification = UserNotificantion()
     notification.created_at = datetime.datetime.utcnow()
@@ -55,6 +57,12 @@ def notification_item_sold(self, listing):
     self.session.add(notification)
     self.session.commit()
 
+    if check_is_pushes_available_by_type(listing.user, '1'):
+        listing.user.notify(alert=ITEM_SOLD % listing.title,
+                            custom={'type': '1'},
+                            sound='',
+                            badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == listing.user_id,
+                                                                                    UserNotificantion.seen_at == None)).count())
 
 
 def notification_item_received(session, order):
@@ -72,6 +80,13 @@ def notification_item_received(session, order):
     session.add(notification)
     session.commit()
 
+    if check_is_pushes_available_by_type(order.user, '2'):
+        order.user.notify(alert=ITEM_RECEIVED % order.listing.title,
+                          custom={'type': '2'},
+                          sound='',
+                          badge=session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == order.user_id,
+                                                                             UserNotificantion.seen_at == None)).count())
+
 
 def notification_new_feedback(self, listing):
     notification = UserNotificantion()
@@ -87,6 +102,13 @@ def notification_new_feedback(self, listing):
     notification.priority = NotificationPriority.High
     self.session.add(notification)
     self.session.commit()
+
+    if check_is_pushes_available_by_type(listing.user, '3'):
+        listing.user.notify(alert=NEW_FEEDBACK,
+                            custom={'type': '3'},
+                            sound='',
+                            badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == listing.user_id,
+                                                                                    UserNotificantion.seen_at == None)).count())
 
 
 def notification_funds_released(session, user, listing):
@@ -106,6 +128,13 @@ def notification_funds_released(session, user, listing):
     session.add(notification)
     session.commit()
 
+    if check_is_pushes_available_by_type(listing.user, '4'):
+        listing.user.notify(alert=FUNDS_RELEASED,
+                            custom={'type': '4'},
+                            sound='',
+                            badge=session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == listing.user_id,
+                                                                               UserNotificantion.seen_at == None)).count())
+
 
 def notification_leave_feedback(self, order):
     notification = UserNotificantion()
@@ -124,6 +153,13 @@ def notification_leave_feedback(self, order):
     self.session.add(notification)
     self.session.commit()
 
+    if check_is_pushes_available_by_type(self.user, '5'):
+        self.user.notify(alert=LEAVE_FEEDBACK % order.listing.title,
+                         custom={'type': '5'},
+                         sound='',
+                         badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == self.user.id,
+                                                                                 UserNotificantion.seen_at == None)).count())
+
 
 def notification_item_favourite(self, listing):
     notification = UserNotificantion()
@@ -140,6 +176,14 @@ def notification_item_favourite(self, listing):
     self.session.add(notification)
     self.session.commit()
 
+    if check_is_pushes_available_by_type(listing.user, '6'):
+        listing.user.notify(alert=ITEM_IS_FAVOURITED % listing.title,
+                            custom={'type': '6',
+                                    'user_id': self.user.id},
+                            sound='',
+                            badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == listing.user_id,
+                                                                               UserNotificantion.seen_at == None)).count())
+
 
 def notification_favourite_item_sold(self, owner_id, listing):
     notification = UserNotificantion()
@@ -153,6 +197,16 @@ def notification_favourite_item_sold(self, owner_id, listing):
     self.session.add(notification)
     self.session.commit()
 
+    # get owner by id
+    owner = self.session.query(User).get(owner_id)
+
+    if check_is_pushes_available_by_type(owner, '7'):
+        owner.notify(alert=A_FAVOURITE_ITEM_IS_SOLD,
+                     custom={'type': '7'},
+                     sound='',
+                     badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == owner_id,
+                                                                             UserNotificantion.seen_at == None)).count())
+
 
 def notification_new_follower(self, following_user_id):
     notification = UserNotificantion()
@@ -165,6 +219,17 @@ def notification_new_follower(self, following_user_id):
     notification.priority = NotificationPriority.Low
     self.session.add(notification)
     self.session.commit()
+
+    # get owner by id
+    owner = self.session.query(User).get(following_user_id)
+
+    if check_is_pushes_available_by_type(owner, '8'):
+        owner.notify(alert=NEW_FOLLOWERS,
+                     custom={'type': '8',
+                             'user_id': self.user.id},
+                     sound='',
+                     badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == following_user_id,
+                                                                             UserNotificantion.seen_at == None)).count())
 
 
 def notification_following_user_new_item(self, owner_id, listing):
@@ -182,6 +247,17 @@ def notification_following_user_new_item(self, owner_id, listing):
     self.session.add(notification)
     self.session.commit()
 
+    # get owner by id
+    owner = self.session.query(User).get(owner_id)
+
+    if check_is_pushes_available_by_type(owner, '9'):
+        owner.notify(alert=NEW_ITEMS,
+                     custom={'type': '9',
+                             'user_id': self.user.id},
+                     sound='',
+                     badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == owner_id,
+                                                                             UserNotificantion.seen_at == None)).count())
+
 
 def notification_new_mention(self, owner_id, listing):
     notification = UserNotificantion()
@@ -197,6 +273,17 @@ def notification_new_mention(self, owner_id, listing):
     notification.priority = NotificationPriority.Low
     self.session.add(notification)
     self.session.commit()
+
+    # get owner by id
+    owner = self.session.query(User).get(owner_id)
+
+    if check_is_pushes_available_by_type(owner, '10'):
+        owner.notify(alert=MENTIONS,
+                     custom={'type': '10',
+                             'listing_id': listing.id},
+                     sound='',
+                     badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == owner_id,
+                                                                             UserNotificantion.seen_at == None)).count())
 
 
 def notification_new_offered_price(self, listing, offered_price):
@@ -215,11 +302,19 @@ def notification_new_offered_price(self, listing, offered_price):
     self.session.add(notification)
     self.session.commit()
 
+    listing.user.notify(alert=NEW_OFFERED_PRICE % listing.title,
+                        custom={'type': '11',
+                                'listing_id': listing.id},
+                        sound='',
+                        badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == listing.user_id,
+                                                                                UserNotificantion.seen_at == None)).count())
 
-def notification_offered_price_accepted(self, owner_id, listing, offered_price):
+
+
+def notification_offered_price_accepted(self, owner, listing, offered_price):
     notification = UserNotificantion()
     notification.created_at = datetime.datetime.utcnow()
-    notification.owner_id = owner_id
+    notification.owner_id = owner.id
     notification.type = NotificationType.OfferedPriceAccepted
     notification.user_id = self.user.id
     notification.user_avatar = self.user.avatar
@@ -232,11 +327,19 @@ def notification_offered_price_accepted(self, owner_id, listing, offered_price):
     self.session.add(notification)
     self.session.commit()
 
+    if owner.available_push_notifications:
+        owner.notify(alert=OFFERED_PRICE_ACCEPTED % listing.id,
+                     custom={'type': '12',
+                             'listing_id': listing.id},
+                     sound='',
+                     badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == owner.id,
+                                                                             UserNotificantion.seen_at == None)).count())
 
-def notification_offered_price_declined(self, owner_id, listing, offered_price):
+
+def notification_offered_price_declined(self, owner, listing, offered_price):
     notification = UserNotificantion()
     notification.created_at = datetime.datetime.utcnow()
-    notification.owner_id = owner_id
+    notification.owner_id = owner.id
     notification.type = NotificationType.OfferedPriceDeclined
     notification.user_id = self.user.id
     notification.user_avatar = self.user.avatar
@@ -248,6 +351,14 @@ def notification_offered_price_declined(self, owner_id, listing, offered_price):
     notification.priority = NotificationPriority.Mandatory
     self.session.add(notification)
     self.session.commit()
+
+    if owner.available_push_notifications:
+        owner.notify(alert=OFFERED_PRICE_DECLINED % listing.id,
+                     custom={'type': '13',
+                             'listing_id': listing.id},
+                     sound='',
+                     badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == owner.id,
+                                                                             UserNotificantion.seen_at == None)).count())
 
 
 def update_notification_user_username(self, user):

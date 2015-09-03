@@ -188,7 +188,7 @@ class ItemOffersHandler(ApiHandler):
 
             self.session.commit()
 
-            notification_offered_price_accepted(self, offer.user_id, offer.listing, offer.new_price)
+            notification_offered_price_accepted(self, offer.user, offer.listing, offer.new_price)
 
         elif str(new_status) == '2':
             offer.status = OfferStatus.Declined
@@ -202,7 +202,7 @@ class ItemOffersHandler(ApiHandler):
             self.session.add(comment)
             self.session.commit()
 
-            notification_offered_price_declined(self, offer.user_id, offer.listing, offer.new_price)
+            notification_offered_price_declined(self, offer.user, offer.listing, offer.new_price)
 
         return self.success()
 

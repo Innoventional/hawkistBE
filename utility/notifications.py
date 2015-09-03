@@ -256,7 +256,7 @@ def notification_following_user_new_item(self, owner_id, listing):
     if check_is_pushes_available_by_type(owner, '9'):
         owner.notify(alert=NEW_ITEMS,
                      custom={'type': '9',
-                             'user_id': self.user.id},
+                             'listing_id': listing.id},
                      sound='',
                      badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == owner_id,
                                                                              UserNotificantion.seen_at == None)).count())

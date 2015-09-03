@@ -204,7 +204,8 @@ def notification_favourite_item_sold(self, owner_id, listing):
 
     if check_is_pushes_available_by_type(owner, '7'):
         owner.notify(alert=A_FAVOURITE_ITEM_IS_SOLD % listing.title,
-                     custom={'type': '7'},
+                     custom={'type': '7',
+                             'listing_id': listing.id},
                      sound='',
                      badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == owner_id,
                                                                              UserNotificantion.seen_at == None)).count())

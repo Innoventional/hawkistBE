@@ -155,7 +155,9 @@ def notification_leave_feedback(self, order):
 
     if check_is_pushes_available_by_type(self.user, '5'):
         self.user.notify(alert=LEAVE_FEEDBACK % order.listing.title,
-                         custom={'type': '5'},
+                         custom={'type': '5',
+                                 'order_id': order.id,
+                                 'order_available_feedback': True},
                          sound='',
                          badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == self.user.id,
                                                                                  UserNotificantion.seen_at == None)).count())

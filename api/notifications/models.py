@@ -10,12 +10,12 @@ class NotificationType(Enum):
     NewComment = 0 #+
     ItemSold = 1 #+
     ItemReceived = 2 #+
-    NewFeedback = 3
+    NewFeedback = 3 #+
     FundsReleased = 4 #+
     LeaveFeedback = 5
     ItemIsFavourited = 6 #+
     AFavouriteItemIsSold = 7
-    NewFollowers = 8
+    NewFollowers = 8 #+
     NewItems = 9
     Mentions = 10
     NewOfferedPrice = 11 #+

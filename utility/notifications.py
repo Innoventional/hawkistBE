@@ -302,13 +302,13 @@ def notification_new_offered_price(self, listing, offered_price):
     self.session.add(notification)
     self.session.commit()
 
-    listing.user.notify(alert=NEW_OFFERED_PRICE % listing.title,
-                        custom={'type': '11',
-                                'listing_id': listing.id},
-                        sound='',
-                        badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == listing.user_id,
-                                                                                UserNotificantion.seen_at == None)).count())
-
+    if listing.user.apns_token:
+        listing.user.notify(alert=NEW_OFFERED_PRICE % listing.title,
+                            custom={'type': '11',
+                                    'listing_id': listing.id},
+                            sound='',
+                            badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == listing.user_id,
+                                                                                    UserNotificantion.seen_at == None)).count())
 
 
 def notification_offered_price_accepted(self, owner, listing, offered_price):
@@ -327,7 +327,7 @@ def notification_offered_price_accepted(self, owner, listing, offered_price):
     self.session.add(notification)
     self.session.commit()
 
-    if owner.available_push_notifications:
+    if owner.available_push_notifications and owner.apns_token:
         owner.notify(alert=OFFERED_PRICE_ACCEPTED % listing.id,
                      custom={'type': '12',
                              'listing_id': listing.id},
@@ -352,7 +352,7 @@ def notification_offered_price_declined(self, owner, listing, offered_price):
     self.session.add(notification)
     self.session.commit()
 
-    if owner.available_push_notifications:
+    if owner.available_push_notifications and owner.apns_token:
         owner.notify(alert=OFFERED_PRICE_DECLINED % listing.id,
                      custom={'type': '13',
                              'listing_id': listing.id},

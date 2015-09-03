@@ -98,5 +98,6 @@ class UserNotificantion(Base):
             'order': {
                 'id': self.order_id,
                 'available_feedback': self.order_available_feedback
-            }
+            },
+            'feedback_type': self.feedback_type
         }

@@ -32,7 +32,7 @@ def daily_events():
             time_delta = datetime.datetime.utcnow() - order.created_at
             if time_delta.days == 4 or time_delta.days == 6:
                 # send 4/6 days warning letter
-                send_warning_4_6_days_email(order.user.email, order.user.username, order.listing.title)
+                send_warning_4_6_days_email(order.user.email, order.user.username, order.listing.title, time_delta.days)
                 # add notifications
                 notification_item_received(session, order)
             elif time_delta.days == 7:

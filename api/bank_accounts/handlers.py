@@ -11,7 +11,7 @@ from ui_messages.errors.my_balance_errors import BALANCE_EDIT_USER_INFO_EMPTY_FI
     BALANCE_EDIT_BANK_ACCOUNT_INFO_INVALID_SORT_CODE_FORMAT, BALANCE_EDIT_BANK_ACCOUNT_INFO_INVALID_NUMBER_FORMAT, \
     BALANCE_WITHDRAWAL_NOT_ENOUGH_MONEY
 from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE, INVALID_NUMBER_FORMAT_TITLE, \
-    INVALID_SORT_CODE_FORMAT_TITLE
+    INVALID_SORT_CODE_FORMAT_TITLE, BALANCE_WITHDRAWAL_NOT_ENOUGH_MONEY_TITLE
 from utility.send_email import user_withdrawal_requested_email
 from utility.stripe_api import stripe_create_transfer
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
@@ -406,7 +406,8 @@ class WithdrawalHandler(ApiHandler):
 
         # check user balance
         if self.user.app_wallet < 15:
-            return self.make_error(BALANCE_WITHDRAWAL_NOT_ENOUGH_MONEY)
+            return self.make_error(message=BALANCE_WITHDRAWAL_NOT_ENOUGH_MONEY,
+                                   title=BALANCE_WITHDRAWAL_NOT_ENOUGH_MONEY_TITLE)
 
         # first calculate withdrawal amount
         transfer_amount_total = self.user.app_wallet

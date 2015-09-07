@@ -10,6 +10,7 @@ CREATE_LISTING_USER_HAVENT_FB = "In order to sell on Hawkist, you must connect a
                                 "identity."
 CREATE_LISTING_USER_DONT_CONFIRM_EMAIL = "In order to sell on Hawkist you must confirm an email address."
 CREATE_LISTING_EMPTY_FIELDS = 'You must input the %s in order to create a listing.'
+CREATE_LISTING_EMPTY_FIELDS_SHIPPING = 'You must input a Shipping Price or select Collection Only to create a listing.'
 
 # check is this instance exist
 INVALID_PLATFORM_ID = 'No platform with id %s'
@@ -41,6 +42,7 @@ DELETE_SOLD_LISTING = 'You cannot delete sold listing'
 UPDATE_LISTING_UNDEFINED_LISTING_ID = 'No listing to update id'
 UPDATE_LISTING_LISTING_SOLD = 'You cannot update sold listing'
 UPDATE_LISTING_EMPTY_FIELDS = 'You must select the %s in order to update a listing.'
+UPDATE_LISTING_EMPTY_FIELDS_SHIPPING = 'You must input a Shipping Price or select Collection Only to update a listing.'
 
 # Listing likes
 LIKE_LISTING_NO_ID = 'No listing to like id'

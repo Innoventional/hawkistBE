@@ -13,4 +13,4 @@ BALANCE_EDIT_BANK_ACCOUNT_INFO_INVALID_NUMBER_FORMAT = 'Please check the Account
 BALANCE_EDIT_BANK_ACCOUNT_INFO_INVALID_SORT_CODE_FORMAT = 'Please check the Sort Code to ensure it is correctly ' \
                                                           'formatted.'
 
-BALANCE_WITHDRAWAL_NOT_ENOUGH_MONEY = u'£15 minimum to withdraw'
+BALANCE_WITHDRAWAL_NOT_ENOUGH_MONEY = u'You must have a balance of £15 or more to request a withdrawal.'

@@ -18,7 +18,7 @@ from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID,
     DELETE_LISTING_ANOTHER_USER, LIKE_LISTING_NO_ID, LIKE_YOUR_OWN_LISTING, UPDATE_LISTING_UNDEFINED_LISTING_ID, \
     UPDATE_LISTING_LISTING_SOLD, UPDATE_LISTING_EMPTY_FIELDS, \
     DELETE_RESERVED_LISTING, DELETE_SOLD_LISTING, CREATE_LISTING_SELLING_PRICE_LESS_THAN_1, \
-    LISTING_SHIPPING_PRICE_TOO_HIGH, LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE
+    LISTING_SHIPPING_PRICE_TOO_HIGH, LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE, UPDATE_LISTING_EMPTY_FIELDS_SHIPPING
 from ui_messages.errors.users_errors.blocked_users_error import GET_BLOCKED_USER
 from ui_messages.errors.users_errors.suspended_users_errors import GET_SUSPENDED_USER
 from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID
@@ -97,9 +97,9 @@ class CheckSellingAbilityHandler(ApiHandler):
             logger.debug(suspension_error)
             return suspension_error
 
-        # if not self.user.facebook_id:
-        #     return self.make_error(message=CREATE_LISTING_USER_HAVENT_FB,
-        #                            title=CREATE_LISTING_USER_HAVENT_FB_TITLE)
+        if not self.user.facebook_id:
+            return self.make_error(message=CREATE_LISTING_USER_HAVENT_FB,
+                                   title=CREATE_LISTING_USER_HAVENT_FB_TITLE)
 
         if not self.user.email_status:
             return self.make_error(message=CREATE_LISTING_USER_DONT_CONFIRM_EMAIL,
@@ -504,6 +504,11 @@ class ListingHandler(ApiHandler):
                                    empty_fields[last_coma_index:].replace(', ', ' and ')
                     empty_fields_title = empty_fields[:last_coma_index] + \
                                          empty_fields[last_coma_index:].replace(' and ', ' & ')
+                    if empty_field_error[0] == 'shipping price or collection only':
+                        empty_fields_title = 'Shipping Price or Collection Only'
+                        return self.make_error(message=UPDATE_LISTING_EMPTY_FIELDS_SHIPPING,
+                                               title=CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields_title)
+
                 return self.make_error(message=UPDATE_LISTING_EMPTY_FIELDS % empty_fields,
                                        title=CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields_title.capitalize())
 
@@ -743,6 +748,10 @@ class ListingHandler(ApiHandler):
                                    empty_fields[last_coma_index:].replace(', ', ' and ')
                     empty_fields_title = empty_fields[:last_coma_index] + \
                                          empty_fields[last_coma_index:].replace(' and ', ' & ')
+                    if empty_field_error[0] == 'shipping price or collection only':
+                        empty_fields_title = 'Shipping Price or Collection Only'
+                        return self.make_error(message=UPDATE_LISTING_EMPTY_FIELDS_SHIPPING,
+                                               title=CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields_title)
                 return self.make_error(message=CREATE_LISTING_EMPTY_FIELDS % empty_fields,
                                        title=CREATE_LISTING_EMPTY_FIELDS_TITLE % empty_fields_title.capitalize())
 

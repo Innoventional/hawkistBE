@@ -55,17 +55,19 @@ ADMIN_ACCOUNT_ACTIVATED_SUBJECT = 'Hawkist Account Reactivated'
 
 # PAYMENTS
 PURCHASE_ITEM_BUYER_TITLE = '%s'
-PURCHASE_ITEM_BUYER_TEXT = u"%s,\n" \
-                           u"You recently purchased %s for £%s from %s. This email is confirmation that we have taken " \
-                           u"payment for the item.\n" \
-                           u"In order to contact the seller, please use their email address which is %s.\n" \
-                           u"Please note that you have 7 days to confirm receipt of the item to us or indicate any " \
-                           u"issues with it before we release your funds to the seller." \
-                           u"For more information about returns or refunds, please visit our FAQs on " \
-                           u"https://hawkist.zendesk.com." \
-                           u"If you have any questions, you can contact Hawkist support on info@hawkist.com.\n" \
-                           u"Thanks for your business!\n" \
-                           u"Hawkist"
+PURCHASE_ITEM_BUYER_TEXT = u'%s\n' \
+                           u'You recently purchased %s for £%s from %s. This email is confirmation that we have taken ' \
+                           u'payment for the item.\n\n' \
+                           u'Please note that you have 7 days to confirm receipt of the item to us or indicate any ' \
+                           u'issues with it before we release your payment to the seller.\n\n' \
+                           u'If you need to contact the seller for any reason, please use their email address which ' \
+                           u'is %s. However, we have left instructions for them to ship the item as soon as ' \
+                           u'possible.\n\n' \
+                           u'For more information about returns or refunds, please visit our FAQs on ' \
+                           u'https://hawkist.zendesk.com.\n\n' \
+                           u'If you have any questions, you can contact Hawkist support on info@hawkist.com.\n\n' \
+                           u'Thanks for your business!\n' \
+                           u'Hawkist'
 
 PURCHASE_ITEM_SELLER_TITLE = 'Sold: %s'
 PURCHASE_ITEM_SELLER_TEXT = "%s,\n" \
@@ -179,12 +181,17 @@ INVESTIGATION_RESOLVED_TEXT = '%s,\n' \
                               'Thanks for your business!\n' \
                               'Hawkist'
 
-HAS_ITEM_RECEIVED_TITLE = 'Has received: %s'
+HAS_ITEM_RECEIVED_TITLE = 'Update Required: %s'
 HAS_ITEM_RECEIVED_TEXT = '%s,\n' \
-                         'Do we send an email to a buyer if he does not confirm receipt of an item within 7 days and ' \
-                         'funds are automatically released to the seller?\n' \
+                         'It has been %s days since you purchased %s. Has the item arrived yet?\n' \
+                         'If so please log on to Hawkist and let us know. We need an update so the payment for this ' \
+                         'purchase can be released to the seller.\n' \
+                         'For more information about how to update orders, please visit our FAQs on ' \
+                         'https://hawkist.zendesk.com.\n' \
+                         'If you have any questions, you can contact Hawkist support on info@hawkist.com.\n' \
                          'Thanks for your business!\n' \
                          'Hawkist'
+
 
 WITHDRAWAL_REQUESTED_TITLE = 'Withdrawal Request Received'
 WITHDRAWAL_REQUESTED_TEXT = u'%s,\n' \

@@ -333,7 +333,7 @@ def notification_offered_price_accepted(self, owner, listing, offered_price):
     self.session.commit()
 
     if owner.available_push_notifications and owner.apns_token:
-        owner.notify(alert=OFFERED_PRICE_ACCEPTED % listing.id,
+        owner.notify(alert=OFFERED_PRICE_ACCEPTED % listing.title,
                      custom={'type': '12',
                              'listing_id': listing.id},
                      sound='',
@@ -358,7 +358,7 @@ def notification_offered_price_declined(self, owner, listing, offered_price):
     self.session.commit()
 
     if owner.available_push_notifications and owner.apns_token:
-        owner.notify(alert=OFFERED_PRICE_DECLINED % listing.id,
+        owner.notify(alert=OFFERED_PRICE_DECLINED % listing.title,
                      custom={'type': '13',
                              'listing_id': listing.id},
                      sound='',

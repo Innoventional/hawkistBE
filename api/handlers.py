@@ -30,6 +30,7 @@ try:
     from comments.handlers import *
     from offers.handlers import *
     from users.blocked_users.handlers import *
+    from users.reported_users.handlers import *
     from api.payments.handlers import *
     from orders.handlers import *
     from addresses.handlers import *

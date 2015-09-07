@@ -617,7 +617,7 @@ Response Failure:
 
 
 --------------------------
-### Block a user
+### User blocking and reporting
    
 **Block someone**
 
@@ -666,6 +666,42 @@ Response Failure:
         'title': ''          — Error message title 
     } 
 
+
+
+ReportingReasons
+
+    AbusiveBehaviour = 0
+    InappropriateContent = 1
+    ImpersonationOrHateAccount = 2
+    SellingFakeItems = 3
+    UnderagedAccount = 4
+    
+**Report someone**
+
+    Url: 'user/reporting'
+    Method: 'POST'
+    
+
+Data:
+
+    {
+        "user_id": USER_TO_REPORT_ID,
+        "reason_id": REPORT_REASON_ID
+    }
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    } 
  
 --------------------------
 ### Items

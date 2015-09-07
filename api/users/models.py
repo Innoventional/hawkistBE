@@ -9,7 +9,6 @@ from api.items.models import ListingStatus
 from api.payments.models import StripeCustomer
 from api.tags.models import Platform
 from api.users.blocked_users.models import user_blacklist
-from api.users.reported_users.models import user_reportlist
 from orm import Base
 from utility.apple.push import send_ios_notify
 
@@ -99,11 +98,6 @@ class User(Base):
                               secondary=user_blacklist,
                               primaryjoin=id == user_blacklist.c.blocked_user_id,
                               secondaryjoin=id == user_blacklist.c.user_id)
-
-    reported = relationship('User',
-                            secondary=user_reportlist,
-                            primaryjoin=id == user_reportlist.c.user_id,
-                            secondaryjoin=id == user_reportlist.c.reported_user_id)
 
     comment_mentions = relationship('Comment', secondary=comment_mentioned_users,
                                     backref=backref('mentions', order_by=id, cascade="all,delete", lazy='dynamic'))

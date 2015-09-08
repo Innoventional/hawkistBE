@@ -50,7 +50,7 @@ class ReportListingsHandler(ApiHandler):
         if not listing_to_report_id:
             return self.make_error(REPORT_LISTING_NO_LISTING_ID)
 
-        if len(str(listing_report_reason)):
+        if len(str(listing_report_reason)) == 0:
             return self.make_error(REPORT_LISTING_NO_REASON_ID)
 
         # check reporting reason

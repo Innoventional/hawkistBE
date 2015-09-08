@@ -1,5 +1,5 @@
 import logging
-from api.tags.models import Platform, Category
+from api.tags.models import Platform
 from base import ApiHandler, die
 from helpers import route
 from utility.user_utility import check_user_suspension_status, update_user_last_activity

@@ -1,0 +1,46 @@
+{% extends '../base.html' %}
+
+{% block title %}Blocked Users List{% end %}
+
+{% block content %}
+    <div class="tag_navigation_div">
+        <a href="listings" >All</a>
+
+        <a href="listings/issues/new">Has an issue
+            {% if new_issues %}
+                <i class="glyphicon glyphicon-exclamation-sign red-color" title="New issue"></i>
+            {% end %}
+        </a>
+        <a href="#" id="current_link">Reported</a>
+    </div>
+    {% if reported_listings.count() == 0 %}
+        <br/>No reported listings
+    {% else %}
+    <div class="row-offcanvas">
+        <table class="table table-hover">
+            <thead>
+                <th>Report ID</th>
+                <th>Reported Listing ID</th>
+                <th>Reported Listing Title</th>
+                <th>User Who Report ID</th>
+                <th>User Who Report Username</th>
+                <th>Reporting reason</th>
+                <th>Time</th>
+            </thead>
+            <tbody>
+                {% for r in reported_listings %}
+                    <tr data-id="{{ r.id }}">
+                        <td>{{ r.id }}</td>
+                        <td>{{ r.listing_id }}</td>
+                        <td>{{ r.listing.title }}</td>
+                        <td>{{ r.user_id }}</td>
+                        <td>{{ r.user.username }}</td>
+                        <td>{{ ListingReportingReasons.tostring(r.reason) }}</td>
+                        <td>{{ (r.created_at + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M") }}</td>
+                     </tr>
+                {% end %}
+            </tbody>
+        </table>
+    </div>
+    {% end %}
+{% end %}

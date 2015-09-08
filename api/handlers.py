@@ -26,6 +26,7 @@ try:
     from admin.handlers.listings.listings import *
     from admin.handlers.listings.issued_listings import *
     from admin.handlers.listings.listing_by_id import *
+    from admin.handlers.listings.reported_listings import *
     from admin.handlers.withdrawal import *
     from followers.handlers import *
     from comments.handlers import *

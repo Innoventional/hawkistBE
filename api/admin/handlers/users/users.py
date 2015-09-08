@@ -4,6 +4,7 @@ import string
 import datetime
 from sqlalchemy import and_, func
 from api.admin.handlers.login import AdminBaseHandler
+from api.items.models import Listing
 from api.users.models import User, SystemStatus, UserType
 from base import paginate, HttpRedirect
 from environment import env
@@ -304,6 +305,14 @@ class AdminUsersHandler(AdminBaseHandler):
                 self.session.commit()
             self.session.delete(c)
             self.session.commit()
+
+        # delete user reserving
+        listings_reserved_by_user = self.session.query(Listing).filter(Listing.user_who_reserve_id == user.id)
+        for reserved_listing in listings_reserved_by_user:
+            reserved_listing.selling_price = reserved_listing.previous_price
+            reserved_listing.user_who_reserve_id = None
+            reserved_listing.reserve_time = None
+            reserved_listing.reserved_by_user = False
 
         # delete all user listings
         user_listings = user.listings

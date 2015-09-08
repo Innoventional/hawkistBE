@@ -44,12 +44,13 @@ class WalletHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         # check does this user has stripe customer
         need_commit = False
@@ -84,12 +85,13 @@ class BalanceHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         return self.success({'user_info': self.user.banking_user_info})
 
@@ -98,12 +100,13 @@ class BalanceHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         first_name = ''
         last_name = ''
@@ -190,12 +193,13 @@ class BankAccountHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         return self.success({'account': self.user.banking_account})
 
@@ -204,12 +208,13 @@ class BankAccountHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         holder_first_name = ''
         holder_last_name = ''
@@ -298,12 +303,13 @@ class BankAddressHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         return self.success({'address': self.user.banking_address})
 
@@ -312,12 +318,13 @@ class BankAddressHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         address_line1 = ''
         address_line2 = ''

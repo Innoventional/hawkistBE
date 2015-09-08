@@ -24,12 +24,13 @@ class AddressHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         return self.success({
             'addresses': [a.response for a in self.session.query(Address).filter(Address.user_id == self.user.id)]
@@ -41,13 +42,13 @@ class AddressHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
 
+        update_user_last_activity(self)
         logger.debug(self.request_object)
 
         address_id = ''
@@ -162,12 +163,13 @@ class AddressHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         address_to_delete_id = self.get_arg('address_id', None)
 
@@ -188,12 +190,13 @@ class AddressHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         if not self.user.stripe_customer:
             return self.make_error(title=ADD_ADDRESS_GET_LATEST_NO_CARD_TITLE,

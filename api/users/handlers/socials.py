@@ -22,6 +22,8 @@ class UserSocialHandler(ApiHandler):
         if self.user is None:
             die(401)
 
+        logger.debug(self.user)
+
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
@@ -53,6 +55,8 @@ class UserSocialHandler(ApiHandler):
 
         if self.user is None:
             die(401)
+
+        logger.debug(self.user)
 
         # check user status
         suspension_error = check_user_suspension_status(self.user)

@@ -37,13 +37,14 @@ class ItemOffersHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         logger.debug('REQUEST_OBJECT_NEW_OFFER')
         logger.debug(self.request_object)
@@ -91,7 +92,7 @@ class ItemOffersHandler(ApiHandler):
         # check is retail price more than new price
         if float(new_price) >= float(listing.retail_price):
             return self.make_error(message=CREATE_OFFER_OFFERED_PRICE_MUST_BE_LESS_THAN_RETAIL
-                                   % "%.02f" % float(listing.retail_price), title=CREATE_OFFER_PRICE_TO_HIGH_TITLE)
+                                           % "%.02f" % float(listing.retail_price), title=CREATE_OFFER_PRICE_TO_HIGH_TITLE)
 
         # create an offer
         offer = Offer()
@@ -123,13 +124,14 @@ class ItemOffersHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         logger.debug('REQUEST_OBJECT_CHANGE_OFFER_STATUS')
         logger.debug(self.request_object)

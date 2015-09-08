@@ -52,12 +52,13 @@ class PostCodeHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         logger.debug('REQUEST_OBJECT_GET_CITY_BY_POST_CODE')
         logger.debug(self.request_object)
@@ -91,12 +92,13 @@ class CheckSellingAbilityHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         if not self.user.facebook_id:
             return self.make_error(message=CREATE_LISTING_USER_HAVENT_FB,
@@ -120,13 +122,14 @@ class ListingHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         # for get item by id
         listing_id = self.get_arg('listing_id', int)
@@ -293,8 +296,8 @@ class ListingHandler(ApiHandler):
 
                 # finally get all items which match search terms
                 listings = all_listings.filter(and_(Listing.id.in_(list(set(right_tag_item_ids +
-                                                                        list(right_title_or_description_item_ids) +
-                                                                        right_usernames_item_ids))),
+                                                                            list(right_title_or_description_item_ids) +
+                                                                            right_usernames_item_ids))),
                                                     ~Listing.user_id.in_(block_me_user_id),
                                                     ~Listing.user_id.in_(suspended_users_id),
                                                     Listing.status != ListingStatus.Sold,
@@ -354,13 +357,14 @@ class ListingHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         listing_id = ''
         title = ''
@@ -387,7 +391,7 @@ class ListingHandler(ApiHandler):
                 listing_id = self.request_object['id']
 
             if 'title' in self.request_object:
-                    title = self.request_object['title']
+                title = self.request_object['title']
 
             if 'description' in self.request_object:
                 description = self.request_object['description']
@@ -908,13 +912,14 @@ class ListingHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         logger.debug('REQUEST_OBJECT_DELETE_ITEM')
         logger.debug(self.request_object)
@@ -964,13 +969,14 @@ class ListingLikeHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         if not listing_to_like_id:
             return self.make_error(LIKE_LISTING_NO_ID)
@@ -1008,13 +1014,14 @@ class UserWishListHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         user_id = self.get_arg('user_id', None)
         user = None

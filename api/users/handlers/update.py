@@ -36,13 +36,15 @@ class UserHandler(ApiHandler):
         if self.user is None:
             die(401)
 
-        update_user_last_activity(self)
+        logger.debug(self.user)
 
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         # update cookies
         self.set_secure_cookie(USER_ID, str(self.user.id), expires_days=30)
@@ -86,13 +88,15 @@ class UserHandler(ApiHandler):
         if self.user is None:
             die(401)
 
-        update_user_last_activity(self)
+        logger.debug(self.user)
 
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         username = ''
         email = ''
@@ -234,7 +238,6 @@ class UserMetaTagsHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         # check user status
         suspension_error = check_user_suspension_status(self.user)
@@ -242,9 +245,11 @@ class UserMetaTagsHandler(ApiHandler):
             logger.debug(suspension_error)
             return suspension_error
 
+        update_user_last_activity(self)
+
         # first we must get users metatags
         existing_user_tags_id = [metatag.platform_id for metatag in self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
-                                                                                                           UserMetaTag.metatag_type == UserMetaTagType.Platform))]
+                                                                                                                UserMetaTag.metatag_type == UserMetaTagType.Platform))]
         tags_to_be_added = self.session.query(Platform).filter(~Platform.id.in_(existing_user_tags_id)).order_by(Platform.id)
 
         return self.success(
@@ -259,13 +264,14 @@ class UserMetaTagsHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         logger.debug('REQUEST_OBJECT_USER_ADD_METATAGS')
         logger.debug(self.request_object)
@@ -386,13 +392,15 @@ class UserMetaTagsHandler(ApiHandler):
         if self.user is None:
             die(401)
 
-        update_user_last_activity(self)
+        logger.debug(self.user)
 
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         logger.debug('REQUEST_OBJECT_USER_DELETE_METATAGS')
         logger.debug(self.request_object)
@@ -508,6 +516,8 @@ class UserAPNSTokenHandler(ApiHandler):
 
         if self.user is None:
             die(401)
+
+        logger.debug(self.user)
 
         # check user status
         suspension_error = check_user_suspension_status(self.user)

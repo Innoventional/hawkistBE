@@ -22,13 +22,14 @@ class BlockingUsersHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         logger.debug('REQUEST_OBJECT_BLOCK_USER')
         logger.debug(self.request_object)
@@ -69,13 +70,14 @@ class BlockingUsersHandler(ApiHandler):
             die(401)
 
         logger.debug(self.user)
-        update_user_last_activity(self)
 
         # check user status
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
             return suspension_error
+
+        update_user_last_activity(self)
 
         user_to_unblock_id = self.get_arg('user_id', int, None)
 

@@ -19,6 +19,8 @@ class UserHolidayModeHandler(ApiHandler):
         if self.user is None:
             die(401)
 
+        logger.debug(self.user)
+
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
@@ -32,6 +34,8 @@ class UserHolidayModeHandler(ApiHandler):
 
         if self.user is None:
             die(401)
+
+        logger.debug(self.user)
 
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
@@ -68,6 +72,8 @@ class UserNotifyAboutFavoriteHandler(ApiHandler):
         if self.user is None:
             die(401)
 
+        logger.debug(self.user)
+
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
@@ -81,6 +87,8 @@ class UserNotifyAboutFavoriteHandler(ApiHandler):
 
         if self.user is None:
             die(401)
+
+        logger.debug(self.user)
 
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
@@ -117,6 +125,8 @@ class UserEnablePushNotificationsHandler(ApiHandler):
         if self.user is None:
             die(401)
 
+        logger.debug(self.user)
+
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
@@ -130,6 +140,8 @@ class UserEnablePushNotificationsHandler(ApiHandler):
 
         if self.user is None:
             die(401)
+
+        logger.debug(self.user)
 
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
@@ -190,6 +202,8 @@ class LetMembersFindMeUsingFindFriendsHandler(ApiHandler):
         if self.user is None:
             die(401)
 
+        logger.debug(self.user)
+
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:
             logger.debug(suspension_error)
@@ -203,6 +217,8 @@ class LetMembersFindMeUsingFindFriendsHandler(ApiHandler):
 
         if self.user is None:
             die(401)
+
+        logger.debug(self.user)
 
         suspension_error = check_user_suspension_status(self.user)
         if suspension_error:

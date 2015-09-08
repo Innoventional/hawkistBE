@@ -2,6 +2,7 @@
 
 __author__ = 'ne_luboff'
 
+GET_DELETED_LISTING = 'Unable to find this listing. It must have been deleted.'
 GET_LISTING_INVALID_ID = 'No listing with id %s'
 GET_LISTING_BY_USER_INVALID_ID = 'No user with id %s'
 

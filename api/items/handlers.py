@@ -18,14 +18,15 @@ from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID,
     DELETE_LISTING_ANOTHER_USER, LIKE_LISTING_NO_ID, LIKE_YOUR_OWN_LISTING, UPDATE_LISTING_UNDEFINED_LISTING_ID, \
     UPDATE_LISTING_LISTING_SOLD, UPDATE_LISTING_EMPTY_FIELDS, \
     DELETE_RESERVED_LISTING, DELETE_SOLD_LISTING, CREATE_LISTING_SELLING_PRICE_LESS_THAN_1, \
-    LISTING_SHIPPING_PRICE_TOO_HIGH, LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE, UPDATE_LISTING_EMPTY_FIELDS_SHIPPING
+    LISTING_SHIPPING_PRICE_TOO_HIGH, LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE, UPDATE_LISTING_EMPTY_FIELDS_SHIPPING, \
+    GET_DELETED_LISTING
 from ui_messages.errors.users_errors.blocked_users_error import GET_BLOCKED_USER
 from ui_messages.errors.users_errors.suspended_users_errors import GET_SUSPENDED_USER
 from ui_messages.errors.users_errors.update_errors import NO_USER_WITH_ID
 from ui_messages.messages.custom_error_titles import CREATE_LISTING_EMPTY_FIELDS_TITLE, \
     CREATE_LISTING_USER_DONT_CONFIRM_EMAIL_TITLE, CREATE_LISTING_USER_HAVENT_FB_TITLE, \
     LISTING_INVALID_MINIMUM_PRICE_TITLE, LISTING_SHIPPING_PRICE_TOO_HIGH_TITLE, \
-    LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE_TITLE
+    LISTING_RETAIL_PRICE_LESS_THAN_SELLING_PRICE_TITLE, GET_DELETED_LISTING_TITLE
 from ui_messages.messages.user_messages import TRY_TO_GET_SUSPENDED_USER_ITEMS
 from utility.google_api import get_city_by_code
 from utility.items import calculate_discount_value
@@ -142,7 +143,7 @@ class ListingHandler(ApiHandler):
             # first get this item
             listing = self.session.query(Listing).filter(Listing.id == listing_id).first()
             if not listing:
-                return self.make_error(GET_LISTING_INVALID_ID % listing_id)
+                return self.make_error(message=GET_DELETED_LISTING, title=GET_DELETED_LISTING_TITLE)
 
             # add view
             # first we must check owner of this listing

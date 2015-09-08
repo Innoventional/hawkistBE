@@ -305,6 +305,12 @@ class AdminUsersHandler(AdminBaseHandler):
             self.session.delete(c)
             self.session.commit()
 
+        # delete all user listings
+        user_listings = user.listings
+        for u_l in user_listings:
+            self.session.delete(u_l)
+            self.session.commit()
+
         self.session.delete(user)
         self.session.commit()
         return self.success()

@@ -1,5 +1,5 @@
 import logging
-from api.tags.models import Platform
+from api.tags.models import Platform, Category
 from base import ApiHandler, die
 from helpers import route
 from utility.user_utility import check_user_suspension_status, update_user_last_activity
@@ -28,7 +28,7 @@ class MetaTagsHandler(ApiHandler):
 
         response = dict()
         # get platform tags
-        platforms = self.session.query(Platform).order_by(Platform.title)
+        platforms = self.session.query(Platform).order_by(Platform.id)
         response_by_platform = []
         for p in platforms:
             p_response = p.response

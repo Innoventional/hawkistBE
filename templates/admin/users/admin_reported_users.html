@@ -19,6 +19,7 @@
     <div class="row-offcanvas">
         <table class="table table-hover">
             <thead>
+                <th>Report ID</th>
                 <th>Reported User ID</th>
                 <th>Reported User Username</th>
                 <th>User Who Report ID</th>
@@ -29,6 +30,7 @@
             <tbody>
                 {% for r in reported_users %}
                     <tr data-id="{{ r.id }}">
+                        <td>{{ r.id }}</td>
                         <td>{{ r.reported_user_id }}</td>
                         <td>{{ r.reported_user.username }}</td>
                         <td>{{ r.user_id }}</td>

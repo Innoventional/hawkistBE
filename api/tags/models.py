@@ -51,7 +51,7 @@ class Category(Base):
 
     # depends on platform
     platform_id = Column(Integer, ForeignKey('platforms.id'), nullable=False, index=True)
-    platform = relationship('Platform', backref=backref('category_platform', order_by=id, cascade="all,delete",
+    platform = relationship('Platform', backref=backref('category_platform', order_by=title, cascade="all,delete",
                                                         lazy='dynamic'), foreign_keys=platform_id)
 
     @property
@@ -74,7 +74,7 @@ class Subcategory(Base):
 
     # depends on category
     category_id = Column(Integer, ForeignKey('categories.id'), nullable=False, index=True)
-    category = relationship('Category', backref=backref('subcategory_category', order_by=id, cascade="all,delete",
+    category = relationship('Category', backref=backref('subcategory_category', order_by=title, cascade="all,delete",
                                                         lazy='dynamic'), foreign_keys=category_id)
 
     @property
@@ -98,7 +98,7 @@ class Color(Base):
 
     # depends on subcategory
     subcategory_id = Column(Integer, ForeignKey('subcategories.id'), nullable=False, index=True)
-    subcategory = relationship('Subcategory', backref=backref('color_subcategory', order_by=id, cascade="all,delete",
+    subcategory = relationship('Subcategory', backref=backref('color_subcategory', order_by=title, cascade="all,delete",
                                                               lazy='dynamic'), foreign_keys=subcategory_id)
 
     @property
@@ -122,7 +122,7 @@ class Condition(Base):
 
     # depends on subcategory
     subcategory_id = Column(Integer, ForeignKey('subcategories.id'), nullable=False, index=True)
-    subcategory = relationship('Subcategory', backref=backref('condition_subcategory', order_by=id, cascade="all,delete",
+    subcategory = relationship('Subcategory', backref=backref('condition_subcategory', order_by=title, cascade="all,delete",
                                                               lazy='dynamic'), foreign_keys=subcategory_id)
 
     @property

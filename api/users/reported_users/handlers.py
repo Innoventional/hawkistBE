@@ -52,7 +52,7 @@ class ReportUsersHandler(ApiHandler):
         if not user_to_report_id:
             return self.make_error(REPORT_USER_NO_USER_ID)
 
-        if not user_report_reason:
+        if len(str(user_report_reason)):
             return self.make_error(REPORT_USER_NO_REASON_ID)
 
         # validate user id

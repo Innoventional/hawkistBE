@@ -15,11 +15,8 @@
         <a href="../users">All</a>
         <a href="#" id="current_link">Suspended</a>
         <a href="../users/blocked">Blocked
-        {% for u in users %}
-            {% if u.blocked_me %}
+        {% if str(blocked_users_count) != '0' %}
                 <i class="glyphicon glyphicon-exclamation-sign red-color" title="Someone was blocked or reported"></i>
-            {% break %}
-            {% end %}
         {% end %}
         </a>
         <a href="../users/reported">Reported</a>

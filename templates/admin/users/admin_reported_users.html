@@ -6,10 +6,14 @@
     <div class="tag_navigation_div">
         <a href="../users" >All</a>
         <a href="../users/suspended">Suspended</a>
-        <a href="../users/blocked">Blocked</a>
+        <a href="../users/blocked">Blocked
+        {% if str(blocked_users_count) != '0' %}
+                <i class="glyphicon glyphicon-exclamation-sign red-color" title="Someone was blocked or reported"></i>
+        {% end %}
+        </a>
         <a href="#" id="current_link">Reported</a>
     </div>
-    {% if str(reported_users_count) == '0' %}
+    {% if reported_users.count() == 0 %}
         <br/>No reported users
     {% else %}
     <div class="row-offcanvas">
@@ -21,23 +25,16 @@
                 <th>User Who Report Username</th>
                 <th>Reporting reason</th>
                 <th>Time</th>
-                <th>Action</th>
             </thead>
             <tbody>
-                {% for b in reported_users %}
-                    <tr data-reporter_id="{{ b.reporter_id }}"
-                        data-reported_id="{{ b.reported_id }}">
-                        <td>{{ b.reported_id }}</td>
-                        <td>{{ b.reported_username }}</td>
-                        <td>{{ b.reporter_id }}</td>
-                        <td>{{ b.reporter_username }}</td>
-                        <td>{{ UserReportingReasons.tostring(b.reason) }}</td>
-                        <td>{{ (b.created_at + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M") }}</td>
-                        <td>
-                            <!--<a class="btn btn_delete_blocked_flag red-color" href="#" title="Delete flag">-->
-                                <!--<i class="glyphicon glyphicon-trash"></i>-->
-                            <!--</a>-->
-                        </td>
+                {% for r in reported_users %}
+                    <tr data-id="{{ r.id }}">
+                        <td>{{ r.reported_user_id }}</td>
+                        <td>{{ r.reported_user.username }}</td>
+                        <td>{{ r.user_id }}</td>
+                        <td>{{ r.user.username }}</td>
+                        <td>{{ UserReportingReasons.tostring(r.reason) }}</td>
+                        <td>{{ (r.created_at + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M") }}</td>
                      </tr>
                 {% end %}
             </tbody>

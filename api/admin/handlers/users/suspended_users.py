@@ -27,5 +27,11 @@ class AdminSuspendedUsersHandler(AdminBaseHandler):
         if q:
             users = users.filter(User.username.ilike(u'%{0}%'.format(q)))
 
+        blocked_users_count = 0
+        blocked_users_count_query = self.session.execute("""SELECT count(*) as ca FROM user_blacklist;""")
+        for b in blocked_users_count_query:
+            blocked_users_count = b.ca
+
         return self.render_string('admin/users/admin_suspended_users.html', users=users, menu_tab_active='tab_users',
-                                  SystemStatus=SystemStatus, UserType=UserType, current_user=self.user, q=q)
+                                  SystemStatus=SystemStatus, UserType=UserType, current_user=self.user, q=q,
+                                  blocked_users_count=blocked_users_count)

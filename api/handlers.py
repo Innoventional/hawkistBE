@@ -10,6 +10,7 @@ try:
     from users.handlers.personalization import *
     from users.handlers.socials import *
     from items.handlers import *
+    from items.reported_items.handlers import *
     from tags.handler import *
     from admin.handlers.users.users import *
     from admin.handlers.users.suspended_users import *

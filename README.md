@@ -668,7 +668,7 @@ Response Failure:
 
 
 
-ReportingReasons
+UserReportingReasons
 
     AbusiveBehaviour = 0
     InappropriateContent = 1
@@ -1106,7 +1106,41 @@ Response Failure:
         'title': ''          — Error message title 
     }
     
+    
+ListingReportingReasons
 
+    ItemViolatesTermsOfUse = 0
+    PriceIsMisleading = 1
+    ItemIsRegulatedOrIllegal = 2
+    
+**Report some listing**
+
+    Url: 'listing/reporting'
+    Method: 'POST'
+    
+
+Data:
+
+    {
+        "listing_id": LISTING_TO_REPORT_ID,
+        "reason_id": REPORT_REASON_ID
+    }
+
+Response Success:
+    
+    {
+        'status': 0
+    }
+    
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    } 
+    
+    
 --------------------------
 ### Comments
 

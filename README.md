@@ -382,6 +382,43 @@ Response Success:
     }
     
 
+**Delete user tags**
+
+    Url: 'user/metatags'
+    Method: 'DELETE'
+
+Data:
+
+    {
+        "tags": [
+            {
+                "type": VALID_TAG_TYPE,         - int      
+                "id": int
+            }, 
+            .
+            .
+            .
+            {
+                "type": VALID_TAG_TYPE, 
+                "id": int
+            }
+        ]
+    }
+    
+Response Success:
+    
+    {
+        'status': 0
+    }
+
+Response Failure:
+
+    {
+        'status': 1,
+        'message': '',          — Error message text
+        'title': ''          — Error message title 
+    }
+
 --------------------------
 ### Another users
 

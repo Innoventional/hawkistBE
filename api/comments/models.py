@@ -35,14 +35,14 @@ class Comment(Base):
     user_mentions = relationship('User', secondary=comment_mentioned_users,
                                  backref=backref('user_mentions', order_by=id, cascade="all,delete", lazy='dynamic'))
 
-    @property
-    def response(self):
+    def response(self, user):
         return {
             'id': self.id,
             'created_at': self.created_at.strftime("%Y-%m-%dT%H:%M"),
             'text': self.text,
             'listing_id': self.listing_id,
             'user_id': self.user_id,
+            'blocked': user in self.user.blocked,
             'user_username': self.user.username,
             'user_avatar': self.user.avatar,
             'offer': self.offer.response if self.offer else None,
@@ -50,7 +50,8 @@ class Comment(Base):
             'mentions': [
                 {
                     'id': u.id,
-                    'username': u.username
+                    'username': u.username,
+                    'blocked': user in u.blocked,
                 } for u in self.user_mentions
             ]
         }

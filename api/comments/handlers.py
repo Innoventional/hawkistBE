@@ -61,8 +61,8 @@ class ItemCommentsHandler(ApiHandler):
         if listing.user.system_status == SystemStatus.Suspended:
             return self.make_error(GET_SUSPENDED_USER_COMMENTS % listing.user.username.upper())
 
-        listing_comments = self.session.query(Comment).filter(Comment.listing_id == listing_id).order_by(Comment.created_at)
-        return self.success({'comments': [c.response for c in listing_comments]})
+        # listing_comments = self.session.query(Comment).filter(Comment.listing_id == listing_id).order_by(Comment.created_at)
+        return self.success({'comments': [c.response(self.user) for c in listing.listing_comments]})
 
     def create(self, listing_id):
 

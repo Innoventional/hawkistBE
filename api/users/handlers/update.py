@@ -231,7 +231,7 @@ class UserEmailVerificationHandler(OpenApiHandler):
 
 @route('user/metatags')
 class UserMetaTagsHandler(ApiHandler):
-    allowed_methods = ('GET', 'PUT', 'DELETE')
+    allowed_methods = ('GET', 'POST', 'PUT')
 
     def read(self):
         if self.user is None:
@@ -270,7 +270,7 @@ class UserMetaTagsHandler(ApiHandler):
             'tags': tag_response
         })
 
-    def update(self):
+    def create(self):
 
         if self.user is None:
             die(401)
@@ -399,7 +399,7 @@ class UserMetaTagsHandler(ApiHandler):
 
         return self.success({'user': self.user.user_response})
 
-    def remove(self):
+    def update(self):
 
         if self.user is None:
             die(401)

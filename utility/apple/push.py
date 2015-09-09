@@ -39,6 +39,12 @@ def get_feedbacks(server):
 if __name__ == '__main__':
     import datetime
     # result = send_ios_notify('f18b174eb350e4ee95bf79c332146dd80a3c66bd6bd73b164718876af0cd3b2c',
-    result = send_ios_notify('35ca4ca211290f75ba046612de3a18246cd41322608365d0e32cb64ceaa00bc4',
-                             alert='%s' % datetime.datetime.utcnow(), badge=0, custom={'type': '5'})
+    result = send_ios_notify('f18b174eb350e4ee95bf79c332146dd80a3c66bd6bd73b164718876af0cd3b2c',
+                             alert='Has JOE arrived yet? Let us know.', badge=0, custom={'type': '2'})
+                             # alert='%s' % datetime.datetime.utcnow(), badge=0, custom={'type': '2'})
+    # result = send_ios_notify('f18b174eb350e4ee95bf79c332146dd80a3c66bd6bd73b164718876af0cd3b2c', custom={'order_id': 220,
+    #                                          'user_id': 177,
+    #                                          'type': '5',
+    #                                          'order_available_feedback': True},
+    #                               badge=2919111, alert='Leave feedback on your recent purchase MacBook Air.')
     print result

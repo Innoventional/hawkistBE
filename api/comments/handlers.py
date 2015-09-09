@@ -7,10 +7,11 @@ from api.users.models import SystemStatus, User
 from base import ApiHandler, die
 from helpers import route
 from ui_messages.errors.comments_errors.comments_errors import GET_COMMENTS_NO_LISTING_ID, CREATE_COMMENTS_NO_LISTING_ID, \
-    CREATE_COMMENTS_EMPTY_DATA
+    CREATE_COMMENTS_EMPTY_DATA, CREATE_COMMENTS_ON_BLOCKED_USER
 from ui_messages.errors.items_errors.items_errors import GET_LISTING_INVALID_ID
 from ui_messages.errors.users_errors.blocked_users_error import GET_BLOCKED_USER_COMMENTS
 from ui_messages.errors.users_errors.suspended_users_errors import GET_SUSPENDED_USER_COMMENTS
+from ui_messages.messages.custom_error_titles import GET_DELETED_LISTING_TITLE
 from utility.comments import get_users_from_comment
 from utility.notifications import notification_new_comment, notification_new_mention
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
@@ -96,6 +97,10 @@ class ItemCommentsHandler(ApiHandler):
         if self.user in listing.user.blocked:
             return self.make_error(message=GET_BLOCKED_USER_COMMENTS % listing.user.username.upper(),
                                    status=3)
+
+        if listing.user in self.user.blocked:
+            return self.make_error(message=CREATE_COMMENTS_ON_BLOCKED_USER % listing.user.username,
+                                   title=GET_DELETED_LISTING_TITLE)
 
         # check is user active
         if listing.user.system_status == SystemStatus.Suspended:

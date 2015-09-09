@@ -63,7 +63,8 @@ class UserHandler(ApiHandler):
 
             # check has current user access to getting user profile
             if self.user in user.blocked:
-                return self.make_error(GET_BLOCKED_USER % user.username.encode('utf-8').upper())
+                return self.make_error(message=GET_BLOCKED_USER % user.username.encode('utf-8').upper(),
+                                       status=3)
 
             # else we must show following details
             user_response = user.user_response

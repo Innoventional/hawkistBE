@@ -81,13 +81,8 @@ class AdminIssuedListingsHandler(AdminBaseHandler):
             transaction_canceled(order.user.email, order.user.username, order.listing.title)
             refunds_issues_buyer(order)
 
-            #
             investigation_resolved(order.listing.user.email, order.listing.user.username, order.listing.title)
             investigation_resolved(order.user.email, order.user.username, order.listing.title)
-
-            order.available_feedback = True
-            order.sorting_status = SortingStatus.WaitForFeedback
-            notification_leave_feedback(self, order)
         elif str(action) == str(IssueStatus.Resolved):
             order.issue_status = IssueStatus.Resolved
             # TODO money to seller
@@ -98,10 +93,6 @@ class AdminIssuedListingsHandler(AdminBaseHandler):
 
             investigation_resolved(order.listing.user.email, order.listing.user.username, order.listing.title)
             investigation_resolved(order.user.email, order.user.username, order.listing.title)
-
-            order.available_feedback = True
-            order.sorting_status = SortingStatus.WaitForFeedback
-            notification_leave_feedback(self, order)
         order.updated_at = datetime.datetime.utcnow()
         self.session.commit()
         return self.success()

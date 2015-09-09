@@ -159,7 +159,8 @@ def notification_leave_feedback(self, order):
         order.user.notify(alert=LEAVE_FEEDBACK % order.listing.title,
                           custom={'type': '5',
                                   'order_id': order.id,
-                                  'order_available_feedback': True},
+                                  'order_available_feedback': True,
+                                  'user_id': order.listing.user_id},
                           sound='',
                           badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == order.user.id,
                                                                                   UserNotificantion.seen_at == None)).count())

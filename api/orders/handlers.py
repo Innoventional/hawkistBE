@@ -312,7 +312,11 @@ class OrdersHandler(ApiHandler):
             order.issue_reason = issue_reason
             order.issue_status = IssueStatus.New
 
+            order.available_feedback = True
+            order.sorting_status = SortingStatus.WaitForFeedback
+
             listing_with_issue_seller(self, order.listing)
+            notification_leave_feedback(self, order)
         else:
             return self.make_error(UPDATE_ORDER_INVALID_STATUS)
 

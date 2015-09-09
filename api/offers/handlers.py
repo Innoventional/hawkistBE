@@ -64,7 +64,8 @@ class ItemOffersHandler(ApiHandler):
 
         # check access to current profile
         if self.user in listing.user.blocked:
-            return self.make_error(GET_BLOCKED_USER % listing.user.username.upper())
+            return self.make_error(message=GET_BLOCKED_USER % listing.user.username.upper(),
+                                   status=3)
 
         # check is listing owner active
         if listing.user.system_status == SystemStatus.Suspended:

@@ -55,7 +55,8 @@ class FollowersHandler(ApiHandler):
 
             # check access to this user
             if self.user in user.blocked:
-                return self.make_error(GET_BLOCKED_USER_FOLLOWERS % user.username.upper())
+                return self.make_error(message=GET_BLOCKED_USER_FOLLOWERS % user.username.upper(),
+                                       status=3)
 
             # check is user active
             if user.system_status == SystemStatus.Suspended:

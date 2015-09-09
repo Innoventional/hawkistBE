@@ -192,7 +192,8 @@ class ListingHandler(ApiHandler):
 
             # check has current user access to getting user profile
             if self.user in user.blocked:
-                return self.make_error(GET_BLOCKED_USER % user.username.upper())
+                return self.make_error(message=GET_BLOCKED_USER % user.username.upper(),
+                                       status=3)
 
             # check is user active
             if user.system_status == SystemStatus.Suspended:
@@ -1040,7 +1041,8 @@ class UserWishListHandler(ApiHandler):
 
             # check access to user profile
             if self.user in user.blocked:
-                return self.make_error(GET_BLOCKED_USER % user.username.upper())
+                return self.make_error(message=GET_BLOCKED_USER % user.username.upper(),
+                                       status=3)
 
             # check is user active
             if user.system_status == SystemStatus.Suspended:

@@ -55,7 +55,8 @@ class ItemCommentsHandler(ApiHandler):
 
         # check has current user access to this listing comments
         if self.user in listing.user.blocked:
-            return self.make_error(GET_BLOCKED_USER_COMMENTS % listing.user.username.upper())
+            return self.make_error(message=GET_BLOCKED_USER_COMMENTS % listing.user.username.upper(),
+                                   status=3)
 
         # check is user active
         if listing.user.system_status == SystemStatus.Suspended:
@@ -93,7 +94,8 @@ class ItemCommentsHandler(ApiHandler):
 
         # check has current user access to this listing comments
         if self.user in listing.user.blocked:
-            return self.make_error(GET_BLOCKED_USER_COMMENTS % listing.user.username.upper())
+            return self.make_error(message=GET_BLOCKED_USER_COMMENTS % listing.user.username.upper(),
+                                   status=3)
 
         # check is user active
         if listing.user.system_status == SystemStatus.Suspended:

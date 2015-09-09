@@ -42,7 +42,7 @@ class Comment(Base):
             'text': self.text,
             'listing_id': self.listing_id,
             'user_id': self.user_id,
-            'blocked': user in self.user.blocked,
+            'blocke_me': user in self.user.blocked,
             'user_username': self.user.username,
             'user_avatar': self.user.avatar,
             'offer': self.offer.response if self.offer else None,
@@ -51,7 +51,7 @@ class Comment(Base):
                 {
                     'id': u.id,
                     'username': u.username,
-                    'blocked': user in u.blocked,
+                    'blocke_me': user in u.blocked,
                 } for u in self.user_mentions
             ]
         }

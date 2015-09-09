@@ -345,7 +345,7 @@ class ListingHandler(ApiHandler):
             page_size = self.get_arg('page_size', int, 100)
             paginator, items = paginate(listings, page, page_size)
             if paginator['pages'] < page:
-                listings = []
+                items = []
             response['paginator'] = paginator
             response['items'] = [l.response(self.user.id) for l in items]
 

@@ -76,7 +76,7 @@ class NotificationsHandler(ApiHandler):
 
         # pagination
         page = self.get_arg('p', int, 1)
-        page_size = self.get_arg('page_size', int, 100)
+        page_size = self.get_arg('page_size', int, 50)
         paginator, user_notifications = paginate(user_notifications, page, page_size)
         if paginator['pages'] < page:
             user_notifications = []

@@ -55,7 +55,7 @@ ADMIN_ACCOUNT_ACTIVATED_SUBJECT = 'Hawkist Account Reactivated'
 
 # PAYMENTS
 PURCHASE_ITEM_BUYER_TITLE = '%s'
-PURCHASE_ITEM_BUYER_TEXT = u'<b>%s</b><br/>' \
+PURCHASE_ITEM_BUYER_TEXT = u'<b>%s</b>,<br/>' \
                            u'You recently purchased <b>%s</b> for <b>£%s</b> from <b>%s</b>. This email is confirmation ' \
                            u'that we have taken payment for the item.<br/><br/>' \
                            u'Please note that you have 7 days to confirm receipt of the item to us or indicate any ' \

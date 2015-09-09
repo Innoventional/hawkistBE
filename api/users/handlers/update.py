@@ -247,16 +247,28 @@ class UserMetaTagsHandler(ApiHandler):
 
         update_user_last_activity(self)
 
+        # TODO old method which get only not included user tags (2015-09-12)
         # first we must get users metatags
-        existing_user_tags_id = [metatag.platform_id for metatag in self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
-                                                                                                                UserMetaTag.metatag_type == UserMetaTagType.Platform))]
-        tags_to_be_added = self.session.query(Platform).filter(~Platform.id.in_(existing_user_tags_id)).order_by(Platform.id)
+        # existing_user_tags_id = [metatag.platform_id for metatag in self.session.query(UserMetaTag).filter(and_(UserMetaTag.user_id == self.user.id,
+        #                                                                                                         UserMetaTag.metatag_type == UserMetaTagType.Platform))]
+        # tags_to_be_added = self.session.query(Platform).filter(~Platform.id.in_(existing_user_tags_id)).order_by(Platform.id)
+        #
+        # return self.success(
+        #     {
+        #         "tags": [t.response for t in tags_to_be_added]
+        #     }
+        # )
 
-        return self.success(
-            {
-                "tags": [t.response for t in tags_to_be_added]
-            }
-        )
+        included_user_platforms = [user_tag.platform_id for user_tag in self.user.user_metatags]
+        tag_response = []
+        platforms = self.session.query(Platform).order_by(Platform.id)
+        for p in platforms:
+            current_response = p.response
+            current_response['available'] = True if p.id not in included_user_platforms else False
+            tag_response.append(current_response)
+        return self.success({
+            'tags': tag_response
+        })
 
     def update(self):
 

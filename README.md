@@ -356,7 +356,7 @@ Response Failure:
     
 
 
-**Feeds to short (get available platforms)**
+**Get platform tags (included and not)**
 
     Url: 'user/metatags'
     Method: 'GET'
@@ -370,7 +370,10 @@ Response Success:
             {
                 "parent_id": null,
                 "id": ID,
-                "name": TITLE OF PLATFORM
+                "name": TITLE OF PLATFORM,
+                "description": PLATFORM DESCRIPTION,
+                "image_url": PLATFORM IMAGE,
+                "available": DOES CURRENT USER ALREADY INCLUDE THIS TAG TO HIS FEEDS
             },
             .
             .

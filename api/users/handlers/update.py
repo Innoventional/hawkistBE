@@ -74,6 +74,7 @@ class UserHandler(ApiHandler):
             # do you follow this user
             user_response['following'] = True if user in self.user.following else False
             user_response['blocked'] = True if user in self.user.blocked else False
+            user_response['blocked_me'] = True if self.user in user.blocked else False
             return self.success({'user': user_response})
         # your own profile
         else:

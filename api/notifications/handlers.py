@@ -1,7 +1,7 @@
 import logging
 import datetime
 from api.notifications.models import UserNotificantion
-from base import ApiHandler, die
+from base import ApiHandler, die, paginate
 from helpers import route
 from utility.average_response_time import calculate_average_response_time
 from utility.user_utility import update_user_last_activity, check_user_suspension_status
@@ -70,7 +70,18 @@ class NotificationsHandler(ApiHandler):
             self.user.average_response_time = calculate_average_response_time(self.user)
             self.session.commit()
 
+        user_notifications = self.user.user_notifications
+
+        response = dict()
+
+        # pagination
+        page = self.get_arg('p', int, 1)
+        page_size = self.get_arg('page_size', int, 100)
+        paginator, user_notifications = paginate(user_notifications, page, page_size)
+        if paginator['pages'] < page:
+            user_notifications = []
+        response['paginator'] = paginator
+        response['notifications'] = [n.response for n in user_notifications]
+
         # get all new notifications
-        return self.success({
-            'notifications': [n.response for n in self.user.user_notifications]
-        })
+        return self.success(response)

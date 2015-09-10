@@ -381,7 +381,7 @@ def stripe_create_transfer(amount=None, currency='gbp', user_id=None):
             amount=amount,
             currency=currency,
             recipient="self",
-            statement_descriptor='withdrawal___user_{0}_amount_{1}'.format(user_id, amount)
+            description='withdrawal___user_{0}_amount_{1}'.format(user_id, amount)
         )
     except stripe.error.CardError, e:
         error = str(e)

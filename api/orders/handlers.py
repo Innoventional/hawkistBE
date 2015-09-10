@@ -224,7 +224,6 @@ class OrdersHandler(ApiHandler):
         new_order.sorting_status = SortingStatus.Open
         listing.reserved_by_user = False
         listing.user_who_reserve_id = None
-        self.session.commit()
 
         notification_item_sold(self, listing)
 
@@ -232,6 +231,8 @@ class OrdersHandler(ApiHandler):
             for liked_people in listing.likes:
                 if str(liked_people.id) != str(self.user.id):
                     notification_favourite_item_sold(self, liked_people.id, listing)
+
+        self.session.commit()
 
         purchase_confirmation_sending_buyer(self, listing)
         purchase_confirmation_sending_seller(self, listing, address)

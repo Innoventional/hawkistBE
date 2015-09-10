@@ -113,7 +113,7 @@ def listing_with_issue_seller(self, listing):
 def listing_received_seller(self, order):
     text = LISTING_RECEIVED_SELLER_TEXT % (order.listing.user.username, order.listing.title,
                                            self.user.username,
-                                           order.payment_sum_without_application_fee)
+                                           "%.02f" % float(order.payment_sum_without_application_fee))
     subject = LISTING_RECEIVED_SELLER_TITLE % order.listing.title
     send_email(text, subject=subject, recipient=order.listing.user.email)
 
@@ -127,14 +127,14 @@ def listing_with_issue_investigation_opened_buyer(order):
 
 def funds_received_seller(order):
     text = FUNDS_RECEIVED_SELLER_TEXT % (order.listing.user.username, order.listing.title,
-                                         order.payment_sum_without_application_fee)
+                                         "%.02f" % float(order.payment_sum_without_application_fee))
     subject = FUNDS_RECEIVED_SELLER_TITLE % order.listing.title
     send_email(text, subject=subject, recipient=order.listing.user.email)
 
 
 def refunds_issues_buyer(self):
     text = REFUND_ISSUES_BUYER_TEXT % (self.user.username, self.listing.title,
-                                       self.payment_sum)
+                                       "%.02f" % float(self.payment_sum))
     subject = REFUND_ISSUES_BUYER_TITLE % self.listing.title
     send_email(text, subject=subject, recipient=self.user.email)
 
@@ -158,12 +158,12 @@ def send_warning_4_6_days_email(email, username, title, number_of_days):
 
 
 def user_withdrawal_requested_email(email, username, balance):
-    text = WITHDRAWAL_REQUESTED_TEXT % (username, balance)
+    text = WITHDRAWAL_REQUESTED_TEXT % (username, "%.02f" % float(balance))
     subject = WITHDRAWAL_REQUESTED_TITLE
     send_email(text, subject=subject, recipient=email)
 
 
 def user_withdrawal_completed_email(email, username, balance):
-    text = WITHDRAWAL_COMPLETED_TEXT % (username, balance)
+    text = WITHDRAWAL_COMPLETED_TEXT % (username, "%.02f" % float(balance))
     subject = WITHDRAWAL_COMPLETED_TITLE
     send_email(text, subject=subject, recipient=email)

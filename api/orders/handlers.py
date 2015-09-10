@@ -199,7 +199,7 @@ class OrdersHandler(ApiHandler):
         new_order.user_id = self.user.id
         new_order.listing_id = listing.id
         new_order.order_status = OrderStatus.Active
-        new_order.payment_sum_without_application_fee = float(amount) - (float(listing.selling_price) * env['stripe_hawkist_fee_persentage'])
+        new_order.payment_sum_without_application_fee = round(float(amount) - (float(listing.selling_price) * env['stripe_hawkist_fee_persentage']), 2)
         new_order.payment_sum = amount
 
         if new_charge:

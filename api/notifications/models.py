@@ -7,17 +7,20 @@ __author__ = 'ne_luboff'
 
 
 class NotificationType(Enum):
+    # high
     NewComment = 0
     ItemSold = 1
     ItemReceived = 2
     NewFeedback = 3
     FundsReleased = 4
+    # low
     LeaveFeedback = 5
     ItemIsFavourited = 6
     AFavouriteItemIsSold = 7
     NewFollowers = 8
     NewItems = 9
     Mentions = 10
+    # mandatory
     NewOfferedPrice = 11
     OfferedPriceAccepted = 12
     OfferedPriceDeclined = 13

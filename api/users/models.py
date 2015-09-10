@@ -134,13 +134,13 @@ class User(Base):
     average_response_time = Column(Integer, default=0, nullable=True)
 
     # notification setting
-    notify_about_favorite = Column(Boolean, nullable=False, default=False)
+    notify_about_favorite = Column(Boolean, nullable=False, default=True)
 
     # holiday mode
     holiday_mode = Column(Boolean, nullable=False, default=False)
 
     # Let members find me in Find Friends TickBox
-    visible_in_find_friends = Column(Boolean, nullable=False, default=False)
+    visible_in_find_friends = Column(Boolean, nullable=False, default=True)
 
     # device token for push notifications
     apns_token = Column(String, nullable=True)
@@ -148,6 +148,8 @@ class User(Base):
     available_push_notifications_types = Column(String, nullable=False, default='{"0":true,"1":true,"2":true,"3":true,'
                                                                                 '"4":true,"5":true,"6":true,"7":true,'
                                                                                 '"8":true,"9":true,"10":true}')
+    low_priority_push_notifications_last_sending = Column(String, nullable=False, default='{"5":"","6":"","7":"",'
+                                                                                          '"8":"","9":"","10":""}')
 
     def __repr__(self):
         return '<User %s (%s)>' % (self.id, self.username)

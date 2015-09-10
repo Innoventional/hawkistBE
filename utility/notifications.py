@@ -16,6 +16,23 @@ def check_is_pushes_available_by_type(user, push_type):
     return False
 
 
+def check_low_priority_push_available_today_by_type(user, push_type):
+    # first get last push sending value by current push type
+    last_push_sending = json.loads(json.loads(json.dumps(user.low_priority_push_notifications_last_sending))).get(push_type)
+    # check is any value there
+    if last_push_sending and str(datetime.date.today()) == str(last_push_sending):
+            return False
+    return True
+
+
+def update_low_priority_push_available_today_by_type(user, push_type):
+    # first get last push sending value by current push type
+    last_push_sending = json.loads(json.loads(json.dumps(user.low_priority_push_notifications_last_sending))).get(push_type)
+    user.low_priority_push_notifications_last_sending = user.low_priority_push_notifications_last_sending.\
+        replace('"%s":"%s"' % (push_type, str(last_push_sending)),
+                '"%s":"%s"' % (push_type, str(datetime.date.today())))
+
+
 def notification_new_comment(self, listing, comment):
     notification = UserNotificantion()
     notification.created_at = datetime.datetime.utcnow()
@@ -155,7 +172,8 @@ def notification_leave_feedback(self, order):
     self.session.add(notification)
     self.session.commit()
 
-    if check_is_pushes_available_by_type(order.user, '5'):
+    if check_is_pushes_available_by_type(order.user, '5') and \
+            check_low_priority_push_available_today_by_type(order.user, '5'):
         order.user.notify(alert=LEAVE_FEEDBACK % order.listing.title,
                           custom={'type': '5',
                                   'order_id': order.id,
@@ -164,6 +182,7 @@ def notification_leave_feedback(self, order):
                           sound='',
                           badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == order.user.id,
                                                                                   UserNotificantion.seen_at == None)).count())
+        update_low_priority_push_available_today_by_type(order.user, '5')
 
 
 def notification_item_favourite(self, listing):
@@ -181,13 +200,15 @@ def notification_item_favourite(self, listing):
     self.session.add(notification)
     self.session.commit()
 
-    if check_is_pushes_available_by_type(listing.user, '6'):
+    if check_is_pushes_available_by_type(listing.user, '6') and \
+            check_low_priority_push_available_today_by_type(listing.user, '6'):
         listing.user.notify(alert=ITEM_IS_FAVOURITED % listing.title,
                             custom={'type': '6',
                                     'user_id': self.user.id},
                             sound='',
                             badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == listing.user_id,
                                                                                UserNotificantion.seen_at == None)).count())
+        update_low_priority_push_available_today_by_type(listing.user, '6')
 
 
 def notification_favourite_item_sold(self, owner_id, listing):
@@ -205,13 +226,14 @@ def notification_favourite_item_sold(self, owner_id, listing):
     # get owner by id
     owner = self.session.query(User).get(owner_id)
 
-    if check_is_pushes_available_by_type(owner, '7'):
+    if check_is_pushes_available_by_type(owner, '7') and check_low_priority_push_available_today_by_type(owner, '7'):
         owner.notify(alert=A_FAVOURITE_ITEM_IS_SOLD % listing.title,
                      custom={'type': '7',
                              'listing_id': listing.id},
                      sound='',
                      badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == owner_id,
                                                                              UserNotificantion.seen_at == None)).count())
+        update_low_priority_push_available_today_by_type(owner, '7')
 
 
 def notification_new_follower(self, following_user_id):
@@ -229,13 +251,14 @@ def notification_new_follower(self, following_user_id):
     # get owner by id
     owner = self.session.query(User).get(following_user_id)
 
-    if check_is_pushes_available_by_type(owner, '8'):
+    if check_is_pushes_available_by_type(owner, '8') and check_low_priority_push_available_today_by_type(owner, '8'):
         owner.notify(alert=NEW_FOLLOWERS,
                      custom={'type': '8',
                              'user_id': self.user.id},
                      sound='',
                      badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == following_user_id,
                                                                              UserNotificantion.seen_at == None)).count())
+        update_low_priority_push_available_today_by_type(owner, '8')
 
 
 def notification_following_user_new_item(self, owner_id, listing):
@@ -256,13 +279,14 @@ def notification_following_user_new_item(self, owner_id, listing):
     # get owner by id
     owner = self.session.query(User).get(owner_id)
 
-    if check_is_pushes_available_by_type(owner, '9'):
+    if check_is_pushes_available_by_type(owner, '9') and check_low_priority_push_available_today_by_type(owner, '9'):
         owner.notify(alert=NEW_ITEMS,
                      custom={'type': '9',
                              'listing_id': listing.id},
                      sound='',
                      badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == owner_id,
                                                                              UserNotificantion.seen_at == None)).count())
+        update_low_priority_push_available_today_by_type(owner, '9')
 
 
 def notification_new_mention(self, owner_id, listing):
@@ -283,13 +307,14 @@ def notification_new_mention(self, owner_id, listing):
     # get owner by id
     owner = self.session.query(User).get(owner_id)
 
-    if check_is_pushes_available_by_type(owner, '10'):
+    if check_is_pushes_available_by_type(owner, '10') and check_low_priority_push_available_today_by_type(owner, '10'):
         owner.notify(alert=MENTIONS,
                      custom={'type': '10',
                              'listing_id': listing.id},
                      sound='',
                      badge=self.session.query(UserNotificantion).filter(and_(UserNotificantion.owner_id == owner_id,
                                                                              UserNotificantion.seen_at == None)).count())
+        update_low_priority_push_available_today_by_type(owner, '10')
 
 
 def notification_new_offered_price(self, listing, offered_price):

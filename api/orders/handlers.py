@@ -141,7 +141,8 @@ class OrdersHandler(ApiHandler):
 
         # calculate charge amount
         amount = listing.selling_price
-        if listing.shipping_price:
+        # if user select delivery address i.e. not collection add listing shipping price to total amount
+        if listing.shipping_price and not collection:
             amount += listing.shipping_price
 
         new_charge = ''

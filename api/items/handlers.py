@@ -901,11 +901,10 @@ class ListingHandler(ApiHandler):
             # update user location
             self.user.city = city
 
-            self.session.commit()
-
             for follower in self.user.followers:
                 notification_following_user_new_item(self, follower.id, listing)
 
+            self.session.commit()
             return self.success({'item': listing.response(self.user.id)})
 
     def remove(self):

@@ -16,8 +16,8 @@ CONFIRM_SUCCESS_EMAIL_LETTER_TEXT = "<b>%s</b>,<br/>" \
                                     "Don't forget to connect your Facebook profile to Hawkist in order to maximise your " \
                                     "chances of selling an item.<br/>" \
                                     "Hawkist<br/>" \
-                                    "Follow us on Facebook<br/>" \
-                                    "Follow us on Twitter"
+                                    "<a href='https://www.facebook.com/hawkistUK'>Follow us on Facebook</a><br/>" \
+                                    "<a href='https://twitter.com/HawkistUK'>Follow us on Twitter</a>"
 
 # change user group
 ADMIN_BACK_USER_TO_STANDARD_USERTYPE_LETTER_TEXT = 'Looks like you were excluded from Hawkist %s user group.'

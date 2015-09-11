@@ -15,9 +15,7 @@
     <button class="btn btn-primary" data-toggle="modal" data-target="#add_new_category_modal" href="#">
         Add new category
     </button>
-    {% if categories.count() == 0 %}
-        <br/>No categories
-    {% else %}
+    {% if categories.count() != 0 %}
         <div class="row-offcanvas">
             <table class="table table-hover">
                 <thead>

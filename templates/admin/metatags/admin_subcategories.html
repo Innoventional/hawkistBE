@@ -16,9 +16,7 @@
         Add new subcategory
     </button>
 
-    {% if subcategories.count() == 0 %}
-        <br/>No subcategories
-    {% else %}
+    {% if subcategories.count() != 0 %}
         <div class="row-offcanvas">
             <table class="table table-hover">
                 <thead>

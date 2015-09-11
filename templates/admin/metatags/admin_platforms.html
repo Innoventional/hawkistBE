@@ -20,9 +20,7 @@
         Add new platform
     </button>
 
-    {% if platforms.count() == 0 %}
-        <br/>No platforms
-    {% else %}
+    {% if platforms.count() != 0 %}
         <div class="row-offcanvas">
             <table class="table table-hover">
                 <thead>

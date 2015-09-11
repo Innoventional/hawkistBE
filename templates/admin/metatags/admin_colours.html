@@ -27,9 +27,7 @@
     <button class="btn btn-primary" data-toggle="modal" data-target="#add_new_colour_modal" href="#">
         Add new colour
     </button>
-    {% if colours.count() == 0 %}
-        <br/>No colours
-    {% else %}
+    {% if colours.count() != 0 %}
         <div class="row-offcanvas">
             <table class="table table-hover">
                 <thead>

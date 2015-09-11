@@ -15,37 +15,41 @@
     <button class="btn btn-primary" data-toggle="modal" data-target="#add_new_condition_modal" href="#">
         Add new condition
     </button>
-    <div class="row-offcanvas">
-        <table class="table table-hover">
-            <thead>
-                <th>ID</th>
-                <th>Condition Title</th>
-                <th>Parent (Platform > Category > Subcategory)</th>
-                <th>Action</th>
-            </thead>
-            <tbody>
-                {% for c in conditions %}
-                    <tr data-id="{{ c.id }}"
-                        data-title="{{ c.title }}"
-                        data-subcategory_id="{{ c.subcategory.id }}">
-                        <td>{{ c.id }}</td>
-                        <td>{{ c.title }}</td>
-                        <td>{{ c.subcategory.category.platform.title }} >
-                            {{ c.subcategory.category.title }} > {{ c.subcategory.title }}</td>
-                        <td>
-                            <a class="btn btn_edit_condition silver-color" href="#" data-toggle="modal"
-                               data-target="#edit_condition_modal" title="Edit condition">
-                                <i class="glyphicon glyphicon-pencil"></i>
-                            </a>
-                            <a class="btn btn_delete_condition red-color" href="#" title="Delete condition">
-                                <i class="glyphicon glyphicon-trash"></i>
-                            </a>
-                        </td>
-                     </tr>
-                {% end %}
-            </tbody>
-        </table>
-    </div>
+    {% if conditions.count() == 0 %}
+        No conditions
+    {% else %}
+        <div class="row-offcanvas">
+            <table class="table table-hover">
+                <thead>
+                    <th>ID</th>
+                    <th>Condition Title</th>
+                    <th>Parent (Platform > Category > Subcategory)</th>
+                    <th>Action</th>
+                </thead>
+                <tbody>
+                    {% for c in conditions %}
+                        <tr data-id="{{ c.id }}"
+                            data-title="{{ c.title }}"
+                            data-subcategory_id="{{ c.subcategory.id }}">
+                            <td>{{ c.id }}</td>
+                            <td>{{ c.title }}</td>
+                            <td>{{ c.subcategory.category.platform.title }} >
+                                {{ c.subcategory.category.title }} > {{ c.subcategory.title }}</td>
+                            <td>
+                                <a class="btn btn_edit_condition silver-color" href="#" data-toggle="modal"
+                                   data-target="#edit_condition_modal" title="Edit condition">
+                                    <i class="glyphicon glyphicon-pencil"></i>
+                                </a>
+                                <a class="btn btn_delete_condition red-color" href="#" title="Delete condition">
+                                    <i class="glyphicon glyphicon-trash"></i>
+                                </a>
+                            </td>
+                         </tr>
+                    {% end %}
+                </tbody>
+            </table>
+        </div>
+    {% end %}
 
 <!-- Add new condition modal -->
     <div class="modal fade property" id="add_new_condition_modal" tabindex="-1" role="dialog" aria-labelledby="add_new_tag_modalLabel" aria-hidden="true">

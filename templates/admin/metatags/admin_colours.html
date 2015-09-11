@@ -27,47 +27,51 @@
     <button class="btn btn-primary" data-toggle="modal" data-target="#add_new_colour_modal" href="#">
         Add new colour
     </button>
-    <div class="row-offcanvas">
-        <table class="table table-hover">
-            <thead>
-                <th>ID</th>
-                <th>Colour Name</th>
-                <th>Colour preview</th>
-                <th>Parent (Platform > Category > Subcategory)</th>
-                <th>Action</th>
-            </thead>
-            <tbody>
-                {% for c in colours %}
-                    <tr data-id="{{ c.id }}"
-                        data-title="{{ c.title }}"
-                        data-code="{{ c.code }}"
-                        data-subcategory_id="{{ c.subcategory.id }}">
-                        <td>{{ c.id }}</td>
-                        <td>{{ c.title }}</td>
-                        <td>
-                            {% if c.code == "" %}
-                                Disabled
-                            {% else %}
-                                <input class="color" value="{{ c.code }}"  disabled>
-                            {% end %}
-                        </td>
-                        <td>{{ c.subcategory.category.platform.title }} >
-                            {{ c.subcategory.category.title }} >
-                            {{ c.subcategory.title }}</td>
-                        <td>
-                            <a class="btn btn_edit_colour silver-color" href="#" data-toggle="modal"
-                               data-target="#edit_colour_modal" title="Edit colour">
-                                <i class="glyphicon glyphicon-pencil"></i>
-                            </a>
-                            <a class="btn btn_delete_colour red-color" href="#" title="Delete colour">
-                                <i class="glyphicon glyphicon-trash"></i>
-                            </a>
-                        </td>
-                     </tr>
-                {% end %}
-            </tbody>
-        </table>
-    </div>
+    {% if colours.count() == 0 %}
+        No colours
+    {% else %}
+        <div class="row-offcanvas">
+            <table class="table table-hover">
+                <thead>
+                    <th>ID</th>
+                    <th>Colour Name</th>
+                    <th>Colour preview</th>
+                    <th>Parent (Platform > Category > Subcategory)</th>
+                    <th>Action</th>
+                </thead>
+                <tbody>
+                    {% for c in colours %}
+                        <tr data-id="{{ c.id }}"
+                            data-title="{{ c.title }}"
+                            data-code="{{ c.code }}"
+                            data-subcategory_id="{{ c.subcategory.id }}">
+                            <td>{{ c.id }}</td>
+                            <td>{{ c.title }}</td>
+                            <td>
+                                {% if c.code == "" %}
+                                    Disabled
+                                {% else %}
+                                    <input class="color" value="{{ c.code }}"  disabled>
+                                {% end %}
+                            </td>
+                            <td>{{ c.subcategory.category.platform.title }} >
+                                {{ c.subcategory.category.title }} >
+                                {{ c.subcategory.title }}</td>
+                            <td>
+                                <a class="btn btn_edit_colour silver-color" href="#" data-toggle="modal"
+                                   data-target="#edit_colour_modal" title="Edit colour">
+                                    <i class="glyphicon glyphicon-pencil"></i>
+                                </a>
+                                <a class="btn btn_delete_colour red-color" href="#" title="Delete colour">
+                                    <i class="glyphicon glyphicon-trash"></i>
+                                </a>
+                            </td>
+                         </tr>
+                    {% end %}
+                </tbody>
+            </table>
+        </div>
+    {% end %}
 
 <!-- Add new colour modal -->
     <div class="modal fade property" id="add_new_colour_modal" tabindex="-1" role="dialog" aria-labelledby="add_new_tag_modalLabel" aria-hidden="true">

@@ -15,36 +15,40 @@
     <button class="btn btn-primary" data-toggle="modal" data-target="#add_new_category_modal" href="#">
         Add new category
     </button>
-    <div class="row-offcanvas">
-        <table class="table table-hover">
-            <thead>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Platform Title</th>
-                <th>Action</th>
-            </thead>
-            <tbody>
-                {% for c in categories %}
-                    <tr data-id="{{ c.id }}"
-                        data-title="{{ c.title }}"
-                        data-platform_id="{{ c.platform.id }}">
-                        <td>{{ c.id }}</td>
-                        <td>{{ c.title }}</td>
-                        <td>{{ c.platform.title }}</td>
-                        <td>
-                            <a class="btn btn_edit_category silver-color" href="#" data-toggle="modal"
-                               data-target="#edit_category_modal" title="Edit category">
-                                <i class="glyphicon glyphicon-pencil"></i>
-                            </a>
-                            <a class="btn btn_delete_category red-color" href="#" title="Delete category">
-                                <i class="glyphicon glyphicon-trash"></i>
-                            </a>
-                        </td>
-                     </tr>
-                {% end %}
-            </tbody>
-        </table>
-    </div>
+    {% if categories.count() == 0 %}
+        No categories
+    {% else %}
+        <div class="row-offcanvas">
+            <table class="table table-hover">
+                <thead>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Platform Title</th>
+                    <th>Action</th>
+                </thead>
+                <tbody>
+                    {% for c in categories %}
+                        <tr data-id="{{ c.id }}"
+                            data-title="{{ c.title }}"
+                            data-platform_id="{{ c.platform.id }}">
+                            <td>{{ c.id }}</td>
+                            <td>{{ c.title }}</td>
+                            <td>{{ c.platform.title }}</td>
+                            <td>
+                                <a class="btn btn_edit_category silver-color" href="#" data-toggle="modal"
+                                   data-target="#edit_category_modal" title="Edit category">
+                                    <i class="glyphicon glyphicon-pencil"></i>
+                                </a>
+                                <a class="btn btn_delete_category red-color" href="#" title="Delete category">
+                                    <i class="glyphicon glyphicon-trash"></i>
+                                </a>
+                            </td>
+                         </tr>
+                    {% end %}
+                </tbody>
+            </table>
+        </div>
+    {% end %}
 
 <!-- Add new category modal -->
     <div class="modal fade property" id="add_new_category_modal" tabindex="-1" role="dialog" aria-labelledby="add_new_tag_modalLabel" aria-hidden="true">

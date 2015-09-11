@@ -148,6 +148,10 @@ class ListingHandler(ApiHandler):
             if not listing:
                 return self.make_error(message=GET_DELETED_LISTING, title=GET_DELETED_LISTING_TITLE)
 
+            if self.user in listing.user.blocked:
+                return self.make_error(message=GET_BLOCKED_USER % listing.user.username.upper(),
+                                       status=3)
+
             # add view
             # first we must check owner of this listing
             if str(listing.user.id) != str(self.user.id):

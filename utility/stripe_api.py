@@ -386,7 +386,10 @@ def stripe_create_transfer(amount=None, currency='gbp', user_id=None):
     except stripe.error.CardError, e:
         error = str(e)
     except stripe.error.InvalidRequestError, e:
-        error = str(e)
+        if 'Insufficient funds in Stripe account' in str(e):
+            error = 'Insufficient funds in Stripe account.\nTODO!!!'
+        else:
+            error = str(e)
     except stripe.error.AuthenticationError, e:
         error = str(e)
     except stripe.error.APIConnectionError, e:

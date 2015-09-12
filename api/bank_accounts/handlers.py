@@ -69,8 +69,8 @@ class WalletHandler(ApiHandler):
         return self.success(
             {
                 'balance': {
-                    'available': "%.02f" % float(self.user.app_wallet),
-                    'pending': "%.02f" % float(self.user.app_wallet_pending)
+                    'available': "%.02f" % float(round(self.user.app_wallet, 2)),
+                    'pending': "%.02f" % float(round(self.user.app_wallet_pending, 2))
                 }
             }
         )
@@ -417,12 +417,12 @@ class WithdrawalHandler(ApiHandler):
                                    title=BALANCE_WITHDRAWAL_NOT_ENOUGH_MONEY_TITLE)
 
         # first calculate withdrawal amount
-        transfer_amount_total = self.user.app_wallet
+        transfer_amount_total = round(self.user.app_wallet, 2)
         # amount without withdrawal fee
         transfer_amount = round(decimal.Decimal(transfer_amount_total) - decimal.Decimal(env['stripe_hawkist_fee_withdrawal']), 2)
 
         # create stripe transfer
-        stripe_response = stripe_create_transfer(amount=transfer_amount_total * 100, user_id=self.user.id)
+        stripe_response = stripe_create_transfer(amount=int(transfer_amount_total * 100), user_id=self.user.id)
         logger.debug('STRIPE_TRANSFER_RESPONSE')
         logger.debug(stripe_response)
         stripe_error, stripe_data = stripe_response['error'], stripe_response['data']

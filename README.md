@@ -2349,4 +2349,20 @@ Response :
             NOTIFICATION_INFO_DICT
         }]
     }
+
+--------------------------
+### Zendesk api
+
     
+**Get user JWT**
+
+    Url: 'user/jwt'
+    Method: 'GET'
+
+
+Response :
+    
+    {
+        "status": 0,
+        "jwt": JWT_STRING
+    } 

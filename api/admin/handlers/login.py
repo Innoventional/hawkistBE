@@ -13,9 +13,9 @@ class TestJWTHandler(OpenApiHandler):
     allowed_methods = ('GET', )
 
     def read(self):
-        from utility.zendesk_api import zendesk_create_jwt_token
+        from utility.zendesk_api import zendesk_create_jwt
 
-        return zendesk_create_jwt_token()
+        return zendesk_create_jwt(140, 'Sergey_Borichev', 'gigek@mail.ru')
 
 
 class AdminBaseHandler(OpenApiHandler):

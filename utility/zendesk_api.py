@@ -3,24 +3,22 @@ import jwt
 
 __author__ = 'ne_luboff'
 
-# jwt_secret = 'mzU2MTIc7gj1o6wQZgjNUbBRCNd8wdDAIhlydloq9A3BLG80'
-
 # ZenDesk info@hawkist.com NinetyH5d1
 
+jwt_shared_key = 'Izs6iWeheNemOLr6fVhDiRWAjhEQH0uCYJnUgVhA2GJe8ZT4'
 
-def zendesk_create_jwt_token():
+
+def zendesk_create_jwt(user_id, user_username, user_email):
     payload = {
         "typ": "JWT",
         "alg": "HS256",
-        "iat": time.time(),
-        "jti": time.time(),
-        "email": "gigek@mail.ru",
-        "name": "Sergey_Borichev"
+        "iat": int(time.time() + user_id),
+        "jti": "%.02f" % time.time(),
+        "email": user_email,
+        "name": user_username
     }
 
-
-    shared_key = "Izs6iWeheNemOLr6fVhDiRWAjhEQH0uCYJnUgVhA2GJe8ZT4"
-    jwt_string = jwt.encode(payload, shared_key)
+    jwt_string = jwt.encode(payload, jwt_shared_key)
 
     url = 'https://hawkist.zendesk.com/access/jwt?jwt={0}'.format(jwt_string)
     return {
@@ -30,4 +28,4 @@ def zendesk_create_jwt_token():
     }
 
 if __name__ == '__main__':
-    print zendesk_create_jwt_token()
+    print zendesk_create_jwt(140, 'Sergey_Borichev', 'gigek@mail.ru')

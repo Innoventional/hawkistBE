@@ -21,6 +21,7 @@ from utility.image.processor import make_thumbnail
 from utility.notifications import update_notification_user_username, update_notification_user_avatar
 from utility.send_email import email_confirmation_sending, send_email
 from utility.user_utility import update_user_last_activity, check_user_suspension_status, check_email_uniqueness
+from utility.zendesk_api import zendesk_create_jwt
 
 __author__ = 'ne_luboff'
 
@@ -573,5 +574,28 @@ class UserAPNSTokenHandler(ApiHandler):
             self.user.updated_at = datetime.datetime.utcnow()
             self.session.commit()
 
-
         return self.success()
+
+
+@route('user/jwt')
+class UserJWTHandler(ApiHandler):
+    allowed_methods = ('GET',)
+
+    def read(self):
+
+        if self.user is None:
+            die(401)
+
+        logger.debug(self.user)
+
+        # check user status
+        suspension_error = check_user_suspension_status(self.user)
+        if suspension_error:
+            logger.debug(suspension_error)
+            return suspension_error
+
+        update_user_last_activity(self)
+
+        jwt_response = zendesk_create_jwt(self.user.id, self.user.username, self.user.email)
+
+        return self.success({'jwt': jwt_response['payload_encoded']})

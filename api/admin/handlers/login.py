@@ -8,9 +8,18 @@ from ui_messages.errors.admin_errors.admin_login_errors import ADMIN_LOGIN_USER_
 __author__ = 'ne_luboff'
 
 
+@route('test_jwt_token')
+class TestJWTHandler(OpenApiHandler):
+    allowed_methods = ('GET', )
+
+    def read(self):
+        from utility.zendesk_api import zendesk_create_jwt_token
+
+        return zendesk_create_jwt_token()
+
+
 class AdminBaseHandler(OpenApiHandler):
     pass
-
 
 @route('admin')
 class AdminHandler(AdminBaseHandler):

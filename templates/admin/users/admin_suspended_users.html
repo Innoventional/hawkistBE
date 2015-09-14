@@ -19,7 +19,11 @@
                 <i class="glyphicon glyphicon-exclamation-sign red-color" title="Someone was blocked or reported"></i>
         {% end %}
         </a>
-        <a href="../users/reported">Reported</a>
+        <a href="../users/reported">Reported
+            {% if reported_users_count != 0 %}
+                <i class="glyphicon glyphicon-exclamation-sign red-color" title="Someone was reported"></i>
+            {% end %}
+        </a>
     </div>
     <div id='PleaseWaitSuspension' style="display: none">
         <img src="{{ static_url('images/spinner.gif') }}"/>
@@ -66,10 +70,10 @@
                             {% end %}
                         </td>
                         <td>{{ UserType.tostring(user.user_type) }}</td>
-                            {% if user.blocked_me %}
-                                <i class="glyphicon glyphicon-exclamation-sign red-color"
-                                   title="User was blocked or reported"></i></td>
-                            {% end %}
+                            <!--{% if user.blocked_me %}-->
+                                <!--<i class="glyphicon glyphicon-exclamation-sign red-color"-->
+                                   <!--title="User was blocked or reported"></i></td>-->
+                            <!--{% end %}-->
                         <!--check current user status and can he do anything-->
                         {% if current_user.user_type < user.user_type or current_user == user %}
                         <td>

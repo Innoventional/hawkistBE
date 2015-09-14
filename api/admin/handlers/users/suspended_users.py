@@ -1,6 +1,7 @@
 import logging
 from api.admin.handlers.login import AdminBaseHandler
 from api.users.models import User, SystemStatus, UserType
+from api.users.reported_users.models import ReportedUsers
 from base import HttpRedirect
 from helpers import route
 
@@ -32,6 +33,10 @@ class AdminSuspendedUsersHandler(AdminBaseHandler):
         for b in blocked_users_count_query:
             blocked_users_count = b.ca
 
+        suspended_users_count = self.session.query(User).filter(User.system_status == SystemStatus.Suspended).count()
+        reported_users_count = self.session.query(ReportedUsers).count()
+
         return self.render_string('admin/users/admin_suspended_users.html', users=users, menu_tab_active='tab_users',
                                   SystemStatus=SystemStatus, UserType=UserType, current_user=self.user, q=q,
-                                  blocked_users_count=blocked_users_count)
+                                  blocked_users_count=blocked_users_count, suspended_users_count=suspended_users_count,
+                                  reported_users_count=reported_users_count)

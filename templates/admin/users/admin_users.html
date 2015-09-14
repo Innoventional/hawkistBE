@@ -30,7 +30,11 @@
             {% end %}
         {% end %}
         </a>
-        <a href="users/reported">Reported</a>
+        <a href="users/reported">Reported
+        {% if reported_users_count != 0 %}
+                <i class="glyphicon glyphicon-exclamation-sign red-color" title="Someone was reported"></i>
+            {% end %}
+        </a>
     </div>
 
     {% include '../search/search_result_users.html' %}

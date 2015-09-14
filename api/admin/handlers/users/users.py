@@ -6,6 +6,7 @@ from sqlalchemy import and_, func
 from api.admin.handlers.login import AdminBaseHandler
 from api.items.models import Listing
 from api.users.models import User, SystemStatus, UserType
+from api.users.reported_users.models import ReportedUsers
 from base import paginate, HttpRedirect
 from environment import env
 from helpers import route, encrypt_password
@@ -60,10 +61,11 @@ class AdminUsersHandler(AdminBaseHandler):
         page_size = self.get_arg('page_size', int, 100)
         # properly pagination handler
         paginator, tags = paginate(users, page, page_size)
+        reported_users_count = self.session.query(ReportedUsers).count()
 
         return self.render_string('admin/users/admin_users.html', users=users, paginator=paginator,
                                   menu_tab_active='tab_users', SystemStatus=SystemStatus, UserType=UserType,
-                                  current_user=self.user, q=q)
+                                  current_user=self.user, q=q, reported_users_count=reported_users_count)
 
     def create(self):
         if not self.user:

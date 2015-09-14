@@ -1,7 +1,8 @@
 import logging
 import datetime
 from api.admin.handlers.login import AdminBaseHandler
-from api.users.models import User
+from api.users.models import User, SystemStatus
+from api.users.reported_users.models import ReportedUsers
 from base import HttpRedirect
 from helpers import route
 from ui_messages.errors.admin_errors.admin_blocked_users_error import ADMIN_NO_BLOCKER_OR_NO_BLOCKED_USER_ID
@@ -36,9 +37,12 @@ class AdminBlockedUsersHandler(AdminBaseHandler):
         for b in blocked_users_count_query:
             blocked_users_count = b.ca
 
+        suspended_users_count = self.session.query(User).filter(User.system_status == SystemStatus.Suspended).count()
+        reported_users_count = self.session.query(ReportedUsers).count()
         return self.render_string('admin/users/admin_blocked_users.html', blocked_users=blocked_users,
                                   blocked_users_count=blocked_users_count, menu_tab_active='tab_users',
-                                  timedelta=datetime.timedelta)
+                                  timedelta=datetime.timedelta, suspended_users_count=suspended_users_count,
+                                  reported_users_count=reported_users_count)
 
     def remove(self):
         if not self.user:

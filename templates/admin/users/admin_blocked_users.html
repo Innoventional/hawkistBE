@@ -5,9 +5,17 @@
 {% block content %}
     <div class="tag_navigation_div">
         <a href="../users" >All</a>
-        <a href="../users/suspended">Suspended</a>
+        <a href="../users/suspended">Suspended
+            {% if suspended_users_count != 0 %}
+                <i class="glyphicon glyphicon-exclamation-sign red-color" title="Someone was suspended"></i>
+            {% end %}
+        </a>
         <a href="#" id="current_link">Blocked</a>
-        <a href="../users/reported">Reported</a>
+        <a href="../users/reported">Reported
+            {% if reported_users_count != 0 %}
+                <i class="glyphicon glyphicon-exclamation-sign red-color" title="Someone was reported"></i>
+            {% end %}
+        </a>
     </div>
     {% if str(blocked_users_count) == '0' %}
         <br/>No blocked users

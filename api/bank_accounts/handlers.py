@@ -107,6 +107,8 @@ class BalanceHandler(ApiHandler):
             return suspension_error
 
         update_user_last_activity(self)
+        logger.debug('REQUEST_OBJECT_UPDATE_USER_INFO')
+        logger.debug(self.request_object)
 
         first_name = ''
         last_name = ''
@@ -215,6 +217,8 @@ class BankAccountHandler(ApiHandler):
             return suspension_error
 
         update_user_last_activity(self)
+        logger.debug('REQUEST_OBJECT_UPDATE_BANK_ACCOUNT_INFO')
+        logger.debug(self.request_object)
 
         holder_first_name = ''
         holder_last_name = ''
@@ -325,6 +329,8 @@ class BankAddressHandler(ApiHandler):
             return suspension_error
 
         update_user_last_activity(self)
+        logger.debug('REQUEST_OBJECT_UPDATE_BANK_ACCOUNT_ADDRESS_INFO')
+        logger.debug(self.request_object)
 
         address_line1 = ''
         address_line2 = ''

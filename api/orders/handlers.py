@@ -167,7 +167,8 @@ class OrdersHandler(ApiHandler):
             if amount > 0.50:
                 # so try create stripe charge
                 stripe_response = stripe_create_charges(customer_id=self.user.stripe_customer.stripe_customer_id,
-                                                        card_id=stripe_card_id, amount=int(amount*100), description=listing.id)
+                                                        card_id=stripe_card_id, amount=int(amount*100),
+                                                        buyer_id=self.user.id, listing_id=listing.id)
                 logger.debug('STRIPE_RESPONSE')
                 logger.debug(stripe_response)
 

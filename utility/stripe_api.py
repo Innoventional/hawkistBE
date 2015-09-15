@@ -273,7 +273,7 @@ def stripe_delete_card(card):
         return error
 
 
-def stripe_create_charges(customer_id=None, card_id=None, amount=None, currency='gbp', description=None):
+def stripe_create_charges(customer_id=None, card_id=None, amount=None, currency='gbp', buyer_id=None, listing_id=None):
     """
     Function for charges.
     Parameters:
@@ -352,7 +352,7 @@ def stripe_create_charges(customer_id=None, card_id=None, amount=None, currency=
             currency=currency,
             customer=customer_id,
             source=card_id,
-            description='Hawkist_listing_%s' % description
+            description='Charge___buyer_{0}_listing_{1}'.format(buyer_id, listing_id)
         )
     except stripe.error.CardError, e:
         error = str(e)

@@ -427,18 +427,19 @@ class WithdrawalHandler(ApiHandler):
         # amount without withdrawal fee
         transfer_amount = round(decimal.Decimal(transfer_amount_total) - decimal.Decimal(env['stripe_hawkist_fee_withdrawal']), 2)
 
+        # TODO disable stripe manual transfers 2015-09-15
         # create stripe transfer
-        stripe_response = stripe_create_transfer(amount=int(transfer_amount_total * 100), user_id=self.user.id)
-        logger.debug('STRIPE_TRANSFER_RESPONSE')
-        logger.debug(stripe_response)
-        stripe_error, stripe_data = stripe_response['error'], stripe_response['data']
-        if stripe_error:
-            return self.make_error(stripe_error)
+        # stripe_response = stripe_create_transfer(amount=int(transfer_amount_total * 100), user_id=self.user.id)
+        # logger.debug('STRIPE_TRANSFER_RESPONSE')
+        # logger.debug(stripe_response)
+        # stripe_error, stripe_data = stripe_response['error'], stripe_response['data']
+        # if stripe_error:
+        #     return self.make_error(stripe_error)
 
         # create withdrawal
         new_withdrawal = UserWithdrawal()
         new_withdrawal.created_at = datetime.datetime.utcnow()
-        new_withdrawal.stripe_transfer_id = stripe_data.id
+        # new_withdrawal.stripe_transfer_id = stripe_data.id
 
         # info about user
         new_withdrawal.user_id = self.user.id

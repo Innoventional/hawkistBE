@@ -39,8 +39,8 @@ def get_feedbacks(server):
 if __name__ == '__main__':
     import datetime
     # result = send_ios_notify('f18b174eb350e4ee95bf79c332146dd80a3c66bd6bd73b164718876af0cd3b2c',
-    result = send_ios_notify('35ca4ca211290f75ba046612de3a18246cd41322608365d0e32cb64ceaa00bc4',
-                             alert='Has JOE arrived yet? Let us know.', badge=0, custom={'type': '2'})
+    result = send_ios_notify('ab6a605a45bf9d5b4f44087b4d49c5555e492a67c190d02a4858ae1fea91525f',
+                             alert='Hi', badge=1, custom={})
                              # alert='%s' % datetime.datetime.utcnow(), badge=0, custom={'type': '2'})
     # result = send_ios_notify('f18b174eb350e4ee95bf79c332146dd80a3c66bd6bd73b164718876af0cd3b2c', custom={'order_id': 220,
     #                                          'user_id': 177,

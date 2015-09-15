@@ -18,7 +18,7 @@ class UserWithdrawal(Base):
     created_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
 
-    stripe_transfer_id = Column(String, nullable=False)
+    # stripe_transfer_id = Column(String, nullable=False)
 
     # info about user who want withdrawal
     user_id = Column(Integer, nullable=False)

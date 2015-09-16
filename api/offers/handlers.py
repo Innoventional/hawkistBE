@@ -15,7 +15,7 @@ from ui_messages.errors.offers_errors.offers_errors import GET_OFFERS_NO_LISTING
     CREATE_OFFER_OFFERED_PRICE_MUST_BE_LESS_THAN_RETAIL
 from ui_messages.errors.users_errors.blocked_users_error import GET_BLOCKED_USER
 from ui_messages.errors.users_errors.suspended_users_errors import GET_SUSPENDED_USER
-from ui_messages.messages.custom_error_titles import CREATE_OFFER_PRICE_TO_HIGH_TITLE
+from ui_messages.messages.custom_error_titles import CREATE_OFFER_PRICE_TO_HIGH_TITLE, REACH_OFFER_LIMIT_TITLE
 from ui_messages.messages.offers_messages import OFFER_NEW, OFFER_ACCEPTED, OFFER_DECLINED
 from utility.items import calculate_discount_value
 from utility.notifications import notification_new_offered_price, notification_offered_price_accepted, \
@@ -78,7 +78,7 @@ class ItemOffersHandler(ApiHandler):
         today_user_offers = [o for o in all_user_offers
                              if o.created_at.strftime("%Y-%m-%d") == datetime.datetime.utcnow().strftime("%Y-%m-%d")]
         if len(today_user_offers) >= env['offer_limit_per_day']:
-            return self.make_error(REACH_OFFER_LIMIT)
+            return self.make_error(message=REACH_OFFER_LIMIT, title=REACH_OFFER_LIMIT_TITLE)
 
         new_price = None
 
@@ -92,8 +92,8 @@ class ItemOffersHandler(ApiHandler):
 
         # check is retail price more than new price
         if float(new_price) >= float(listing.retail_price):
-            return self.make_error(message=CREATE_OFFER_OFFERED_PRICE_MUST_BE_LESS_THAN_RETAIL
-                                           % "%.02f" % float(listing.retail_price), title=CREATE_OFFER_PRICE_TO_HIGH_TITLE)
+            return self.make_error(message=CREATE_OFFER_OFFERED_PRICE_MUST_BE_LESS_THAN_RETAIL % "%.02f"
+                                           % float(listing.retail_price), title=CREATE_OFFER_PRICE_TO_HIGH_TITLE)
 
         # create an offer
         offer = Offer()

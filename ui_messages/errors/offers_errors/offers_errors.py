@@ -3,7 +3,7 @@ from environment import env
 
 __author__ = 'ne_luboff'
 
-REACH_OFFER_LIMIT = 'Sorry, but offers limit reached for you. Maximum offer number - %s' % env['offer_limit_per_day']
+REACH_OFFER_LIMIT = 'You cannot create more than %s offers per day.' % env['offer_limit_per_day']
 
 GET_OFFERS_NO_LISTING_ID = 'Get offers no listing id'
 GET_OFFERS_ANOTHER_OWNER = 'Access denied. You cannot get offers of another user listing'

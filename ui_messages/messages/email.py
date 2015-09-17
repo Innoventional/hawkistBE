@@ -5,8 +5,7 @@ __author__ = 'ne_luboff'
 CONFIRM_EMAIL_LETTER_SUBJECT = 'Email Confirmation Required'
 CONFIRM_EMAIL_LETTER_TEXT = '<b>%s</b>,<br/><br/>' \
                             'To complete your Hawkist account we need you to confirm this email address.<br/>' \
-                            'Please follow this link:<br/>' \
-                            '%s/api/user/confirm_email/%s<br/><br/>' \
+                            '<a href="%s/api/user/confirm_email/%s">Please follow this link.</a><br/><br/>' \
                             'Thanks,<br/><br/>' \
                             'Hawkist'
 

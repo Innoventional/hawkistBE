@@ -6,7 +6,7 @@ from tornado import httpserver, ioloop
 from app import HawkistApi
 from environment import env
 from orm import create_session
-from utility.cron_scripts import daily_events, hourly_events
+from utility.cron_scripts import daily_events, hourly_events, clear_amazon_s3_bucket
 
 LOG_FORMAT = '[%(asctime)s] %(levelname)s [line:%(lineno)s] [%(funcName)s] %(message)s'
 logging.basicConfig(format=LOG_FORMAT)
@@ -115,6 +115,9 @@ class ApiManager(object):
 
     def do_hourly_events(self):
         hourly_events()
+
+    def do_clear_amazon_s3_bucket(self):
+        clear_amazon_s3_bucket()
 
 if __name__ == '__main__':
     ApiManager(sys.argv)

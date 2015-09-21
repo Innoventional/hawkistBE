@@ -1,13 +1,17 @@
 import datetime
 import logging
-from api.items.models import Listing, ListingStatus
+from api.items.models import Listing, ListingStatus, ListingPhoto
 from api.offers.models import OfferStatus
 from api.orders.models import UserOrders, OrderStatus
+from api.tags.models import Platform
 from api.users.models import User, SystemStatus
+from environment import env
 from orm import new_session
+from utility.amazon import delete_file_from_s3
 from utility.average_response_time import calculate_average_response_time
 from utility.notifications import notification_item_received, notification_funds_released
 from utility.send_email import send_warning_4_6_days_email, funds_received_seller
+import boto
 
 __author__ = 'ne_luboff'
 
@@ -76,3 +80,50 @@ def hourly_events():
             user.average_response_time = calculate_average_response_time(user)
         session.commit()
         logger.debug('Cron script finished: %s' % datetime.datetime.utcnow())
+
+
+def clear_amazon_s3_bucket():
+    """
+    Compare images in Amazon S3 bucket and DB.
+    If image is not in use delete it.
+    """
+    AWS_ACCESS_KEY_ID = env['amazon']['access_key_id']
+    AWS_SECRET_ACCESS_KEY = env['amazon']['secret_access_key']
+    user_images_bucket_name = 'hawkist-avatar'
+    listing_images_bucket_name = 'hawkist-item-images'
+    link_to_user_images_bucket = 'http://{0}.s3.amazonaws.com/'.format(user_images_bucket_name)
+    link_to_listing_images_bucket = 'https://s3-eu-west-1.amazonaws.com/{0}/'.format(listing_images_bucket_name)
+
+    # create connection to S3
+    s3 = boto.connect_s3(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+
+    # get all user images (avatars and thumbnails)
+    user_images_bucket = s3.get_bucket(user_images_bucket_name)
+    user_images_bucket_names = [o.key for o in user_images_bucket.list()]
+
+    # get all listing images
+    listing_images_bucket = s3.get_bucket(listing_images_bucket_name)
+    listing_images_bucket_names = [o.key for o in listing_images_bucket.list()]
+
+    # get data from db
+    with new_session() as session:
+        all_users = session.query(User)
+        user_avatar_db_names = [user.avatar.split('?')[0].replace(link_to_user_images_bucket, '')
+                                for user in all_users]
+        user_thumbnail_db_names = [user.thumbnail.split('?')[0].replace(link_to_user_images_bucket, '')
+                                   for user in all_users]
+        platform_images_db_names = [platform.image_url.split('?')[0].replace(link_to_user_images_bucket, '')
+                                    for platform in session.query(Platform)]
+        listing_images_db_names = [listing_photo.image_url.split('?')[0].replace(link_to_listing_images_bucket, '')
+                                   for listing_photo in session.query(ListingPhoto)]
+
+    # first check avatars
+    for user_image_name in user_images_bucket_names:
+        if user_image_name not in user_avatar_db_names and user_image_name not in user_thumbnail_db_names \
+                and user_image_name not in platform_images_db_names:
+            # delete this image from bucket
+            delete_file_from_s3(user_images_bucket_name, user_image_name)
+
+    for listing_image_name in listing_images_bucket_names:
+        if listing_image_name not in listing_images_db_names:
+            delete_file_from_s3(listing_images_bucket_name, listing_image_name)

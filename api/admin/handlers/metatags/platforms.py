@@ -70,7 +70,7 @@ class AdminPlatformHandler(AdminBaseHandler):
 
             if self.request.files:
                 img = self.request.files.values()[0][0]['body']
-                image_url = upload_file('platform-%s' % platform.id, img, content_type='image/jpeg')
+                image_url = upload_file('platform-%s-production' % platform.id, img, content_type='image/jpeg')
                 platform.image_url = image_url
                 need_commit = True
 
@@ -93,7 +93,7 @@ class AdminPlatformHandler(AdminBaseHandler):
 
         # add platform image
         img = self.request.files.values()[0][0]['body']
-        image_url = upload_file('platform-%s' % new_platform.id, img, content_type='image/jpeg')
+        image_url = upload_file('platform-%s-production' % new_platform.id, img, content_type='image/jpeg')
         new_platform.image_url = image_url
 
         self.session.commit()

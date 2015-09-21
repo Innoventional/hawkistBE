@@ -8,10 +8,15 @@ from boto.s3.key import Key
 # AWS_SECRET_ACCESS_KEY = '4LeP128W0AytCYkh3UZUjA1cfUWECh2srXEZ9/IB'
 
 # hawkist live aws credentials
+from environment import env
+
 AWS_S3_BUCKET = 'hawkist-avatar'
 AWS_S3_BUCKET_WITHDRAWALS = 'hawkist-withdrawals'
-AWS_ACCESS_KEY_ID = 'AKIAJZDNOKN3IAAMLYJQ'
-AWS_SECRET_ACCESS_KEY = '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'
+# AWS_ACCESS_KEY_ID = 'AKIAJZDNOKN3IAAMLYJQ'
+# AWS_SECRET_ACCESS_KEY = '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'
+
+AWS_ACCESS_KEY_ID = env['amazon']['access_key_id']
+AWS_SECRET_ACCESS_KEY = env['amazon']['secret_access_key']
 
 LOCAL_PATH = '/backup/s3/'
 
@@ -82,3 +87,17 @@ def upload_file_withdrawals(filename, data, content_type='csv'):
     except Exception as e:
         boto_logger.error('File pushing to Amazon s3 failed, error: %s' % str(e))
         return ''
+
+
+def delete_file_from_s3(bucketname, filename):
+    from boto.s3.connection import S3Connection, Bucket, Key
+
+    conn = S3Connection(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+
+    b = Bucket(conn, bucketname)
+
+    k = Key(b)
+
+    k.key = '/'+filename
+
+    b.delete_key(k)

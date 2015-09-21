@@ -9,7 +9,7 @@ __author__ = 'ne_luboff'
 
 class ListingReportingReasons(Enum):
     ItemViolatesTermsOfUse = 0
-    PriceIsMisleading = 1
+    ItemIsStolenOrCounterfeit = 1
     ItemIsRegulatedOrIllegal = 2
 
     @classmethod

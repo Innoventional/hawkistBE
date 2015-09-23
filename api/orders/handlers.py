@@ -16,7 +16,8 @@ from ui_messages.errors.payment_errors import CREATE_CHARGE_NO_CARD_ID, CREATE_C
     CREATE_CHARGE_BUY_YOUR_OWN_LISTING, CREATE_CHARGE_BUY_RESERVED_LISTING, CREATE_CHARGE_BUY_SOLD_LISTING, \
     CREATE_CHARGE_NO_STRIPE_ACCOUNT, UPDATE_CARD_INVALID_ID, CREATE_CHARGE_NOT_ENOUGH_MONEY, \
     ORDER_CREATE_LISTING_NOT_SUPPORT_COLLECTION, ORDER_CREATE_INVALID_ADDRESS_ID, CREATE_CHARGE_NO_ADDRESS
-from ui_messages.messages.custom_error_titles import CREATE_CHARGE_NOT_ENOUGH_MONEY_TITLE
+from ui_messages.messages.custom_error_titles import CREATE_CHARGE_NOT_ENOUGH_MONEY_TITLE, ITEM_NOT_AVAILABLE_TITLE, \
+    ITEM_RESERVED_TITLE
 from utility.notifications import notification_item_sold, notification_funds_released, notification_leave_feedback, \
     notification_favourite_item_sold, notification_item_received
 from utility.send_email import purchase_confirmation_sending_buyer, purchase_confirmation_sending_seller, \
@@ -123,11 +124,11 @@ class OrdersHandler(ApiHandler):
             if listing.reserved_by_user:
                 # check listing reserver
                 if str(self.user.id) != str(listing.user_who_reserve_id):
-                    return self.make_error(CREATE_CHARGE_BUY_RESERVED_LISTING)
+                    return self.make_error(message=CREATE_CHARGE_BUY_RESERVED_LISTING, title=ITEM_RESERVED_TITLE)
             else:
                 return self.make_error(CREATE_CHARGE_BUY_RESERVED_LISTING)
         elif listing.status == ListingStatus.Sold:
-            return self.make_error(CREATE_CHARGE_BUY_SOLD_LISTING)
+            return self.make_error(message=CREATE_CHARGE_BUY_SOLD_LISTING, title=ITEM_NOT_AVAILABLE_TITLE)
 
         address = ''
         # check delivery info

@@ -52,3 +52,7 @@ BALANCE_WITHDRAWAL_NOT_ENOUGH_MONEY_TITLE = 'Minimum Not Met'
 GET_DELETED_LISTING_TITLE = 'Cannot Complete Action'
 
 REACH_OFFER_LIMIT_TITLE = 'Offer Limit Reached'
+
+ITEM_NOT_AVAILABLE_TITLE = 'Item Not Available'
+
+ITEM_RESERVED_TITLE = 'Item Reserved'

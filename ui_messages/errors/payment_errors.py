@@ -18,8 +18,9 @@ CREATE_CHARGE_NO_LISTING_ID = 'No listing to buy id'
 CREATE_CHARGE_NO_STRIPE_ACCOUNT = 'First add bank card'
 
 CREATE_CHARGE_BUY_YOUR_OWN_LISTING = 'Sorry, but you cannot buy your own listings'
-CREATE_CHARGE_BUY_RESERVED_LISTING = 'Sorry, but this listing is reserved'
-CREATE_CHARGE_BUY_SOLD_LISTING = 'Sorry, but this listing is sold out'
+CREATE_CHARGE_BUY_RESERVED_LISTING = 'This item is currently reserved but it may become available again. ' \
+                                     'Please check back in 24 hours.'
+CREATE_CHARGE_BUY_SOLD_LISTING = 'This item has already been purchased.'
 
 ORDER_CREATE_LISTING_NOT_SUPPORT_COLLECTION = 'Sorry, but this listing dont support collection. Only post delivery!'
 ORDER_CREATE_INVALID_ADDRESS_ID = 'Invalid address id'

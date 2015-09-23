@@ -26,7 +26,7 @@ def phone_verification(phone):
     if len(phone) < 10:
         return PHONE_VERIFICATION_TOO_SHORT_NUMBER
 
-    if len(phone) > 15:
+    if len(phone) > 12:
         return PHONE_VERIFICATION_TOO_LONG_NUMBER
     return False
 
@@ -38,8 +38,10 @@ def phone_reformat(phone):
     """
     error = ''
     if str(phone[0:2]) == '07':
+        if len(phone) > 11:
+            error = PHONE_VERIFICATION_TOO_LONG_NUMBER
         phone = phone.replace('0', '44', 1)
-    elif str(phone[0:3]) == '380':
+    elif str(phone[0:3]) == '380' or str(phone[0:3]) == '447':
         phone = phone
     else:
         error = TWILIO_INVALID_PHONE_NUMBER

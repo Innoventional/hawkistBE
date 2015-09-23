@@ -24,7 +24,7 @@ from ui_messages.messages.email import ADMIN_BACK_USER_TO_STANDARD_USERTYPE_LETT
     ADMIN_ACCOUNT_ACTIVATED_TEXT, ADMIN_ACCOUNT_ACTIVATED_SUBJECT, ADMIN_EMAIL_CHANGED_LETTER_SUBJECT, \
     ADMIN_EMAIL_CHANGED_LETTER_TEXT
 from ui_messages.messages.sms import UPDATE_USER_PHONE_NUMBER_SMS
-from utility.format_verification import username_verification, email_verification, phone_verification, phone_reformat
+from utility.format_verification import username_verification, email_verification, phone_verification
 from utility.notifications import update_notification_user_username
 from utility.send_email import send_email, email_confirmation_sending
 from utility.twilio_api import send_sms
@@ -224,11 +224,6 @@ class AdminUsersHandler(AdminBaseHandler):
                 phone_error = phone_verification(phone)
                 if phone_error:
                     return self.make_error(phone_error)
-
-                phone_reformat_response = phone_reformat(phone)
-                phone_reformat_error, phone = phone_reformat_response['error'], phone_reformat_response['data']
-                if phone_reformat_error:
-                    return self.make_error(message=phone_reformat_error, title=PHONE_VERIFICATION_INVALID_FORMAT_TITLE)
 
                 already_used = self.session.query(User).filter(and_(User.id != user.id,
                                                                     User.phone == phone)).first()

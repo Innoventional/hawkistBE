@@ -13,7 +13,7 @@ from ui_messages.messages.custom_error_titles import PHONE_VERIFICATION_INVALID_
     UPDATE_USER_INFO_EMAIL_ALREADY_USED_TITLE
 from ui_messages.messages.sms import SIGN_UP_WELCOME_SMS, REQUEST_NEW_PIN_SMS
 from utility.facebook_api import get_facebook_user, get_facebook_photo
-from utility.format_verification import phone_verification, sms_limit_check, phone_reformat
+from utility.format_verification import phone_verification, sms_limit_check
 from utility.send_email import email_confirmation_sending
 from utility.twilio_api import send_sms
 from utility.user_utility import update_user_last_activity, check_user_suspension_status, check_email_uniqueness
@@ -58,11 +58,6 @@ class UserLoginHandler(ApiHandler):
             phone_error = phone_verification(phone)
             if phone_error:
                 return self.make_error(message=phone_error, title=PHONE_VERIFICATION_INVALID_FORMAT_TITLE)
-
-            phone_reformat_response = phone_reformat(phone)
-            phone_reformat_error, phone = phone_reformat_response['error'], phone_reformat_response['data']
-            if phone_reformat_error:
-                return self.make_error(message=phone_reformat_error, title=PHONE_VERIFICATION_INVALID_FORMAT_TITLE)
 
             # try get existing user
             user = self.session.query(User).filter(User.phone == phone).first()
@@ -241,10 +236,6 @@ class UserLoginHandler(ApiHandler):
         phone_error = phone_verification(phone)
         if phone_error:
             return self.make_error(message=phone_error, title=PHONE_VERIFICATION_INVALID_FORMAT_TITLE)
-        phone_reformat_response = phone_reformat(phone)
-        phone_reformat_error, phone = phone_reformat_response['error'], phone_reformat_response['data']
-        if phone_reformat_error:
-            return self.make_error(message=phone_reformat_error, title=PHONE_VERIFICATION_INVALID_FORMAT_TITLE)
 
         user = self.session.query(User).filter(User.phone == phone).first()
 

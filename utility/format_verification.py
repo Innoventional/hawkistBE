@@ -26,8 +26,12 @@ def phone_verification(phone):
     if len(phone) < 10:
         return PHONE_VERIFICATION_TOO_SHORT_NUMBER
 
-    if len(phone) > 12:
+    if len(phone) > 12 or (str(phone[0:2]) == '07' and len(phone) > 11):
         return PHONE_VERIFICATION_TOO_LONG_NUMBER
+
+    if str(phone[0:2]) != '07' and str(phone[0:3]) != '380':
+        return TWILIO_INVALID_PHONE_NUMBER
+
     return False
 
 
@@ -36,19 +40,23 @@ def phone_reformat(phone):
     Pre-processing for Great Britain numbers.
     If mobile number started with 07 we must change it to 447.
     """
-    error = ''
     if str(phone[0:2]) == '07':
-        if len(phone) > 11:
-            error = PHONE_VERIFICATION_TOO_LONG_NUMBER
-        phone = phone.replace('0', '44', 1)
-    elif str(phone[0:3]) == '380' or str(phone[0:3]) == '447':
-        phone = phone
-    else:
-        error = TWILIO_INVALID_PHONE_NUMBER
-    return {
-        'error': error,
-        'data': phone
-    }
+        return phone.replace('0', '44', 1)
+    return phone
+    # 2015-09-23
+    # error = ''
+    # if str(phone[0:2]) == '07':
+    #     if len(phone) > 11:
+    #         error = PHONE_VERIFICATION_TOO_LONG_NUMBER
+    #     phone = phone.replace('0', '44', 1)
+    # elif str(phone[0:3]) == '380' or str(phone[0:3]) == '447':
+    #     phone = phone
+    # else:
+    #     error = TWILIO_INVALID_PHONE_NUMBER
+    # return {
+    #     'error': error,
+    #     'data': phone
+    # }
 
 
 def username_verification(username):

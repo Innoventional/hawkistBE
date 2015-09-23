@@ -3,6 +3,7 @@ import requests
 from twilio.rest import TwilioRestClient, exceptions
 from ui_messages.errors.utility_errors.twilio_api_errors import TWILIO_INVALID_PHONE_NUMBER, TWILIO_UNSUPPORTED_REGION, \
     TWILIO_NOT_NUMBER, TWILIO_NUMBER_CURRENTLY_REACHABLE
+from utility.format_verification import phone_reformat
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +24,7 @@ def send_sms(to_number, text):
     error = ''
     try:
         client = TwilioRestClient(account_sid, auth_token)
-        message = client.messages.create(to="+" + to_number, from_=from_number, body=text)
+        message = client.messages.create(to="+" + phone_reformat(to_number), from_=from_number, body=text)
         url = "https://api.twilio.com/2010-04-01/Accounts/{0}/Messages".format(account_sid)
         r = requests.post(url)
     except exceptions.TwilioRestException, e:

@@ -1,7 +1,8 @@
 import logging
 import requests
 from twilio.rest import TwilioRestClient, exceptions
-from ui_messages.errors.utility_errors.twilio_api_errors import TWILIO_INVALID_PHONE_NUMBER, TWILIO_UNSUPPORTED_REGION
+from ui_messages.errors.utility_errors.twilio_api_errors import TWILIO_INVALID_PHONE_NUMBER, TWILIO_UNSUPPORTED_REGION, \
+    TWILIO_NOT_NUMBER, TWILIO_NUMBER_CURRENTLY_REACHABLE
 
 logger = logging.getLogger(__name__)
 
@@ -30,13 +31,21 @@ def send_sms(to_number, text):
         if 'is not a valid phone number' in exception_text:
             logger.debug('https://www.twilio.com/docs/errors/21211')
             error = TWILIO_INVALID_PHONE_NUMBER
-        if 'Permission to send an SMS has not been enabled for the region' in exception_text:
+        elif 'Permission to send an SMS has not been enabled for the region' in exception_text:
             logger.debug('https://www.twilio.com/docs/errors/21408')
             error = TWILIO_UNSUPPORTED_REGION
+        elif 'is not a mobile number' in exception_text:
+            logger.debug('https://www.twilio.com/docs/errors/21614')
+            error = TWILIO_NOT_NUMBER % to_number
+        elif 'is not currently reachable using the' in exception_text:
+            logger.debug('https://www.twilio.com/docs/errors/21612')
+            error = TWILIO_NUMBER_CURRENTLY_REACHABLE % to_number
+        else:
+            error = exception_text
     finally:
         return error
 
 if __name__ == '__main__':
     # print send_sms("380937181958", 'test')
-    print send_sms("07446263710", 'test')
+    print send_sms("9516583848", 'test')
 

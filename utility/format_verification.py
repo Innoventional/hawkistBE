@@ -5,7 +5,7 @@ from environment import env
 from ui_messages.errors.utility_errors.format_verification_errors import PHONE_VERIFICATION_NOT_DIGITS_ONLY, \
     PHONE_VERIFICATION_TOO_SHORT_NUMBER, PHONE_VERIFICATION_TOO_LONG_NUMBER, EMAIL_VERIFICATION_INVALID_FORMAT, \
     USERNAME_VERIFICATION_TOO_LONG_USERNAME, USERNAME_VERIFICATION_INVALID_FORMAT
-from ui_messages.errors.utility_errors.twilio_api_errors import TWILIO_RICH_SMS_LIMIT
+from ui_messages.errors.utility_errors.twilio_api_errors import TWILIO_RICH_SMS_LIMIT, TWILIO_INVALID_PHONE_NUMBER
 
 __author__ = 'ne_luboff'
 
@@ -36,9 +36,17 @@ def phone_reformat(phone):
     Pre-processing for Great Britain numbers.
     If mobile number started with 07 we must change it to 447.
     """
+    error = ''
     if str(phone[0:2]) == '07':
         phone = phone.replace('0', '44', 1)
-    return phone
+    elif str(phone[0:3]) == '380':
+        phone = phone
+    else:
+        error = TWILIO_INVALID_PHONE_NUMBER
+    return {
+        'error': error,
+        'data': phone
+    }
 
 
 def username_verification(username):

@@ -224,7 +224,12 @@ class AdminUsersHandler(AdminBaseHandler):
                 phone_error = phone_verification(phone)
                 if phone_error:
                     return self.make_error(phone_error)
-                phone = phone_reformat(phone)
+
+                phone_reformat_response = phone_reformat(phone)
+                phone_reformat_error, phone = phone_reformat_response['error'], phone_reformat_response['data']
+                if phone_reformat_error:
+                    return self.make_error(message=phone_reformat_error, title=PHONE_VERIFICATION_INVALID_FORMAT_TITLE)
+
                 already_used = self.session.query(User).filter(and_(User.id != user.id,
                                                                     User.phone == phone)).first()
                 if already_used:

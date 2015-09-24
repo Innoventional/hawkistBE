@@ -164,35 +164,36 @@ class OrdersHandler(ApiHandler):
             if stripe_card_id not in str(stripe_customer_cards):
                 return self.make_error(UPDATE_CARD_INVALID_ID % stripe_card_id)
 
+            # TODO dont delete!
             # only if amount more than 50 cents must go to stripe
-            if amount >= 0.50:
-                # so try create stripe charge
-                stripe_response = stripe_create_charges(customer_id=self.user.stripe_customer.stripe_customer_id,
-                                                        card_id=stripe_card_id, amount=int(amount*100),
-                                                        buyer_id=self.user.id, listing_id=listing.id)
-                logger.debug('STRIPE_RESPONSE')
-                logger.debug(stripe_response)
-
-                stripe_error, stripe_charge = stripe_response['error'], stripe_response['data']
-                if stripe_error:
-                    return self.make_error(stripe_error)
-                # if this is success payment create new row in payments table
-                new_charge = StripeCharges()
-                new_charge.created_at = datetime.datetime.utcnow()
-                new_charge.updated_at = datetime.datetime.utcnow()
-                new_charge.date_finish = new_charge.created_at + datetime.timedelta(days=7)
-                new_charge.charge_id = stripe_charge['id']
-                new_charge.transaction_id = stripe_charge['balance_transaction']
-                new_charge.paid = stripe_charge['paid']
-                new_charge.refunded = stripe_charge['refunded']
-                new_charge.payment_sum = amount
-                new_charge.transaction_status = stripe_charge['status']
-                new_charge.buyer_id = self.user.id
-                new_charge.listing_id = listing.id
-                self.session.add(new_charge)
-                self.session.commit()
-            else:
-                amount = 0
+            # if amount >= 0.50:
+            #     # so try create stripe charge
+            #     stripe_response = stripe_create_charges(customer_id=self.user.stripe_customer.stripe_customer_id,
+            #                                             card_id=stripe_card_id, amount=int(amount*100),
+            #                                             buyer_id=self.user.id, listing_id=listing.id)
+            #     logger.debug('STRIPE_RESPONSE')
+            #     logger.debug(stripe_response)
+            #
+            #     stripe_error, stripe_charge = stripe_response['error'], stripe_response['data']
+            #     if stripe_error:
+            #         return self.make_error(stripe_error)
+            #     # if this is success payment create new row in payments table
+            #     new_charge = StripeCharges()
+            #     new_charge.created_at = datetime.datetime.utcnow()
+            #     new_charge.updated_at = datetime.datetime.utcnow()
+            #     new_charge.date_finish = new_charge.created_at + datetime.timedelta(days=7)
+            #     new_charge.charge_id = stripe_charge['id']
+            #     new_charge.transaction_id = stripe_charge['balance_transaction']
+            #     new_charge.paid = stripe_charge['paid']
+            #     new_charge.refunded = stripe_charge['refunded']
+            #     new_charge.payment_sum = amount
+            #     new_charge.transaction_status = stripe_charge['status']
+            #     new_charge.buyer_id = self.user.id
+            #     new_charge.listing_id = listing.id
+            #     self.session.add(new_charge)
+            #     self.session.commit()
+            # else:
+            #     amount = 0
 
         # after it create new order
         new_order = UserOrders()

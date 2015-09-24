@@ -165,7 +165,7 @@ class OrdersHandler(ApiHandler):
                 return self.make_error(UPDATE_CARD_INVALID_ID % stripe_card_id)
 
             # only if amount more than 50 cents must go to stripe
-            if amount > 0.50:
+            if amount >= 0.50:
                 # so try create stripe charge
                 stripe_response = stripe_create_charges(customer_id=self.user.stripe_customer.stripe_customer_id,
                                                         card_id=stripe_card_id, amount=int(amount*100),

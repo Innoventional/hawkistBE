@@ -671,14 +671,24 @@ class ListingHandler(ApiHandler):
             # photos
             # first add all new photos to listing_photo table
             for photo in photos:
+                try:
+                    image_url = photo.get('image', None)
+                    thumbnail_url = photo.get('thumbnail', None)
+                except AttributeError:
+                    return self.make_error('Anton! Invalid photo list format. Check readme')
+                
+                if not image_url or not thumbnail_url:
+                    return self.make_error('Anton! Must input full photo and thumbnail!')
+
                 # check is this photo new
                 listing_photo = self.session.query(ListingPhoto).filter(and_(ListingPhoto.listing_id == listing_to_update.id,
-                                                                             ListingPhoto.image_url == photo)).first()
+                                                                             ListingPhoto.image_url == image_url)).first()
                 if not listing_photo:
                     listing_photo = ListingPhoto()
                     listing_photo.created_at = datetime.datetime.utcnow()
                     listing_photo.listing = listing_to_update
-                    listing_photo.image_url = photo
+                    listing_photo.image_url = image_url
+                    listing_photo.thumbnail_url = thumbnail_url
                     self.session.add(listing_photo)
                     update_notification_listing_photo(self, listing_to_update)
                     self.session.commit()
@@ -686,7 +696,7 @@ class ListingHandler(ApiHandler):
             # next get all listing photos and remove from it photos which are not in currently received
             all_photos = listing_to_update.listing_photos
             for ph in all_photos:
-                if ph.image_url not in photos:
+                if ph.image_url not in str(photos):
                     self.session.delete(ph)
                     self.session.commit()
 
@@ -895,10 +905,19 @@ class ListingHandler(ApiHandler):
 
             # photos
             for photo in photos:
+                try:
+                    image_url = photo.get('image', None)
+                    thumbnail_url = photo.get('thumbnail', None)
+                except AttributeError:
+                    return self.make_error('Anton! Invalid photo list format. Check readme')
+                if not image_url or not thumbnail_url:
+                    return self.make_error('Anton! Must input full photo and thumbnail!')
+                return
                 listing_photo = ListingPhoto()
                 listing_photo.created_at = datetime.datetime.utcnow()
                 listing_photo.listing = listing
-                listing_photo.image_url = photo
+                listing_photo.image_url = image_url
+                listing_photo.thumbnail_url = thumbnail_url
                 self.session.add(listing_photo)
                 self.session.commit()
 

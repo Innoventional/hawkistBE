@@ -774,7 +774,7 @@ ITEM_INFO_DICT
         'collection_only': COLLECTION ONLY FLAG,
         'post_code': POST CODE,
         'city': LOCATION CITY,
-        'photos': LIST OF LISTING PHOTOS,
+        'photos': DICT OF LISTING PHOTOS AND THUMBNAILS,
         'sold': IS LISTING ALREADY SOLD FLAG,
         'likes': NUMBERS OF LIKES,
         'liked': DOES CURRENT USER ALREADY LIKED THIS ITEM,
@@ -966,7 +966,7 @@ Data:
         "shipping_price": float,
         "collection_only": int,
         "barcode": "http://amazon.link_to_barcode_photo",         - not required -
-        "photos": ["http://amazon.link_to_photo"],
+        "photos": [{"image": "http://amazon.link_to_full_photo", "thumbnail": "http://amazon.link_to_thumbnail"}],
         "post_code": "NR1",
         "city": "Norwich"
     }

@@ -143,7 +143,10 @@ class Listing(Base):
             'collection_only': self.collection_only,
             'post_code': self.post_code,
             'city': self.city,
-            'photos': [photo.image_url for photo in self.listing_photos],
+            'photos': [{
+                           "image": photo.image_url,
+                           "thumbnail": photo.thumbnail_url
+                       } for photo in self.listing_photos],
             'sold': self.sold,
             'status': self.status,
             'likes': len(self.likes),
@@ -166,3 +169,4 @@ class ListingPhoto(Base):
                            foreign_keys=listing_id)
 
     image_url = Column(String, nullable=False)
+    thumbnail_url = Column(String, nullable=False)

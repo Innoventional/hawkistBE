@@ -690,7 +690,6 @@ class ListingHandler(ApiHandler):
                     listing_photo.image_url = image_url
                     listing_photo.thumbnail_url = thumbnail_url
                     self.session.add(listing_photo)
-                    update_notification_listing_photo(self, listing_to_update)
                     self.session.commit()
 
             # next get all listing photos and remove from it photos which are not in currently received
@@ -702,6 +701,7 @@ class ListingHandler(ApiHandler):
 
             if need_commit:
                 listing_to_update.updated_at = datetime.datetime.utcnow()
+                update_notification_listing_photo(self, listing_to_update)
                 self.session.commit()
 
             return self.success({'item': listing_to_update.response(self.user.id)})

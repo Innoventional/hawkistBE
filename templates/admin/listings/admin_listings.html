@@ -52,8 +52,8 @@
                         <td>{{ l.id }}</td>
                         <td align="center" id="thumbnailList1">
                             {% if l.listing_photos.count > 0 %}
-                                <a href="{{ l.listing_photos[0].image_url }}" target="_blank">
-                                    <img src="{{ l.listing_photos[0].image_url }}">
+                                <a href="{{ l.listing_photos[0]['image_url'] }}" target="_blank">
+                                    <img src="{{ l.listing_photos[0]['image_url'] }}">
                                 </a>
                             {% end %}
                         </td>

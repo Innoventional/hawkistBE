@@ -912,7 +912,6 @@ class ListingHandler(ApiHandler):
                     return self.make_error('Anton! Invalid photo list format. Check readme')
                 if not image_url or not thumbnail_url:
                     return self.make_error('Anton! Must input full photo and thumbnail!')
-                return
                 listing_photo = ListingPhoto()
                 listing_photo.created_at = datetime.datetime.utcnow()
                 listing_photo.listing = listing

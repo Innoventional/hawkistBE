@@ -40,8 +40,8 @@
                         <td align="center" id="thumbnailList1">
                             {% if listing.listing_photos.count > 0 %}
                                 {% for p in listing.listing_photos %}
-                                    <a href="{{ p.image_url }}" target="_blank">
-                                        <img src="{{ p.image_url }}">
+                                    <a href="{{ p['image_url'] }}" target="_blank">
+                                        <img src="{{ p['image_url'] }}">
                                     </a>
                                 {% end %}
                             {% end %}

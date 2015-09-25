@@ -43,7 +43,7 @@ def notification_new_comment(self, listing, comment):
     notification.user_username = self.user.username
     notification.listing_id = listing.id
     notification.listing_title = listing.title
-    notification.listing_photo = listing.listing_photos[0].image_url
+    notification.listing_photo = listing.listing_photos[0]['thumbnail_url']
     notification.comment_id = comment.id
     notification.comment_text = comment.text
     notification.priority = NotificationPriority.High
@@ -69,7 +69,7 @@ def notification_item_sold(self, listing):
     notification.user_username = self.user.username
     notification.listing_id = listing.id
     notification.listing_title = listing.title
-    notification.listing_photo = listing.listing_photos[0].image_url
+    notification.listing_photo = listing.listing_photos[0]['thumbnail_url']
     notification.priority = NotificationPriority.High
     self.session.add(notification)
     self.session.commit()
@@ -92,7 +92,7 @@ def notification_item_received(session, order):
     notification.user_username = order.listing.user.username
     notification.listing_id = order.listing.id
     notification.listing_title = order.listing.title
-    notification.listing_photo = order.listing.listing_photos[0].image_url
+    notification.listing_photo = order.listing.listing_photos[0]['thumbnail_url']
     notification.priority = NotificationPriority.High
     session.add(notification)
     session.commit()
@@ -115,7 +115,7 @@ def notification_new_feedback(self, listing, feedback_type):
     notification.user_username = self.user.username
     notification.listing_id = listing.id
     notification.listing_title = listing.title
-    notification.listing_photo = listing.listing_photos[0].image_url
+    notification.listing_photo = listing.listing_photos[0]['thumbnail_url']
     notification.priority = NotificationPriority.High
     notification.feedback_type = feedback_type
     self.session.add(notification)
@@ -142,7 +142,7 @@ def notification_funds_released(session, user, listing):
     notification.listing_title = listing.title
     notification.listing_selling_price = listing.selling_price
     notification.listing_shipping_price = listing.shipping_price
-    notification.listing_photo = listing.listing_photos[0].image_url
+    notification.listing_photo = listing.listing_photos[0]['thumbnail_url']
     notification.priority = NotificationPriority.High
     session.add(notification)
     session.commit()
@@ -165,7 +165,7 @@ def notification_leave_feedback(self, order):
     notification.user_username = order.listing.user.username
     notification.listing_id = order.listing.id
     notification.listing_title = order.listing.title
-    notification.listing_photo = order.listing.listing_photos[0].image_url
+    notification.listing_photo = order.listing.listing_photos[0]['thumbnail_url']
     notification.order_id = order.id
     notification.order_available_feedback = True
     notification.priority = NotificationPriority.Low
@@ -195,7 +195,7 @@ def notification_item_favourite(self, listing):
     notification.user_username = self.user.username
     notification.listing_id = listing.id
     notification.listing_title = listing.title
-    notification.listing_photo = listing.listing_photos[0].image_url
+    notification.listing_photo = listing.listing_photos[0]['thumbnail_url']
     notification.priority = NotificationPriority.Low
     self.session.add(notification)
     self.session.commit()
@@ -218,7 +218,7 @@ def notification_favourite_item_sold(self, owner_id, listing):
     notification.type = NotificationType.AFavouriteItemIsSold
     notification.listing_id = listing.id
     notification.listing_title = listing.title
-    notification.listing_photo = listing.listing_photos[0].image_url
+    notification.listing_photo = listing.listing_photos[0]['thumbnail_url']
     notification.priority = NotificationPriority.Low
     self.session.add(notification)
     self.session.commit()
@@ -271,7 +271,7 @@ def notification_following_user_new_item(self, owner_id, listing):
     notification.user_username = self.user.username
     notification.listing_id = listing.id
     notification.listing_title = listing.title
-    notification.listing_photo = listing.listing_photos[0].image_url
+    notification.listing_photo = listing.listing_photos[0]['thumbnail_url']
     notification.priority = NotificationPriority.Low
     self.session.add(notification)
     self.session.commit()
@@ -299,7 +299,7 @@ def notification_new_mention(self, owner_id, listing):
     notification.user_username = self.user.username
     notification.listing_id = listing.id
     notification.listing_title = listing.title
-    notification.listing_photo = listing.listing_photos[0].image_url
+    notification.listing_photo = listing.listing_photos[0]['thumbnail_url']
     notification.priority = NotificationPriority.Low
     self.session.add(notification)
     self.session.commit()
@@ -327,7 +327,7 @@ def notification_new_offered_price(self, listing, offered_price):
     notification.user_username = self.user.username
     notification.listing_id = listing.id
     notification.listing_title = listing.title
-    notification.listing_photo = listing.listing_photos[0].image_url
+    notification.listing_photo = listing.listing_photos[0]['thumbnail_url']
     notification.comment_offer_price = offered_price
     notification.priority = NotificationPriority.Mandatory
     self.session.add(notification)
@@ -352,7 +352,7 @@ def notification_offered_price_accepted(self, owner, listing, offered_price):
     notification.user_username = self.user.username
     notification.listing_id = listing.id
     notification.listing_title = listing.title
-    notification.listing_photo = listing.listing_photos[0].image_url
+    notification.listing_photo = listing.listing_photos[0]['thumbnail_url']
     notification.comment_offer_price = offered_price
     notification.priority = NotificationPriority.Mandatory
     self.session.add(notification)
@@ -377,7 +377,7 @@ def notification_offered_price_declined(self, owner, listing, offered_price):
     notification.user_username = self.user.username
     notification.listing_id = listing.id
     notification.listing_title = listing.title
-    notification.listing_photo = listing.listing_photos[0].image_url
+    notification.listing_photo = listing.listing_photos[0]['thumbnail_url']
     notification.comment_offer_price = offered_price
     notification.priority = NotificationPriority.Mandatory
     self.session.add(notification)
@@ -419,7 +419,7 @@ def update_notification_listing_photo(self, listing):
     notifications_with_this_listing = self.session.query(UserNotificantion).filter(UserNotificantion.listing_id == listing.id)
     if notifications_with_this_listing:
         for l in notifications_with_this_listing:
-            l.listing_photo = listing.listing_photos[0].image_url
+            l.listing_photo = listing.listing_photos[0]['thumbnail_url']
 
 
 def update_notification_order_available_feedback(self, order_id):

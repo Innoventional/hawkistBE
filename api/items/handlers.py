@@ -676,7 +676,7 @@ class ListingHandler(ApiHandler):
                     thumbnail_url = photo.get('thumbnail', None)
                 except AttributeError:
                     return self.make_error('Anton! Invalid photo list format. Check readme')
-                
+
                 if not image_url or not thumbnail_url:
                     return self.make_error('Anton! Must input full photo and thumbnail!')
 

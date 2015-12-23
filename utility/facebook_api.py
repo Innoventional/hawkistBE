@@ -32,6 +32,9 @@ def get_facebook_user(token):
                 error = 'Facebook response have not key %s' % str(e)
     except urllib2.HTTPError, e:
         error = str(e)
+    except Exception, e:
+        error = str(e)
+
     finally:
         return {
             'data': data,

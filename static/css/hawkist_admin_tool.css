@@ -182,3 +182,9 @@
 .download-button {
     float: right;
 }
+
+@media (min-width: 1200px) {
+  .container-big {
+    width: 1220px;
+  }
+}

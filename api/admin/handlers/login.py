@@ -58,8 +58,8 @@ class AdminLoginHandler(AdminBaseHandler):
         if not user:
             message = ADMIN_LOGIN_USER_NOT_FOUND % email
 
-        # elif user.password != encrypted_pass:
-        #     message = ADMIN_LOGIN_USER_WRONG_PASSWORD
+        elif user.password != encrypted_pass:
+            message = ADMIN_LOGIN_USER_WRONG_PASSWORD
 
         elif user.user_type == UserType.Standard:
             message = ADMIN_LOGIN_USER_ACCESS_DENIED

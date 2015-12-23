@@ -183,8 +183,18 @@
     float: right;
 }
 
-@media (min-width: 1200px) {
-  .container-big {
-    width: 1220px;
-  }
+.user_type_column {
+    min-width: 85px;
+}
+
+.user_status_column {
+    min-width: 120px;
+}
+
+.user_joined_column {
+    min-width: 130px;
+}
+
+.user_action_column {
+    min-width: 195px;
 }

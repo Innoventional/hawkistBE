@@ -2,6 +2,7 @@ import logging
 import datetime
 from random import choice
 import string
+from urllib2 import urlopen
 from sqlalchemy import or_, and_
 from api.users.models import User, SystemStatus, UserType
 from base import ApiHandler, die, OpenApiHandler
@@ -12,6 +13,7 @@ from ui_messages.messages.custom_error_titles import PHONE_VERIFICATION_INVALID_
     LOG_IN_EMPTY_AUTHORIZATION_DATA_TITLE, LOG_IN_USER_NOT_FOUND_TITLE, LOG_IN_INCORRECT_PIN_TITLE, \
     UPDATE_USER_INFO_EMAIL_ALREADY_USED_TITLE
 from ui_messages.messages.sms import SIGN_UP_WELCOME_SMS, REQUEST_NEW_PIN_SMS
+from utility.amazon import upload_file
 from utility.facebook_api import get_facebook_user, get_facebook_photo
 from utility.format_verification import phone_verification, sms_limit_check
 from utility.send_email import email_confirmation_sending
@@ -138,9 +140,18 @@ class UserLoginHandler(ApiHandler):
                 fb_avatar_response = get_facebook_photo(facebook_token)
                 fb_avatar_error, fb_avatar_data = fb_avatar_response['error'], fb_avatar_response['data']
                 if not fb_avatar_error:
-                    user.avatar = fb_avatar_data['avatar']
-                    user.thumbnail = fb_avatar_data['thumbnail']
-                    # self.session.commit()
+                    # must upload photo to amazon
+                    try:
+                        avatar_url = upload_file('avatar-%d-production' % user.id,
+                                                 urlopen(fb_avatar_data['avatar']).read(), content_type='image/png')
+                        thumbnail_url = upload_file('thumbnail-%d-production' % user.id,
+                                                    urlopen(fb_avatar_data['thumbnail']).read(),
+                                                    content_type='image/png')
+                        user.avatar = avatar_url
+                        user.thumbnail = thumbnail_url
+                        self.session.commit()
+                    except Exception, e:
+                        logger.debug(e)
                 else:
                     logger.debug(fb_avatar_error)
 
